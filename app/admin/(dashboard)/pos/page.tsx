@@ -31,7 +31,7 @@ function PosForm() {
   const [qty, setQty] = useState<number>(1)
 
   useEffect(() => {
-    fetch('/api/products')
+    fetch('/api/pos_products')
       .then(res => res.json())
       .then(data => {
         setProducts(data)

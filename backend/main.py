@@ -47,7 +47,7 @@ app.add_middleware(
 def read_root():
     return {"message": "Welcome to Mooncake App API"}
 
-@app.get("/api/products")
+@app.get("/api/pos_products")
 def get_products():
     return [{"name": p[0], "price": p[1]} for p in PRODUCTS]
 
