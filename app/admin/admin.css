@@ -1,0 +1,313 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap');
+
+.admin-theme {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+  --primary: #f59e0b; /* Mooncake Gold */
+  --primary-glow: rgba(245, 158, 11, 0.3);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: rgba(255, 255, 255, 0.08);
+  --radius: 16px;
+
+  background-color: var(--bg);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism Classes */
+.admin-theme .glass {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Base Layout */
+.admin-theme .app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-theme .sidebar {
+  width: 260px;
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--bg);
+  z-index: 50;
+}
+
+.admin-theme .sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-theme .sidebar-header h2 {
+  font-size: 1.5rem;
+  background: linear-gradient(90deg, #fcd34d, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  margin: 0;
+}
+
+.admin-theme .logo-box {
+  font-size: 1.8rem;
+}
+
+.admin-theme .sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-theme .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.admin-theme .nav-link:hover, 
+.admin-theme .nav-link.active {
+  background: var(--primary-glow);
+  color: #fbbf24;
+}
+
+.admin-theme .main-content {
+  flex: 1;
+  margin-left: 260px;
+  padding: 2rem 3rem;
+  width: calc(100% - 260px);
+}
+
+.admin-theme .container {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.admin-theme .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  animation: slideDown 0.6s ease-out;
+}
+
+.admin-theme .header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #fcd34d, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 12px var(--primary-glow);
+  margin: 0;
+}
+
+/* Table Design */
+.admin-theme .table-container {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  animation: fadeIn 0.8s ease-out;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.admin-theme table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-theme thead {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.admin-theme th, .admin-theme td {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-theme th {
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.admin-theme tbody tr {
+  transition: all 0.3s ease;
+}
+
+.admin-theme tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.admin-theme .currency {
+  font-weight: 600;
+  color: #fbbf24;
+}
+
+.admin-theme .due-positive {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.admin-theme .due-zero {
+  color: #10b981;
+}
+
+/* Buttons */
+.admin-theme .btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-theme .btn-primary {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.admin-theme .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+}
+
+.admin-theme .btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.admin-theme .btn-outline:hover {
+  background: var(--primary-glow);
+}
+
+/* Stats Cards */
+.admin-theme .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  animation: slideUp 0.6s ease-out;
+}
+
+.admin-theme .stat-card {
+  padding: 1.5rem;
+  border-left: 4px solid var(--primary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.admin-theme .stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.admin-theme .stat-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 200%;
+  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 60%);
+  opacity: 0.5;
+  border-radius: 50%;
+  z-index: -1;
+  transition: opacity 0.3s;
+}
+
+.admin-theme .stat-card:hover::after {
+  opacity: 0.8;
+}
+
+.admin-theme .stat-title {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-theme .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* POS Layout Utilities */
+.admin-theme .pos-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .admin-theme .pos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Quick fixes for Vite layout */
+.admin-theme input, .admin-theme select {
+  background-color: var(--surface);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  padding: 0.6rem;
+  border-radius: 8px;
+  outline: none;
+}
+
+.admin-theme input:focus, .admin-theme select:focus {
+  border-color: var(--primary);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
