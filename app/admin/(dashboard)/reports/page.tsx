@@ -9,7 +9,7 @@ export default function AdminReportsPage() {
 
   const fetchDaily = () => {
     setLoading(true)
-    fetch(`http://127.0.0.1:8000/api/reports/daily_products/${date}`)
+    fetch(`/api/reports/daily_products/${date}`)
       .then(res => res.json())
       .then(d => {
         setData(d)
@@ -22,11 +22,11 @@ export default function AdminReportsPage() {
   }
 
   const handlePrintDaily = () => {
-    window.open(`http://127.0.0.1:8000/api/pdf/daily/${date}`, '_blank')
+    window.open(`/api/pdf/daily/${date}`, '_blank')
   }
 
   const handleMergePdf = () => {
-    window.open(`http://127.0.0.1:8000/api/pdf/merge/${date}`, '_blank')
+    window.open(`/api/pdf/merge/${date}`, '_blank')
   }
 
   return (

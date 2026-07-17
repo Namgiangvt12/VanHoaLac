@@ -11,7 +11,7 @@ export default function AdminOrdersPage() {
 
   const fetchOrders = () => {
     setLoading(true)
-    let url = 'http://127.0.0.1:8000/api/orders'
+    let url = '/api/orders'
     if (keyword) {
       url += `?keyword=${encodeURIComponent(keyword)}`
     }
@@ -37,15 +37,15 @@ export default function AdminOrdersPage() {
 
   const handlePrintPdf = (e: React.MouseEvent, orderId: number) => {
     e.preventDefault()
-    window.open(`http://127.0.0.1:8000/api/pdf/order/${orderId}`, '_blank')
+    window.open(`/api/pdf/order/${orderId}`, '_blank')
   }
-  
+
   const handleDelete = (id: number) => {
-      if(window.confirm(`Bạn có chắc chắn muốn xóa đơn #${id}?`)) {
-          fetch(`http://127.0.0.1:8000/api/orders/${id}`, { method: 'DELETE' })
-            .then(res => res.json())
-            .then(() => fetchOrders())
-      }
+    if (window.confirm(`Bạn có chắc chắn muốn xóa đơn #${id}?`)) {
+      fetch(`/api/orders/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(() => fetchOrders())
+    }
   }
 
   return (
@@ -53,8 +53,8 @@ export default function AdminOrdersPage() {
       <div className="header" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 style={{ margin: 0 }}>Quản lý Đơn Hàng</h1>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Mã đơn, SĐT, Tên..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
@@ -93,8 +93,8 @@ export default function AdminOrdersPage() {
             ) : orders.map(order => (
               <tr key={order.id}>
                 <td>
-                  <span 
-                    style={{ cursor: 'pointer', color: 'var(--primary)', textDecoration: 'underline', fontWeight: 'bold' }} 
+                  <span
+                    style={{ cursor: 'pointer', color: 'var(--primary)', textDecoration: 'underline', fontWeight: 'bold' }}
                     onClick={() => router.push(`/admin/pos?editId=${order.id}`)}
                     title="Click để Chi tiết / Chỉnh sửa đơn hàng"
                   >

@@ -12,7 +12,7 @@ export default function AdminDashboardPage() {
     const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0]
     const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString().split('T')[0]
 
-    fetch(`http://127.0.0.1:8000/api/reports/summary?from_date=${firstDay}&to_date=${lastDay}`)
+    fetch(`/api/reports/summary?from_date=${firstDay}&to_date=${lastDay}`)
       .then(res => res.json())
       .then(data => {
         setSummary(data)
@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
       <div className="header">
         <h1>Bảng Điều Khiển</h1>
       </div>
-      
+
       {loading ? <p>Đang tải dữ liệu...</p> : summary ? (
         <div className="stats-grid">
           <div className="stat-card glass" style={{ borderColor: '#3b82f6' }}>
