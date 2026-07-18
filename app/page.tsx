@@ -1,6 +1,7 @@
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
 import { AboutSection } from "@/components/about-section"
+import { ReviewSection } from "@/components/review-section"
 import { BlogSection } from "@/components/blog-section"
 import { ProductsSection } from "@/components/products-section"
 import { YouTubeSection } from "@/components/youtube-section"
@@ -231,6 +232,7 @@ export default function Home() {
         <HeroSection />
         <YouTubeSection />
         <AboutSection />
+        <ReviewSection />
         <BlogSection />
         <ProductsSection />
       </main>
