@@ -34,3 +34,12 @@ class PaymentCreateSchema(BaseModel):
     amount: int
     type: str # 'deposit', 'full', 'shipping', 'other'
     method: Optional[str] = ""
+
+class PostCreateSchema(BaseModel):
+    title: str
+    slug: str
+    excerpt: Optional[str] = ""
+    content: str
+    image_url: Optional[str] = ""
+    category: Optional[str] = "Tin tức"
+    published: bool = False

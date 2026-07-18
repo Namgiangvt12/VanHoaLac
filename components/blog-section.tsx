@@ -2,9 +2,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
-const blogPosts = [
+const defaultPosts = [
   {
-    id: 1,
+    id: 'a1',
     title: "Từ lò bánh truyền thống lên máy bay xuyên lục địa",
     excerpt: "Những ngày cuối tháng 7 Âm lịch, không khí ở làng nghề bánh trung thu Long Điền nhộn nhịp. Đặc biệt, ngày càng nhiều đơn hàng xuất ngoại.",
     image: "/images/blog-crafting.jpg",
@@ -13,7 +13,7 @@ const blogPosts = [
     href: "https://giadinhonline.vn/banh-trung-thu-long-dien-tu-lo-banh-truyen-thong-len-may-bay-xuyen-luc-dia-d208276.html"
   },
   {
-    id: 2,
+    id: 'a2',
     title: "Giữ gìn thương hiệu bánh trung thu Long Điền",
     excerpt: "Hơn 50 năm qua, bánh trung thu được sản xuất tại thị trấn Long Ðiền (Bà Rịa-Vũng Tàu) vẫn có sức sống bền bỉ nhờ hương vị và bí quyết gia truyền.",
     image: "/images/blog-tea.jpg",
@@ -21,18 +21,35 @@ const blogPosts = [
     category: "Báo Chí",
     href: "https://nhandan.vn/giu-gin-thuong-hieu-banh-trung-thu-long-dien-post774180.html"
   },
-  {
-    id: 3,
-    title: "Nghệ Thuật Làm Vỏ Bánh Trung Thu Hoàn Hảo",
-    excerpt: "Làm chủ sự cân bằng tinh tế giữa kết cấu và hương vị trong nghề làm bánh truyền thống.",
-    image: "/images/blog-festival.jpg",
-    date: "Tin Tức",
-    category: "Kỹ Thuật",
-    href: "#"
-  },
 ]
 
-export function BlogSection() {
+async function getLatestPosts() {
+  try {
+    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { next: { revalidate: 60 } })
+    if (res.ok) {
+      return await res.json()
+    }
+  } catch (e) {
+    console.error(e)
+  }
+  return []
+}
+
+export async function BlogSection() {
+  const dbPosts = await getLatestPosts()
+
+  const formattedDbPosts = dbPosts.map((p: any) => ({
+    id: p.id,
+    title: p.title,
+    excerpt: p.excerpt,
+    image: p.image_url || "/images/blog-crafting.jpg",
+    date: new Date(p.created_at).toLocaleDateString('vi-VN'),
+    category: p.category || "Tin Tức",
+    href: `/bai-viet/${p.slug}`
+  }))
+
+  const displayPosts = [...formattedDbPosts, ...defaultPosts].slice(0, 3)
+
   return (
     <section id="blog" className="py-24 md:py-32 px-6 bg-secondary">
       <div className="max-w-7xl mx-auto">
@@ -57,13 +74,13 @@ export function BlogSection() {
 
         {/* Blog Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
+          {displayPosts.map((post) => (
             <Link 
               key={post.id} 
               href={post.href} 
               className="group cursor-pointer block"
-              target={post.href !== "#" ? "_blank" : undefined}
-              rel={post.href !== "#" ? "noopener noreferrer" : undefined}
+              target={post.href.startsWith("http") ? "_blank" : undefined}
+              rel={post.href.startsWith("http") ? "noopener noreferrer" : undefined}
             >
               <article>
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted">

@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db, get_conn
-from schemas import OrderCreateSchema, OrderUpdateSchema, PaymentCreateSchema
+from schemas import OrderCreateSchema, OrderUpdateSchema, PaymentCreateSchema, PostCreateSchema
+import sqlite3
 from datetime import datetime, date
 from pdf_services import generate_order_pdf_bytes, merge_pdfs, generate_daily_report_pdf, _calc_daily_rows
 import tempfile
@@ -358,6 +359,50 @@ def get_daily_products(date_iso: str):
             "boxes": boxes
         })
     return {"items": results, "total_cakes": total_cakes, "total_boxes": total_boxes}
+
+@app.post("/api/posts")
+def create_post(post: PostCreateSchema):
+    con = get_conn()
+    cur = con.cursor()
+    try:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute("""
+            INSERT INTO posts(title, slug, excerpt, content, image_url, category, published, created_at)
+            VALUES(?,?,?,?,?,?,?,?)
+        """, (post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, post.published, now))
+        con.commit()
+        return {"status": "success", "id": cur.lastrowid}
+    except sqlite3.IntegrityError:
+        con.rollback()
+        raise HTTPException(status_code=400, detail="Slug đã tồn tại (hoặc lỗi dữ liệu)")
+    except Exception as e:
+        con.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        con.close()
+
+@app.get("/api/posts")
+def get_posts(published_only: bool = False):
+    con = get_conn()
+    cur = con.cursor()
+    if published_only:
+        cur.execute("SELECT * FROM posts WHERE published = 1 ORDER BY id DESC")
+    else:
+        cur.execute("SELECT * FROM posts ORDER BY id DESC")
+    rows = cur.fetchall()
+    con.close()
+    return [dict(r) for r in rows]
+
+@app.get("/api/posts/{slug}")
+def get_post(slug: str):
+    con = get_conn()
+    cur = con.cursor()
+    cur.execute("SELECT * FROM posts WHERE slug=?", (slug,))
+    row = cur.fetchone()
+    con.close()
+    if not row:
+        raise HTTPException(status_code=404, detail="Bài viết không tồn tại")
+    return dict(row)
 
 @app.get("/api/pdf/order/{order_id}")
 def get_order_pdf(order_id: int):

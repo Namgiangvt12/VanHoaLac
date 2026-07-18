@@ -50,5 +50,17 @@ def init_db():
         method TEXT,
         FOREIGN KEY(order_id) REFERENCES orders(id)
     )""")
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS posts(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        slug TEXT NOT NULL UNIQUE,
+        excerpt TEXT,
+        content TEXT NOT NULL,
+        image_url TEXT,
+        category TEXT,
+        published BOOLEAN DEFAULT 0,
+        created_at TEXT NOT NULL
+    )""")
     con.commit()
     con.close()
