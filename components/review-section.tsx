@@ -3,24 +3,24 @@ import { Star } from "lucide-react"
 const reviews = [
   {
     id: 1,
-    name: "Nguyễn Văn A",
-    text: "Bánh da dợp ở đây ngon tuyệt vời, bột mềm, nhân đầy đặn cắt ra không bị bở. Cả nhà mình ai cũng khen.",
+    name: "Quyên Bùi",
+    text: "Bánh nó ngon lắm mn ơi, chủ nhiệt tình dễ thương nữa",
     rating: 5,
-    date: "1 tháng trước"
+    date: "1 năm trước"
   },
   {
     id: 2,
-    name: "Tran Thi B",
-    text: "Vị gà quay đúng chuẩn thủ công truyền thống Vũng Tàu. Hộp quà đem biếu khách hàng rất sang trọng. Sẽ luôn ủng hộ lò Văn Hòa Lạc.",
+    name: "Trâm Trần",
+    text: "Bánh ăn ngon lắm, năm nào cũng chờ tới mùa mới đc ăn. Bé chủ tiệm dễ thương lại nhiệt tình, sẽ ủng hộ shop nữa nha",
     rating: 5,
-    date: "2 tháng trước"
+    date: "1 năm trước"
   },
   {
     id: 3,
-    name: "Lê Minh Cường",
-    text: "Tôi đặt số lượng lớn cho công ty, giao hàng nhanh, bánh bảo quản cẩn thận, không móp méo. Rất chuyên nghiệp!",
+    name: "Diễm Phạm",
+    text: "Bánh ngọt vừa phải, ko hương liệu ko chất bảo quản nên cả nhà yên tâm về chất lượng. Tư vấn và giao hàng nhiệt tình",
     rating: 5,
-    date: "3 tuần trước"
+    date: "1 năm trước"
   }
 ]
 
