@@ -48,8 +48,8 @@ export function Footer() {
               Văn Hòa Lạc
             </Link>
             <address className="mt-4 not-italic text-sm text-primary-foreground/70 leading-relaxed" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-              <span itemProp="streetAddress">123 Đường Phạm Văn Đồng</span><br />
-              <span itemProp="addressLocality">Cầu Giấy, Hà Nội</span><br />
+              <span itemProp="streetAddress">53/12/20 Lê Hồng Phong</span><br />
+              <span itemProp="addressLocality">Phường Tam Thắng ,TP. Hồ Chí minh</span><br />
               <meta itemProp="addressCountry" content="VN" />
             </address>
           </div>
@@ -136,10 +136,9 @@ export function Footer() {
             <p className="text-xs text-primary-foreground/60 mb-2">
               © {new Date().getFullYear()} Bánh Trung Thu Văn Hòa Lạc. Đã đăng ký bản quyền.
             </p>
-            <p className="text-xs text-primary-foreground/50 max-w-2xl mx-auto">
-              Văn Hòa Lạc - Thương hiệu bánh trung thu cao cấp thủ công tại Hà Nội. 
-              Chuyên cung cấp bánh trung thu nhân hạt sen, đậu đỏ, trứng muối. 
-              Giao hàng bánh trung thu toàn quốc. Nhận đặt bánh trung thu doanh nghiệp số lượng lớn.
+            <p className="text-xs text-primary-foreground/50 max-w-2xl mx-auto leading-relaxed">
+              Văn Hòa Lạc – Thương hiệu bánh trung thu gia truyền hơn 50 năm tại Long Điền, Bà Rịa - Vũng Tàu.
+              Chuyên cung cấp bánh trung thu thủ công cao cấp với các dòng nhân truyền thống, giao hàng toàn quốc và nhận đặt bánh trung thu doanh nghiệp số lượng lớn.
             </p>
           </div>
         </div>
