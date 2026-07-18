@@ -18,13 +18,22 @@ export function Footer() {
             Liên hệ ngay để đặt bánh trung thu cao cấp cho gia đình hoặc doanh nghiệp. 
             Giao hàng toàn quốc với dịch vụ bảo quản lạnh chuyên nghiệp.
           </p>
-          <Link 
-            href="tel:+842412345678" 
-            className="border border-primary-foreground px-8 py-3.5 text-sm tracking-widest uppercase hover:bg-primary-foreground hover:text-primary transition-colors inline-block"
-            title="Gọi điện đặt bánh trung thu Văn Hòa Lạc"
-          >
-            Gọi Ngay: 024-1234-5678
-          </Link>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link 
+              href="tel:0902371025" 
+              className="border border-primary-foreground px-8 py-3.5 text-sm tracking-widest uppercase hover:bg-primary-foreground hover:text-primary transition-colors inline-block"
+              title="Gọi điện đặt bánh điện thoại 1"
+            >
+              Gọi Ngay: 0902.371.025
+            </Link>
+            <Link 
+              href="tel:0971682213" 
+              className="border border-primary-foreground px-8 py-3.5 text-sm tracking-widest uppercase hover:bg-primary-foreground hover:text-primary transition-colors inline-block"
+              title="Gọi điện đặt bánh điện thoại 2"
+            >
+              Hỗ Trợ: 0971.682.213
+            </Link>
+          </div>
         </div>
 
         {/* Footer Grid */}
@@ -82,13 +91,20 @@ export function Footer() {
           <div>
             <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-4">Liên Hệ</p>
             <ul className="space-y-3">
-              <li>
+              <li className="flex flex-col gap-2">
                 <Link 
-                  href="tel:+842412345678" 
+                  href="tel:0902371025" 
                   className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                   itemProp="telephone"
                 >
-                  024-1234-5678
+                  0902.371.025
+                </Link>
+                <Link 
+                  href="tel:0971682213" 
+                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                  itemProp="telephone"
+                >
+                  0971.682.213
                 </Link>
               </li>
               <li>
