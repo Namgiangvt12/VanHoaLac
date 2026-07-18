@@ -14,7 +14,7 @@ export function AboutSection() {
             <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground">
               Triết Lý Văn Hòa Lạc
             </p>
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <article className="border border-border p-8">
                 <span className="font-serif text-5xl md:text-6xl font-light" aria-hidden="true">1</span>
                 <h3 className="sr-only">Công thức truyền thống</h3>
