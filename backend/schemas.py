@@ -25,6 +25,7 @@ class OrderUpdateSchema(BaseModel):
     customer_address: Optional[str] = ""
     receive_date: str
     discount: int = 0
+    deposit: int = 0
     shipping_fee: int = 0
     notes: Optional[str] = ""
     items: List[OrderItemSchema]

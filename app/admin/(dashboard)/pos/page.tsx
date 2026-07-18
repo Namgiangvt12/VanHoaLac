@@ -49,7 +49,7 @@ function PosForm() {
             receive_date: data.receive_date || new Date().toISOString().split('T')[0],
             shipping_fee: data.shipping_fee || 0,
             discount: data.discount || 0,
-            deposit: 0, // In edit mode, deposit is typically not edited like this or from backend
+            deposit: data.deposit || 0,
             pay_ship_now: false,
             full_pay: false,
             notes: data.notes || ''
@@ -245,13 +245,13 @@ function PosForm() {
             <input type="number" name="discount" value={form.discount} onChange={handleChange} style={inputStyle} />
           </div>
 
+          <div>
+            <label>Đặt cọc (VND)</label>
+            <input type="number" name="deposit" value={form.deposit} onChange={handleChange} style={inputStyle} />
+          </div>
+
           {isEditMode ? null : (
             <>
-              <div>
-                <label>Đặt cọc (VND)</label>
-                <input type="number" name="deposit" value={form.deposit} onChange={handleChange} style={inputStyle} />
-              </div>
-
               <label style={{ display: 'flex', gap: '0.5rem', cursor: 'pointer', marginTop: '0.5rem' }}>
                 <input type="checkbox" name="pay_ship_now" checked={form.pay_ship_now} onChange={handleChange} />
                 Đã thanh toán phí ship
@@ -276,17 +276,13 @@ function PosForm() {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span>Tổng Đơn:</span> <span className="currency" style={{ fontSize: '1.2rem' }}>{formatMoney(subtotal)}</span>
             </div>
-            {isEditMode ? null : (
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                <span>Đã thu:</span> <span>{formatMoney(paid)}</span>
-              </div>
-            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span>Đã thu:</span> <span>{formatMoney(paid)}</span>
+            </div>
             
-            {isEditMode ? null : (
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontWeight: 'bold' }}>
-                <span>Còn thiếu:</span> <span className="due-positive" style={{ fontSize: '1.2rem' }}>{formatMoney(due)}</span>
-              </div>
-            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontWeight: 'bold' }}>
+              <span>Còn thiếu:</span> <span className="due-positive" style={{ fontSize: '1.2rem' }}>{formatMoney(due)}</span>
+            </div>
             
             <button className="btn btn-primary" onClick={handleSubmit} style={{ width: '100%', justifyContent: 'center', padding: '1rem', marginTop: '1rem' }}>
               {isEditMode ? 'CẬP NHẬT ĐƠN HÀNG' : 'LƯU ĐƠN HÀNG'}

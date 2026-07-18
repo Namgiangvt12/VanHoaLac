@@ -128,9 +128,14 @@ def get_order(order_id: int):
         
     cur.execute("SELECT product_name, unit_price, quantity FROM order_items WHERE order_id=?", (order_id,))
     items = cur.fetchall()
+    
+    cur.execute("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE order_id=? AND type='deposit'", (order_id,))
+    dep = cur.fetchone()[0]
+    
     con.close()
     
     result = dict(row)
+    result['deposit'] = dep
     result['items'] = [{"product_name": i['product_name'], "unit_price": i['unit_price'], "quantity": i['quantity']} for i in items]
     return result
 
@@ -206,6 +211,13 @@ def update_order(order_id: int, order: OrderUpdateSchema):
         for item in order.items:
             cur.execute("INSERT INTO order_items(order_id, product_name, unit_price, quantity) VALUES(?,?,?,?)",
                         (order_id, item.product_name, item.unit_price, item.quantity))
+            
+        cur.execute("DELETE FROM payments WHERE order_id=? AND type='deposit'", (order_id,))
+        if order.deposit > 0:
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cur.execute("INSERT INTO payments(order_id, pay_date, amount, type, method) VALUES(?,?,?,?,?)",
+                        (order_id, now, order.deposit, 'deposit', ''))
+                        
         con.commit()
     except Exception as e:
         con.rollback()
