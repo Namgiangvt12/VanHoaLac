@@ -39,7 +39,7 @@ export function Header() {
             className="group flex items-center gap-2"
             title="Bánh Trung Thu Văn Hòa Lạc - Trang Chủ"
           >
-            <span className="font-serif text-2xl font-bold tracking-tight text-primary transition-transform group-hover:scale-105">
+            <span className={`font-serif text-2xl font-bold tracking-tight transition-transform group-hover:scale-105 ${scrolled ? "text-primary" : "text-white"}`}>
               Văn Hòa Lạc
             </span>
           </Link>
@@ -50,10 +50,10 @@ export function Header() {
               <Link 
                 key={link.name}
                 href={link.href} 
-                className="text-xs tracking-[0.2em] uppercase font-medium text-muted-foreground hover:text-primary transition-all relative group"
+                className={`text-xs tracking-[0.2em] uppercase font-medium hover:text-primary transition-all relative group ${scrolled ? "text-muted-foreground" : "text-white/90"}`}
               >
                 {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
+                <span className={`absolute -bottom-1 left-0 w-0 h-0.5 transition-all group-hover:w-full ${scrolled ? "bg-primary" : "bg-white"}`} />
               </Link>
             ))}
           </div>
@@ -62,14 +62,18 @@ export function Header() {
           <div className="hidden md:flex items-center gap-4">
             <Link
               href="#youtube-section"
-              className="p-2 text-primary hover:bg-primary/5 rounded-full transition-colors"
+              className={`p-2 rounded-full transition-colors ${scrolled ? "text-primary hover:bg-primary/5" : "text-white hover:bg-white/10"}`}
               title="Xem video quy trình"
             >
               <Youtube size={20} />
             </Link>
             <Link
               href="#products"
-              className="bg-primary text-primary-foreground px-6 py-2.5 text-xs tracking-widest uppercase font-bold rounded-full hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              className={`px-6 py-2.5 text-xs tracking-widest uppercase font-bold rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 ${
+                scrolled 
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                  : "bg-white text-primary hover:bg-white/90"
+              }`}
             >
               Đặt Bánh Ngay
             </Link>
@@ -78,7 +82,7 @@ export function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-primary hover:bg-primary/5 rounded-full transition-all"
+            className={`md:hidden p-2 rounded-full transition-all ${scrolled ? "text-primary hover:bg-primary/5" : "text-white hover:bg-white/10"}`}
             aria-label={isOpen ? "Đóng menu" : "Mở menu"}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}

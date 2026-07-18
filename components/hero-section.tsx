@@ -22,7 +22,7 @@ export function HeroSection() {
       >
         <Image
           src="/images/hero-mooncakes.jpg"
-          alt="Bánh trung thu Văn Hòa Lạc - Cao Cấp Thủ Công"
+          alt="Bánh Trung Thu Văn Hòa Lạc Vũng Tàu - Cao Cấp Thủ Công"
           fill
           className="object-cover"
           priority
@@ -47,13 +47,14 @@ export function HeroSection() {
               className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.1] text-balance mb-6 drop-shadow-2xl"
               itemProp="headline"
             >
+              <span className="sr-only">Bánh trung thu Văn Hòa Lạc Vũng Tàu</span>
               Nghệ Thuật <br /> 
               <span className="text-gold italic">Bánh Trung Thu</span> <br /> 
-              Gia Truyền
+              Văn Hòa Lạc
             </h1>
             <p className="text-white/80 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-medium" itemProp="description">
               Khám phá hương vị di sản qua từng lớp bánh "Da Dợp" độc bản 
-              tại <span className="text-gold">Văn Hòa Lạc Long Điền</span>.
+              tại <span className="text-gold">Văn Hòa Lạc Vũng Tàu</span>.
             </p>
           </motion.div>
 
@@ -65,7 +66,7 @@ export function HeroSection() {
           >
             <Link
               href="#products"
-              className="group relative inline-flex items-center justify-center px-10 py-5 bg-primary text-primary-foreground text-xs tracking-[0.2em] uppercase font-bold rounded-full transition-all hover:scale-105 shadow-[0_0_20px_rgba(139,0,0,0.4)] hover:shadow-[0_0_30px_rgba(139,0,0,0.6)]"
+              className="group relative inline-flex items-center justify-center px-10 py-5 bg-white text-primary hover:bg-white/90 text-xs tracking-[0.2em] uppercase font-bold rounded-full transition-all hover:scale-105 shadow-xl"
               title="Khám phá bộ sưu tập bánh trung thu"
             >
               Bộ Sưu Tập 2026

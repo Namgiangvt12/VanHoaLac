@@ -39,7 +39,7 @@ export function AboutSection() {
               id="about-heading" 
               className="font-serif text-3xl md:text-4xl lg:text-5xl font-light leading-tight text-balance"
             >
-              Văn Hòa Lạc - Làm với tâm huyết, chia sẻ với yêu thương
+              Văn Hòa Lạc Vũng Tàu - Làm với tâm huyết, chia sẻ với yêu thương
             </h2>
             <p className="mt-8 text-muted-foreground leading-relaxed">
               Mỗi chiếc <strong>bánh trung thu Văn Hòa Lạc</strong> đều là một lễ hội tôn vinh di sản và nghề thủ công. 
@@ -47,9 +47,9 @@ export function AboutSection() {
               đều được chuẩn bị cẩn thận để tôn vinh truyền thống Tết Trung Thu Việt Nam.
             </p>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              Chúng tôi tin rằng những chiếc <strong>bánh trung thu cao cấp</strong> ngon nhất đều kể một câu chuyện—về những buổi 
+              Chúng tôi tin rằng những chiếc <strong>bánh trung thu Vũng Tàu cao cấp</strong> ngon nhất đều kể một câu chuyện—về những buổi 
               sum họp gia đình dưới trăng tròn, về lòng biết ơn mùa màng bội thu, và những điều ước 
-              được trao truyền qua các thế hệ tại <strong>Long Điền, TPHCM</strong>.
+              được trao truyền qua các thế hệ tại <strong>Vũng Tàu</strong>.
             </p>
             <Link 
               href="#contact" 

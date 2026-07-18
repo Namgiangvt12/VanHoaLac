@@ -16,12 +16,12 @@ const beVietnam = Be_Vietnam_Pro({
 });
 
 export const metadata: Metadata = {
-  title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Thủ Công Gia Truyền Của Người Hoa',
-  description: 'Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu thủ công cao cấp tại Long Điền. Nhân Da Dợp , Đậu Xanh, Gà Quay, Thập Cẩm...... Giao hàng toàn quốc. Đặt bánh Tết Trung Thu 2026.',
-  keywords: ['bánh trung thu văn hòa lạc', 'bánh trung thu long điền', 'bánh da dợp văn hòa lạc', 'bánh trung thu thủ công', 'mua bánh trung thu', 'đặt bánh trung thu', 'bánh trung thu nhân hạt sen', 'bánh trung thu truyền thống', 'tết trung thu 2026'],
-  authors: [{ name: 'Văn Hòa Lạc' }],
-  creator: 'Văn Hòa Lạc',
-  publisher: 'Văn Hòa Lạc',
+  title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Thủ Công Gia Truyền',
+  description: 'Bánh Trung Thu Văn Hòa Lạc - Bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền. Nhân Da Dợp , Đậu Xanh, Gà Quay, Thập Cẩm... Giao hàng toàn quốc. Đặt bánh Tết Trung Thu 2026.',
+  keywords: ['banh trung thu văn hòa lạc', 'bánh trung thu vũng tàu', 'văn hòa lạc', 'văn hòa lạc vũng tàu', 'bánh trung thu long điền', 'bánh da dợp văn hòa lạc', 'bánh trung thu thủ công', 'mua bánh trung thu', 'đặt bánh trung thu', 'tết trung thu 2026'],
+  authors: [{ name: 'Văn Hòa Lạc Vũng Tàu' }],
+  creator: 'Văn Hòa Lạc Vũng Tàu',
+  publisher: 'Văn Hòa Lạc Vũng Tàu',
   formatDetection: {
     email: true,
     address: true,
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Bánh Trung Thu Văn Hòa Lạc | Cao Cấp Thủ Công Long Điền',
-    description: 'Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu thủ công cao cấp. Nhân hạt sen, đậu đỏ, trứng muối. Giao hàng toàn quốc.',
+    title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Thủ Công',
+    description: 'Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp. Chuyên bánh da dợp. Giao hàng toàn quốc.',
     url: 'https://vanhoalac.vn',
-    siteName: 'Bánh Trung Thu Văn Hòa Lạc',
+    siteName: 'Bánh Trung Thu Văn Hòa Lạc Vũng Tàu',
     images: [
       {
         url: '/images/hero-mooncakes.jpg',
@@ -53,8 +53,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bánh Trung Thu Văn Hòa Lạc | Cao Cấp Thủ Công Long Điền',
-    description: 'Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu thủ công cao cấp. Giao hàng toàn quốc.',
+    title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu',
+    description: 'Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp. Giao hàng toàn quốc.',
     images: ['/images/hero-mooncakes.jpg'],
   },
   robots: {
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'google-site-verification-code',
+    google: 'RMSB0OSydag4gIrvd75hYd8UPgvCY0rE_pTvGUm7A_4',
   },
   generator: 'v0.app',
   icons: {
