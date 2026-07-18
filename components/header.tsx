@@ -19,11 +19,11 @@ export function Header() {
   }, [])
 
   const navLinks = [
-    { name: "Giới Thiệu", href: "#about" },
-    { name: "Sản Phẩm", href: "#products" },
-    { name: "Video", href: "#youtube-section" },
-    { name: "Bài Viết", href: "#blog" },
-    { name: "Liên Hệ", href: "#contact" },
+    { name: "Giới Thiệu", href: "/ve-chung-toi" },
+    { name: "Sản Phẩm", href: "/#products" },
+    { name: "Video", href: "/#youtube-section" },
+    { name: "Bài Viết", href: "/#blog" },
+    { name: "Liên Hệ", href: "/lien-he" },
   ]
 
   return (
@@ -68,7 +68,9 @@ export function Header() {
               <Youtube size={20} />
             </Link>
             <Link
-              href="#products"
+              href="https://zalo.me/0971682213"
+              target="_blank"
+              rel="noopener noreferrer"
               className={`px-6 py-2.5 text-xs tracking-widest uppercase font-bold rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 ${
                 scrolled 
                   ? "bg-primary text-primary-foreground hover:bg-primary/90" 
@@ -121,7 +123,9 @@ export function Header() {
                   transition={{ delay: 0.5 }}
                 >
                   <Link
-                    href="#products"
+                    href="https://zalo.me/0971682213"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="mt-2 block text-center bg-primary text-primary-foreground px-6 py-4 text-xs tracking-[0.2em] uppercase font-bold rounded-xl shadow-lg"
                     onClick={() => setIsOpen(false)}
                   >
