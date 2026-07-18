@@ -68,9 +68,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'RMSB0OSydag4gIrvd75hYd8UPgvCY0rE_pTvGUm7A_4',
-  },
   generator: 'v0.app',
   icons: {
     icon: [
@@ -98,6 +95,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className={`${playfair.variable} ${beVietnam.variable}`}>
+      <head>
+        <meta name="google-site-verification" content="RMSB0OSydag4gIrvd75hYd8UPgvCY0rE_pTvGUm7A_4" />
+      </head>
       <body className="font-sans antialiased">
         {children}
         <Analytics />
