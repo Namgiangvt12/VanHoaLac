@@ -75,7 +75,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-sans), 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-serif: var(--font-serif), 'Playfair Display', Georgia, serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-gold: #D4AF37;

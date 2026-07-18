@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Be_Vietnam_Pro } from 'next/font/google'
+import { Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
@@ -9,11 +9,6 @@ const playfair = Playfair_Display({
   variable: "--font-serif"
 });
 
-const beVietnam = Be_Vietnam_Pro({ 
-  subsets: ["latin", "vietnamese"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-sans"
-});
 
 export const metadata: Metadata = {
   title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Thủ Công Gia Truyền',
@@ -94,7 +89,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="vi" className={`${playfair.variable} ${beVietnam.variable}`}>
+    <html lang="vi" className={`${playfair.variable}`}>
       <head>
         <meta name="google-site-verification" content="RMSB0OSydag4gIrvd75hYd8UPgvCY0rE_pTvGUm7A_4" />
       </head>
