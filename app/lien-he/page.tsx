@@ -86,7 +86,7 @@ export default function ContactPage() {
             {/* Bản Đồ Google Map */}
             <div className="h-full min-h-[400px] rounded-2xl overflow-hidden shadow-2xl relative border border-border">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15696.536287950553!2d107.2185252!3d10.472938!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317571abfecc22f3%3A0xa5f4cc0bd192461d!2sL%C3%B2%20b%C3%A1nh%20trung%20thu%20V%C4%83n%20Ho%C3%A0%20L%E1%BA%A1c!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s"
+                src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15707.391295326848!2d107.0827754!3d10.3566764!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31756f7c553778ed%3A0x932f5ef477b3d205!2sB%C3%A1nh%20Trung%20Thu%20V%C4%83n%20H%C3%B2a%20L%E1%BA%A1c%20Long%20%C4%90i%E1%BB%81n!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s"
                 width="100%"
                 height="100%"
                 style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
