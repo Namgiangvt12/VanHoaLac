@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db, get_conn
@@ -11,6 +11,8 @@ import os
 import shutil
 import io
 import re
+from PIL import Image
+import uuid
 
 app = FastAPI(title="Mooncake App API v7 - Web Full")
 
@@ -380,6 +382,56 @@ def create_post(post: PostCreateSchema):
         raise HTTPException(status_code=400, detail=str(e))
     finally:
         con.close()
+
+@app.put("/api/posts/{post_id}")
+def update_post(post_id: int, p: PostCreateSchema):
+    con = get_conn()
+    cur = con.cursor()
+    try:
+        cur.execute("""
+            UPDATE posts SET title=?, slug=?, excerpt=?, content=?, image_url=?, category=?, published=?
+            WHERE id=?
+        """, (p.title, p.slug, p.excerpt, p.content, p.image_url, p.category, 1 if p.published else 0, post_id))
+        con.commit()
+    except sqlite3.IntegrityError:
+        con.rollback()
+        raise HTTPException(status_code=400, detail="Slug đã tồn tại (hoặc lỗi dữ liệu)")
+    except Exception as e:
+        con.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        con.close()
+    return {"status": "success"}
+
+@app.post("/api/upload")
+async def upload_image(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        image = Image.open(io.BytesIO(contents))
+        
+        # Resize if width > 1920 to save space
+        if image.width > 1920:
+            ratio = 1920 / image.width
+            new_height = int(image.height * ratio)
+            image = image.resize((1920, new_height), Image.Resampling.LANCZOS)
+        
+        # Convert to RGB if it has alpha channel to save as JPEG/WebP
+        if image.mode in ('RGBA', 'P'):
+            image = image.convert('RGB')
+            
+        filename = f"{uuid.uuid4().hex}.webp"
+        
+        # Ensure public/uploads exists
+        upload_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "public", "uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        filepath = os.path.join(upload_dir, filename)
+        
+        image.save(filepath, format="WEBP", quality=80)
+        
+        return {"url": f"/uploads/{filename}"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Lỗi tải ảnh: {str(e)}")
 
 @app.get("/api/posts")
 def get_posts(published_only: bool = False):

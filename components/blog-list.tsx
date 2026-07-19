@@ -1,17 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import type { BasePost } from "./add-blog-form"
 
-interface BasePost {
-  id: number
-  title: string
-  slug: string
-  category: string
-  published: boolean
-  created_at: string
+interface BlogListProps {
+  onEdit: (post: BasePost) => void
 }
 
-export function BlogList() {
+export function BlogList({ onEdit }: BlogListProps) {
   const [posts, setPosts] = useState<BasePost[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
@@ -69,7 +65,7 @@ export function BlogList() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {posts.map((post) => (
-              <tr key={post.id}>
+              <tr key={post.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{post.id}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <div className="font-medium">{post.title}</div>
@@ -85,6 +81,12 @@ export function BlogList() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button 
+                    onClick={() => onEdit(post)}
+                    className="text-indigo-600 hover:text-indigo-900 font-semibold"
+                  >
+                    Sửa
+                  </button>
                   <button 
                     onClick={() => handleDelete(post.id)}
                     className="text-red-600 hover:text-red-900 ml-4 font-semibold"
