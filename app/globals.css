@@ -126,6 +126,14 @@
   }
   
   /* Cấu hình hiển thị chuẩn cho nội dung viết từ React Quill */
+  .quill-content {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+  }
+  .quill-content * {
+    max-width: 100% !important;
+  }
   .quill-content ul {
     list-style-type: disc !important;
     padding-left: 2rem !important;
@@ -152,5 +160,7 @@
     margin-bottom: 1rem !important;
     font-weight: bold !important;
     color: var(--primary) !important;
+    white-space: normal !important;
   }
 }
+
