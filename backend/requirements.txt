@@ -3,3 +3,5 @@ uvicorn
 sqlalchemy
 reportlab
 pydantic
+Pillow
+python-multipart
