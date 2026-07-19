@@ -82,7 +82,7 @@ export async function BlogSection() {
               target={post.href.startsWith("http") ? "_blank" : undefined}
               rel={post.href.startsWith("http") ? "noopener noreferrer" : undefined}
             >
-              <article>
+              <article className="h-full flex flex-col bg-background border border-border/80 rounded-2xl overflow-hidden hover:shadow-lg transition-all group-hover:-translate-y-1">
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                   <Image
                     src={post.image}
@@ -90,18 +90,18 @@ export async function BlogSection() {
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm px-3 py-1">
-                    <span className="text-xs tracking-widest uppercase">{post.category}</span>
+                  <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+                    <span className="text-xs tracking-widest uppercase font-medium">{post.category}</span>
                   </div>
                 </div>
-                <div className="mt-6">
+                <div className="p-6 flex-1 flex flex-col">
                   <p className="text-xs text-muted-foreground tracking-widest uppercase mb-3">
                     {post.date}
                   </p>
-                  <h3 className="font-serif text-xl md:text-2xl font-light group-hover:text-muted-foreground transition-colors">
+                  <h3 className="font-serif text-xl md:text-2xl font-light group-hover:text-primary transition-colors">
                     {post.title}
                   </h3>
-                  <p className="mt-3 text-muted-foreground text-sm leading-relaxed">
+                  <p className="mt-3 text-muted-foreground text-sm leading-relaxed flex-1">
                     {post.excerpt}
                   </p>
                 </div>

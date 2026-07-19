@@ -96,27 +96,27 @@ export default async function BlogListPage() {
                   target={post.href.startsWith("http") ? "_blank" : undefined}
                   rel={post.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 >
-                  <article>
-                    <div className="relative aspect-[4/3] overflow-hidden mb-6 rounded-lg bg-background/50">
+                  <article className="h-full flex flex-col bg-background border border-border/80 rounded-2xl overflow-hidden hover:shadow-lg transition-all group-hover:-translate-y-1">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                       <Image
                         src={post.image}
                         alt={post.title}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
-                      <div className="absolute top-4 right-4 bg-background px-4 py-1.5 text-xs tracking-widest uppercase">
-                        {post.category}
+                      <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+                        <span className="text-xs tracking-widest uppercase font-medium">{post.category}</span>
                       </div>
                     </div>
-                    <div className="space-y-4">
-                      <p className="text-sm tracking-widest text-muted-foreground">
+                    <div className="p-6 flex-1 flex flex-col">
+                      <p className="text-xs text-muted-foreground tracking-widest uppercase mb-3">
                         {post.date}
                       </p>
-                      <h3 className="font-serif text-xl md:text-2xl font-light leading-snug group-hover:text-amber-700 transition-colors">
+                      <h3 className="font-serif text-xl md:text-2xl font-light group-hover:text-primary transition-colors">
                         {post.title}
                       </h3>
-                      <p className="text-muted-foreground leading-relaxed line-clamp-3">
+                      <p className="mt-3 text-muted-foreground text-sm leading-relaxed flex-1 line-clamp-3">
                         {post.excerpt}
                       </p>
                     </div>

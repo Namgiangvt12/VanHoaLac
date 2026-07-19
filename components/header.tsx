@@ -126,7 +126,7 @@ export function Header() {
                     href="https://zalo.me/0971682213"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 block text-center bg-primary text-primary-foreground px-6 py-4 text-xs tracking-[0.2em] uppercase font-bold rounded-xl shadow-lg"
+                    className="mt-2 block text-center bg-primary text-primary-foreground px-6 py-4 text-xs tracking-[0.2em] uppercase font-bold rounded-xl shadow-lg active:scale-95 transition-transform"
                     onClick={() => setIsOpen(false)}
                   >
                     Đặt Bánh Ngay
