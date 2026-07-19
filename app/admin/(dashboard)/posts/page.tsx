@@ -1,7 +1,7 @@
 'use client'
 
 import { AddBlogForm } from '@/components/add-blog-form'
-
+import { BlogList } from '@/components/blog-list'
 export default function AdminPostsPage() {
   return (
     <div className="container" style={{ animation: 'fadeIn 0.5s ease' }}>
@@ -11,6 +11,7 @@ export default function AdminPostsPage() {
       <div className="bg-white rounded-xl shadow-sm p-6" style={{ color: 'black' }}>
         <AddBlogForm />
       </div>
+      <BlogList />
     </div>
   )
 }

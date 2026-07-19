@@ -404,6 +404,20 @@ def get_post(slug: str):
         raise HTTPException(status_code=404, detail="Bài viết không tồn tại")
     return dict(row)
 
+@app.delete("/api/posts/{post_id}")
+def delete_post(post_id: int):
+    con = get_conn()
+    cur = con.cursor()
+    try:
+        cur.execute("DELETE FROM posts WHERE id=?", (post_id,))
+        con.commit()
+    except Exception as e:
+        con.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        con.close()
+    return {"status": "success"}
+
 @app.get("/api/pdf/order/{order_id}")
 def get_order_pdf(order_id: int):
     buf = generate_order_pdf_bytes(order_id)

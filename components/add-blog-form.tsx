@@ -1,6 +1,20 @@
 "use client"
 
 import { useState } from "react"
+import dynamic from "next/dynamic"
+import "react-quill-new/dist/quill.snow.css"
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
+
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    ['link', 'image'],
+    ['clean']
+  ],
+}
 
 interface BlogFormData {
   title: string
@@ -136,16 +150,15 @@ export function AddBlogForm() {
           <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
             Nội dung *
           </label>
-          <textarea
-            id="content"
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            required
-            rows={8}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Nhập nội dung bài viết..."
-          />
+          <div className="bg-white">
+            <ReactQuill 
+              theme="snow"
+              value={formData.content}
+              onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+              modules={modules}
+              className="h-64 mb-12"
+            />
+          </div>
         </div>
 
         <div>
