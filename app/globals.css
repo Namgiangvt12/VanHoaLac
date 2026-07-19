@@ -127,9 +127,7 @@
   
   /* Cấu hình hiển thị chuẩn cho nội dung viết từ React Quill */
   .quill-content {
-    word-break: break-word;
     overflow-wrap: break-word;
-    white-space: pre-wrap;
   }
   .quill-content * {
     max-width: 100% !important;
