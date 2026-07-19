@@ -3,7 +3,8 @@ import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import Image from "next/image"
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params
   // Demo metadata - in reality you would fetch from DB based on slug
   const titleMap: Record<string, string> = {
     'banh-trung-thu-thap-cam': 'Bánh Trung Thu Thập Cẩm Văn Hòa Lạc',
@@ -11,20 +12,21 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     'banh-trung-thu-ga-quay': 'Bánh Trung Thu Gà Quay Vũng Tàu Cao Cấp',
   }
   
-  const title = titleMap[params.slug] || 'Bánh Trung Thu Văn Hòa Lạc'
+  const title = titleMap[resolvedParams.slug] || 'Bánh Trung Thu Văn Hòa Lạc'
   return {
     title: `${title} | Chính Hãng Vũng Tàu`,
     description: `Mua ${title.toLowerCase()} truyền thống thơm ngon, nguyên liệu chọn lọc. Giao hàng toàn quốc. Đặt ngay từ cơ sở Văn Hòa Lạc.`,
   }
 }
 
-export default function ProductCategoryPage({ params }: { params: { slug: string } }) {
+export default async function ProductCategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params
   const titleMap: Record<string, string> = {
     'banh-trung-thu-thap-cam': 'Bánh Trung Thu Thập Cẩm',
     'banh-trung-thu-dau-xanh': 'Bánh Trung Thu Đậu Xanh',
     'banh-trung-thu-ga-quay': 'Bánh Trung Thu Gà Quay',
   }
-  const name = titleMap[params.slug] || 'Bộ Sưu Tập Bánh Trung Thu'
+  const name = titleMap[resolvedParams.slug] || 'Bộ Sưu Tập Bánh Trung Thu'
 
   return (
     <>
@@ -33,7 +35,7 @@ export default function ProductCategoryPage({ params }: { params: { slug: string
         <div className="max-w-6xl mx-auto">
           <Breadcrumbs items={[
             { label: "Sản Phẩm", href: "/#products" },
-            { label: name, href: `/san-pham/${params.slug}` }
+            { label: name, href: `/san-pham/${resolvedParams.slug}` }
           ]} />
           
           <h1 className="font-serif text-4xl lg:text-5xl font-bold mb-8 text-primary capitalize">
