@@ -46,6 +46,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.staticfiles import StaticFiles
+upload_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "public", "uploads")
+os.makedirs(upload_dir, exist_ok=True)
+app.mount("/api/uploads", StaticFiles(directory=upload_dir), name="uploads")
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Mooncake App API"}
@@ -429,7 +434,7 @@ async def upload_image(file: UploadFile = File(...)):
         
         image.save(filepath, format="WEBP", quality=80)
         
-        return {"url": f"/uploads/{filename}"}
+        return {"url": f"/api/uploads/{filename}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Lỗi tải ảnh: {str(e)}")
 
