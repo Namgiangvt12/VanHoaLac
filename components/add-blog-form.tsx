@@ -3,6 +3,7 @@
 import { useState, useRef, useMemo, useEffect } from "react"
 import dynamic from "next/dynamic"
 import "react-quill-new/dist/quill.snow.css"
+import imageCompression from 'browser-image-compression'
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
 
@@ -65,8 +66,20 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
     input.click()
 
     input.onchange = async () => {
-      const file = input.files ? input.files[0] : null
+      let file = input.files ? input.files[0] : null
       if (!file) return
+
+      try {
+        if (file.type.startsWith('image/')) {
+          file = await imageCompression(file, {
+            maxSizeMB: 0.8,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true
+          })
+        }
+      } catch (error) {
+        console.error("Compression error:", error)
+      }
 
       const uploadData = new FormData()
       uploadData.append("file", file)
@@ -106,10 +119,23 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
   }), [])
 
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null
+    let file = e.target.files ? e.target.files[0] : null
     if (!file) return
     
     setUploadingImage(true)
+    
+    try {
+      if (file.type.startsWith('image/')) {
+        file = await imageCompression(file, {
+          maxSizeMB: 0.8,
+          maxWidthOrHeight: 1200,
+          useWebWorker: true
+        })
+      }
+    } catch (error) {
+      console.error("Compression error:", error)
+    }
+
     const uploadData = new FormData()
     uploadData.append("file", file)
 
