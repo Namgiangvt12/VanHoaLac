@@ -9,7 +9,7 @@ const API_URL = "http://127.0.0.1:8000/api/posts"
 
 async function getPost(slug: string) {
   try {
-    const res = await fetch(`${API_URL}/${slug}`, { next: { revalidate: 60 } })
+    const res = await fetch(`${API_URL}/${slug}`, { cache: 'no-store' })
     if (!res.ok) return null
     return await res.json()
   } catch (e) {

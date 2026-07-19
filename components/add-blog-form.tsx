@@ -84,8 +84,8 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         } else {
           alert('Lỗi: ' + (data.detail || 'Không thể upload ảnh'))
         }
-      } catch (err) {
-        alert("Có lỗi xảy ra khi upload ảnh nội dung")
+      } catch (err: any) {
+        alert("Có lỗi xảy ra khi upload ảnh nội dung: " + err.message)
       }
     }
   }
@@ -124,8 +124,8 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
       } else {
         alert('Lỗi: ' + (data.detail || 'Không thể upload ảnh đại diện'))
       }
-    } catch (err) {
-      alert("Lỗi upload ảnh")
+    } catch (err: any) {
+      alert("Lỗi kết nối upload: " + err.message)
     } finally {
       setUploadingImage(false)
     }
