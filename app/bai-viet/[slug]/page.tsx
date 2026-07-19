@@ -63,7 +63,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       />
       <Header />
       <main className="pt-32 pb-24 px-6 min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <Breadcrumbs items={[
             { label: "Bài Viết", href: "/#blog" },
             { label: post.title, href: `/bai-viet/${post.slug}` }
@@ -92,10 +92,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             )}
 
             <div 
-              className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground leading-relaxed
-                prose-h2:font-serif prose-h2:text-3xl prose-h2:text-primary prose-h2:mt-12
-                prose-h3:font-serif prose-h3:text-2xl prose-h3:text-primary
-                prose-p:mb-6 prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
+              className="quill-content text-foreground text-lg leading-relaxed mb-20"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </article>

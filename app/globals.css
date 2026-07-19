@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin "@tailwindcss/typography";
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
@@ -124,5 +123,34 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Cấu hình hiển thị chuẩn cho nội dung viết từ React Quill */
+  .quill-content ul {
+    list-style-type: disc !important;
+    padding-left: 2rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  .quill-content ol {
+    list-style-type: decimal !important;
+    padding-left: 2rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  .quill-content li {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    display: list-item !important;
+  }
+  .quill-content p {
+    margin-bottom: 1rem !important;
+    line-height: 1.8 !important;
+  }
+  .quill-content h1, .quill-content h2, .quill-content h3 {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    font-weight: bold !important;
+    color: var(--primary) !important;
   }
 }
