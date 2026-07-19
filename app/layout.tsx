@@ -4,7 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { FloatingCTA } from '@/components/floating-cta'
 import './globals.css'
 
-const playfair = Playfair_Display({ 
+const playfair = Playfair_Display({
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-serif"
@@ -72,6 +72,44 @@ export const metadata: Metadata = {
   },
 }
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Bakery",
+  "name": "Bánh Trung Thu Văn Hòa Lạc",
+  "image": "https://vanhoalac.vn/images/hero-mooncakes.jpg",
+  "@id": "https://vanhoalac.vn",
+  "url": "https://vanhoalac.vn",
+  "telephone": "0971682213",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "53/12/20 Lê Hồng Phong",
+    "addressLocality": "Vũng Tàu",
+    "addressRegion": "Bà Rịa - Vũng Tàu",
+    "postalCode": "790000",
+    "addressCountry": "VN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 10.4705,
+    "longitude": 107.2185
+  },
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "opens": "07:00",
+    "closes": "21:00"
+  },
+  "priceRange": "$$"
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -81,6 +119,10 @@ export default function RootLayout({
     <html lang="vi" className={`${playfair.variable}`}>
       <head>
         <meta name="google-site-verification" content="RMSB0OSydag4gIrvd75hYd8UPgvCY0rE_pTvGUm7A_4" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className="font-sans antialiased">
         {children}
