@@ -62,5 +62,17 @@ def init_db():
         published BOOLEAN DEFAULT 0,
         created_at TEXT NOT NULL
     )""")
+    
+    cur.execute("PRAGMA table_info(posts)")
+    columns = [row[1] for row in cur.fetchall()]
+    if "excerpt" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN excerpt TEXT")
+    if "image_url" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN image_url TEXT")
+    if "category" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN category TEXT")
+    if "published" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN published BOOLEAN DEFAULT 0")
+
     con.commit()
     con.close()
