@@ -31,17 +31,16 @@ def _display_from_iso(iso_s: str) -> str:
 def get_vn_font():
     """Tự đăng ký font Unicode nếu có"""
     try:
-        # Đường dẫn gốc tới thư mục chứa fonts
-        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        backend_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
-            os.path.join(root_dir, "DejaVuSans.ttf"),
-            os.path.join(root_dir, "fonts", "DejaVuSans.ttf"),
-            os.path.join(root_dir, "DejaVuSansCondensed.ttf"),
-            os.path.join(root_dir, "fonts", "DejaVuSansCondensed.ttf"),
-            os.path.join(root_dir, "LiberationSans-Regular.ttf"),
-            os.path.join(root_dir, "fonts", "LiberationSans-Regular.ttf"),
-            os.path.join(root_dir, "Arial.ttf"),
-            os.path.join(root_dir, "fonts", "Arial.ttf"),
+            os.path.join(backend_dir, "DejaVuSans.ttf"),
+            os.path.join(backend_dir, "fonts", "DejaVuSans.ttf"),
+            os.path.join(backend_dir, "DejaVuSansCondensed.ttf"),
+            os.path.join(backend_dir, "fonts", "DejaVuSansCondensed.ttf"),
+            os.path.join(backend_dir, "LiberationSans-Regular.ttf"),
+            os.path.join(backend_dir, "fonts", "LiberationSans-Regular.ttf"),
+            os.path.join(backend_dir, "Arial.ttf"),
+            os.path.join(backend_dir, "fonts", "Arial.ttf"),
         ]
         for fp in candidates:
             if os.path.isfile(fp):

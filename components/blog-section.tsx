@@ -64,7 +64,7 @@ export async function BlogSection() {
             </h2>
           </div>
           <Link
-            href="#"
+            href="/bai-viet"
             className="inline-flex items-center gap-2 text-sm tracking-widest uppercase hover:text-muted-foreground transition-colors"
           >
             Xem Tất Cả Bài Viết
