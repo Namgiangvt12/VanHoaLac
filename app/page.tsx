@@ -126,9 +126,45 @@ const jsonLd = {
             "url": "https://vanhoalac.vn/san-pham/banh-hat-sen",
             "priceCurrency": "VND",
             "price": "180000",
+            "validFrom": "2024-01-01",
             "priceValidUntil": "2026-10-31",
             "availability": "https://schema.org/InStock",
-            "seller": { "@id": "https://vanhoalac.vn/#business" }
+            "seller": { "@id": "https://vanhoalac.vn/#business" },
+            "shippingDetails": {
+              "@type": "OfferShippingDetails",
+              "shippingRate": {
+                "@type": "MonetaryAmount",
+                "value": "30000",
+                "currency": "VND"
+              },
+              "shippingDestination": {
+                "@type": "DefinedRegion",
+                "addressCountry": "VN"
+              },
+              "deliveryTime": {
+                "@type": "ShippingDeliveryTime",
+                "handlingTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 0,
+                  "maxValue": 1,
+                  "unitCode": "DAY"
+                },
+                "transitTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 1,
+                  "maxValue": 3,
+                  "unitCode": "DAY"
+                }
+              }
+            },
+            "hasMerchantReturnPolicy": {
+              "@type": "MerchantReturnPolicy",
+              "applicableCountry": "VN",
+              "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+              "merchantReturnDays": 7,
+              "returnMethod": "https://schema.org/ReturnByMail",
+              "returnFees": "https://schema.org/ReturnShippingFees"
+            }
           },
           "aggregateRating": {
             "@type": "AggregateRating",
@@ -151,9 +187,45 @@ const jsonLd = {
             "url": "https://vanhoalac.vn/san-pham/banh-dau-do",
             "priceCurrency": "VND",
             "price": "160000",
+            "validFrom": "2024-01-01",
             "priceValidUntil": "2026-10-31",
             "availability": "https://schema.org/InStock",
-            "seller": { "@id": "https://vanhoalac.vn/#business" }
+            "seller": { "@id": "https://vanhoalac.vn/#business" },
+            "shippingDetails": {
+              "@type": "OfferShippingDetails",
+              "shippingRate": {
+                "@type": "MonetaryAmount",
+                "value": "30000",
+                "currency": "VND"
+              },
+              "shippingDestination": {
+                "@type": "DefinedRegion",
+                "addressCountry": "VN"
+              },
+              "deliveryTime": {
+                "@type": "ShippingDeliveryTime",
+                "handlingTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 0,
+                  "maxValue": 1,
+                  "unitCode": "DAY"
+                },
+                "transitTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 1,
+                  "maxValue": 3,
+                  "unitCode": "DAY"
+                }
+              }
+            },
+            "hasMerchantReturnPolicy": {
+              "@type": "MerchantReturnPolicy",
+              "applicableCountry": "VN",
+              "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+              "merchantReturnDays": 7,
+              "returnMethod": "https://schema.org/ReturnByMail",
+              "returnFees": "https://schema.org/ReturnShippingFees"
+            }
           },
           "aggregateRating": {
             "@type": "AggregateRating",
@@ -176,9 +248,45 @@ const jsonLd = {
             "url": "https://vanhoalac.vn/san-pham/banh-trung-muoi",
             "priceCurrency": "VND",
             "price": "220000",
+            "validFrom": "2024-01-01",
             "priceValidUntil": "2026-10-31",
             "availability": "https://schema.org/InStock",
-            "seller": { "@id": "https://vanhoalac.vn/#business" }
+            "seller": { "@id": "https://vanhoalac.vn/#business" },
+            "shippingDetails": {
+              "@type": "OfferShippingDetails",
+              "shippingRate": {
+                "@type": "MonetaryAmount",
+                "value": "30000",
+                "currency": "VND"
+              },
+              "shippingDestination": {
+                "@type": "DefinedRegion",
+                "addressCountry": "VN"
+              },
+              "deliveryTime": {
+                "@type": "ShippingDeliveryTime",
+                "handlingTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 0,
+                  "maxValue": 1,
+                  "unitCode": "DAY"
+                },
+                "transitTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 1,
+                  "maxValue": 3,
+                  "unitCode": "DAY"
+                }
+              }
+            },
+            "hasMerchantReturnPolicy": {
+              "@type": "MerchantReturnPolicy",
+              "applicableCountry": "VN",
+              "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+              "merchantReturnDays": 7,
+              "returnMethod": "https://schema.org/ReturnByMail",
+              "returnFees": "https://schema.org/ReturnShippingFees"
+            }
           },
           "aggregateRating": {
             "@type": "AggregateRating",
