@@ -134,11 +134,11 @@ export function Footer() {
         <div className="mt-16 pt-8 border-t border-primary-foreground/20">
           <div className="text-center">
             <p className="text-xs text-primary-foreground/60 mb-2">
-              © {new Date().getFullYear()} Bánh Trung Thu Văn Hòa Lạc. Đã đăng ký bản quyền.
+              Bản quyền © {new Date().getFullYear()} Bánh Trung Thu Văn Hòa Lạc (Van Hoa Lac). Đã đăng ký bản quyền.
             </p>
             <p className="text-xs text-primary-foreground/50 max-w-2xl mx-auto leading-relaxed">
-              Văn Hòa Lạc – Thương hiệu bánh trung thu gia truyền hơn 50 năm tại Long Điền, Bà Rịa - Vũng Tàu.
-              Chuyên cung cấp bánh trung thu thủ công cao cấp với các dòng nhân truyền thống, giao hàng toàn quốc và nhận đặt bánh trung thu doanh nghiệp số lượng lớn.
+              Văn Hòa Lạc (Van Hoa Lac Mooncake) – Thương hiệu bánh trung thu gia truyền hơn 50 năm tại Long Điền, Bà Rịa - Vũng Tàu.
+              Chuyên cung cấp bánh trung thu van hoa lac thu cong cao cap với các dòng nhân truyền thống, giao hàng toàn quốc và nhận đặt bánh trung thu doanh nghiệp số lượng lớn.
             </p>
           </div>
         </div>

@@ -42,14 +42,14 @@ export function AboutSection() {
               Văn Hòa Lạc Vũng Tàu - Làm với tâm huyết, chia sẻ với yêu thương
             </h2>
             <p className="mt-8 text-muted-foreground leading-relaxed">
-              Mỗi chiếc <strong>bánh trung thu Văn Hòa Lạc</strong> đều là một lễ hội tôn vinh di sản và nghề thủ công. 
+              Mỗi chiếc <strong>bánh trung thu Văn Hòa Lạc (Van Hoa Lac)</strong> đều là một lễ hội tôn vinh di sản và nghề thủ công. 
               Từ lớp vỏ bánh mỏng manh đến nhân thơm đậm đà, mỗi thành phần 
               đều được chuẩn bị cẩn thận để tôn vinh truyền thống Tết Trung Thu Việt Nam.
             </p>
             <p className="mt-4 text-muted-foreground leading-relaxed">
               Chúng tôi tin rằng những chiếc <strong>bánh trung thu Vũng Tàu cao cấp</strong> ngon nhất đều kể một câu chuyện—về những buổi 
               sum họp gia đình dưới trăng tròn, về lòng biết ơn mùa màng bội thu, và những điều ước 
-              được trao truyền qua các thế hệ tại <strong>Vũng Tàu</strong>.
+              được trao truyền qua các thế hệ của thương hiệu <strong>Van Hoa Lac Mooncake</strong>.
             </p>
             <Link 
               href="#contact" 

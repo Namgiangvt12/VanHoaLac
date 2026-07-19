@@ -33,7 +33,7 @@ export function ReviewSection() {
             Đánh Giá
           </p>
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-light mb-4 text-foreground">
-            Khách hàng nói gì về Văn Hòa Lạc?
+            Khách hàng nói gì về Văn Hòa Lạc (Van Hoa Lac)?
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Dưới đây là một số đánh giá chân thực từ khách hàng qua Google Maps. Chúng tôi luôn trân trọng mọi góp ý để ngày càng hoàn thiện.

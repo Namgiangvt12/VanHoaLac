@@ -132,7 +132,7 @@ export function ProductsSection() {
                 <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-card border border-border/50 shadow-sm transition-all group-hover:shadow-2xl group-hover:border-gold/20">
                   <Image
                     src={product.image}
-                    alt={product.name}
+                    alt={"Bánh Trung Thu Văn Hòa Lạc (Van Hoa Lac) - " + product.name}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes="(max-width: 768px) 100vw, 33vw"

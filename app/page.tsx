@@ -15,7 +15,7 @@ const jsonLd = {
       "@type": "LocalBusiness",
       "@id": "https://vanhoalac.vn/#business",
       "name": "Bánh Trung Thu Văn Hòa Lạc Vũng Tàu",
-      "alternateName": ["Văn Hòa Lạc", "Van Hoa Lac Mooncake", "Văn Hòa Lạc Vũng Tàu", "Bánh Trung Thu Vũng Tàu", "Banh Trung Thu Văn Hòa Lạc"],
+      "alternateName": ["Van Hoa Lac", "Văn Hòa Lạc", "Van Hoa Lac Mooncake", "Văn Hòa Lạc Vũng Tàu", "Bánh Trung Thu Vũng Tàu", "Banh Trung Thu Văn Hòa Lạc"],
       "description": "Thương hiệu bánh trung thu Văn Hòa Lạc Vũng Tàu thủ công cao cấp tại Long Điền. Chuyên cung cấp bánh da dợp (3 lớp nhân) và bánh trung thu gà quay, thập cẩm , đậu xanh.... Giao hàng toàn quốc.",
       "url": "https://vanhoalac.vn",
       "telephone": "+84-971682213",

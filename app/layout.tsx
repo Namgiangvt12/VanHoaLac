@@ -14,7 +14,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Thủ Công Gia Truyền',
   description: 'Bánh Trung Thu Văn Hòa Lạc - Bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền. Nhân Da Dợp , Đậu Xanh, Gà Quay, Thập Cẩm... Giao hàng toàn quốc. Đặt bánh Tết Trung Thu 2026.',
-  keywords: ['banh trung thu văn hòa lạc', 'bánh trung thu vũng tàu', 'văn hòa lạc', 'văn hòa lạc vũng tàu', 'bánh trung thu long điền', 'bánh da dợp văn hòa lạc', 'bánh trung thu thủ công', 'mua bánh trung thu', 'đặt bánh trung thu', 'tết trung thu 2026'],
+  keywords: ['van hoa lac', 'văn hòa lạc', 'banh trung thu van hoa lac', 'banh trung thu văn hòa lạc', 'bánh trung thu vũng tàu', 'văn hòa lạc vũng tàu', 'van hoa lac vung tau', 'bánh trung thu long điền', 'bánh da dợp văn hòa lạc', 'bánh trung thu thủ công'],
   authors: [{ name: 'Văn Hòa Lạc Vũng Tàu' }],
   creator: 'Văn Hòa Lạc Vũng Tàu',
   publisher: 'Văn Hòa Lạc Vũng Tàu',
