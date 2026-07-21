@@ -1,147 +1,88 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  // If Supabase is not configured or has placeholder values, return fallback data
-  if (!supabaseUrl || !supabaseAnonKey ||
-      supabaseUrl.startsWith('your_') || supabaseAnonKey.startsWith('your_') ||
-      !supabaseUrl.startsWith('http')) {
-    const fallbackProducts = [
-      {
-        id: '1',
-        name: "Bánh Trung Thu Nhân Hạt Sen",
-        shortName: "Nhân Hạt Sen",
-        description: "Bánh trung thu Văn Hòa Lạc nhân hạt sen Huế truyền thống với kết cấu mịn màng như lụa",
-        price: "180.000đ",
-        priceValue: 180000,
-        image: "/images/mooncake-lotus.jpg",
-        slug: "banh-hat-sen",
-      },
-      {
-        id: '2',
-        name: "Bánh Trung Thu Gà Quay",
-        shortName: "Nhân Thập Cẩm Gà Quay",
-        description: "Bánh trung thu Văn Hòa Lạc nhân đậu đỏ azuki Nhật Bản ngọt dịu với hương vị đất nhẹ",
-        price: "160.000đ",
-        priceValue: 160000,
-        image: "/images/mooncake-redbean.jpg",
-        slug: "banh-dau-do",
-      },
-      {
-        id: '3',
-        name: "Bánh Trung Thu Trứng Muối",
-        shortName: "Trứng Muối",
-        description: "Bánh trung thu Văn Hòa Lạc với lòng đỏ trứng muối Cần Giờ vàng óng tượng trưng cho trăng tròn",
-        price: "220.000đ",
-        priceValue: 220000,
-        image: "/images/mooncake-egg.jpg",
-        slug: "banh-trung-muoi",
-      },
-    ]
-    return NextResponse.json(fallbackProducts)
-  }
-
-  try {
-    // Dynamically import Supabase to avoid initialization issues
-    const { createClient } = await import('@supabase/supabase-js')
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-    const { data: products, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('in_stock', true)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching products:', error)
-      // Return fallback data on error
-      const fallbackProducts = [
-        {
-          id: '1',
-          name: "Bánh Trung Thu Nhân Hạt Sen",
-          shortName: "Nhân Hạt Sen",
-          description: "Bánh trung thu Văn Hòa Lạc nhân hạt sen Huế truyền thống với kết cấu mịn màng như lụa",
-          price: "180.000đ",
-          priceValue: 180000,
-          image: "/images/mooncake-lotus.jpg",
-          slug: "banh-hat-sen",
-        },
-        {
-          id: '2',
-          name: "Bánh Trung Thu Nhân Đậu Đỏ",
-          shortName: "Nhân Đậu Đỏ",
-          description: "Bánh trung thu Văn Hòa Lạc nhân đậu đỏ azuki Nhật Bản ngọt dịu với hương vị đất nhẹ",
-          price: "160.000đ",
-          priceValue: 160000,
-          image: "/images/mooncake-redbean.jpg",
-          slug: "banh-dau-do",
-        },
-        {
-          id: '3',
-          name: "Bánh Trung Thu Trứng Muối",
-          shortName: "Trứng Muối",
-          description: "Bánh trung thu Văn Hòa Lạc với lòng đỏ trứng muối Cần Giờ vàng óng tượng trưng cho trăng tròn",
-          price: "220.000đ",
-          priceValue: 220000,
-          image: "/images/mooncake-egg.jpg",
-          slug: "banh-trung-muoi",
-        },
-      ]
-      return NextResponse.json(fallbackProducts)
-    }
-
-    // Transform data to match the component's expected format
-    const transformedProducts = products.map(product => ({
-      id: product.id,
-      name: product.name,
-      shortName: product.name.split(' ').slice(-2).join(' '), // Extract last two words as shortName
-      description: product.description,
-      price: `${product.price.toLocaleString('vi-VN')}đ`,
-      priceValue: product.price,
-      image: product.image_url || '/images/default-mooncake.jpg',
-      slug: product.slug,
-    }))
-
-    return NextResponse.json(transformedProducts)
-  } catch (error) {
-    console.error('Unexpected error:', error)
-    // Return fallback data on error
-    const fallbackProducts = [
-      {
-        id: '1',
-        name: "Bánh Trung Thu Nhân Hạt Sen",
-        shortName: "Nhân Hạt Sen",
-        description: "Bánh trung thu Văn Hòa Lạc nhân hạt sen Huế truyền thống với kết cấu mịn màng như lụa",
-        price: "180.000đ",
-        priceValue: 180000,
-        image: "/images/mooncake-lotus.jpg",
-        slug: "banh-hat-sen",
-      },
-      {
-        id: '2',
-        name: "Bánh Trung Thu Nhân Đậu Đỏ",
-        shortName: "Nhân Đậu Đỏ",
-        description: "Bánh trung thu Văn Hòa Lạc nhân đậu đỏ azuki Nhật Bản ngọt dịu với hương vị đất nhẹ",
-        price: "160.000đ",
-        priceValue: 160000,
-        image: "/images/mooncake-redbean.jpg",
-        slug: "banh-dau-do",
-      },
-      {
-        id: '3',
-        name: "Bánh Trung Thu Trứng Muối",
-        shortName: "Trứng Muối",
-        description: "Bánh trung thu Văn Hòa Lạc với lòng đỏ trứng muối Cần Giờ vàng óng tượng trưng cho trăng tròn",
-        price: "220.000đ",
-        priceValue: 220000,
-        image: "/images/mooncake-egg.jpg",
-        slug: "banh-trung-muoi",
-      },
-    ]
-    return NextResponse.json(fallbackProducts)
-  }
+  const products = [
+    {
+      id: '1',
+      name: "Bánh Da Dợp Thập Cẩm 2 Trứng",
+      shortName: "Da dợp 2 trứng",
+      description: "Bánh trung thu da dợp đặc sắc 2 trứng hòa quyện hương vị",
+      price: "125.000đ",
+      priceValue: 125000,
+      image: "/images/banh-da-dop-2-trung.png",
+      slug: "da-dop-2-trung",
+      category: "Da Dợp Thập Cẩm",
+    },
+    {
+      id: '2',
+      name: "Bánh Da Dợp Thập Cẩm 3 Trứng",
+      shortName: "Da dợp 3 trứng",
+      description: "Bánh trung thu da dợp cao cấp 3 trứng thơm ngon đặc biệt",
+      price: "160.000đ",
+      priceValue: 160000,
+      image: "/images/banh-da-dop-3-trung.png",
+      slug: "da-dop-3-trung",
+      category: "Da Dợp Thập Cẩm",
+    },
+    {
+      id: '3',
+      name: "Bánh Da Dợp 6-10-12-14 Trứng",
+      shortName: "Da dợp 6-10-12-14 trứng",
+      description: "Bánh trung thu da dợp ngoại cỡ cao cấp",
+      price: "450.000đ",
+      priceValue: 450000,
+      image: "/images/banh-da-dop-big.png",
+      slug: "da-dop-big",
+      category: "Da Dợp Thập Cẩm",
+    },
+    {
+      id: '4',
+      name: "Trung Thu Nướng Đậu Xanh",
+      shortName: "Đậu xanh",
+      description: "Bánh nướng truyền thống nhân đậu xanh mịn màng",
+      price: "125.000đ",
+      priceValue: 125000,
+      image: "/images/mooncake-lotus.jpg",
+      slug: "trung-thu-dau-xanh",
+      category: "Trung Thu Nướng",
+    },
+    {
+      id: '5',
+      name: "Trung Thu Nướng Thập Cẩm",
+      shortName: "Thập cẩm",
+      description: "Bánh nướng truyền thống nhân thập cẩm",
+      price: "125.000đ",
+      priceValue: 125000,
+      image: "/images/mooncake-redbean.jpg",
+      slug: "trung-thu-thap-cam",
+      category: "Trung Thu Nướng",
+    },
+    {
+      id: '6',
+      name: "Trung Thu Nướng Thập Cẩm Gà Quay",
+      shortName: "Thập cẩm gà quay",
+      description: "Bánh nướng thập cẩm gà quay thơm lừng",
+      price: "135.000đ",
+      priceValue: 135000,
+      image: "/images/mooncake-redbean.jpg",
+      slug: "trung-thu-ga-quay",
+      category: "Trung Thu Nướng",
+    },
+    {
+      id: '7',
+      name: "Trung Thu Nướng Dừa Mè",
+      shortName: "Dừa mè",
+      description: "Bánh nướng nhân dừa mè ngọt thanh",
+      price: "110.000đ",
+      priceValue: 110000,
+      image: "/images/mooncake-lotus.jpg",
+      slug: "trung-thu-dua-me",
+      category: "Trung Thu Nướng",
+    },
+  ]
+  return NextResponse.json(products)
 }
 
 export async function POST(request: Request) {

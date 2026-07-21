@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Plus, ShoppingBag } from "lucide-react"
+import { Plus, ShoppingBag, Sparkles, Star } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
@@ -15,6 +15,7 @@ interface Product {
   priceValue: number
   image: string
   slug: string
+  category?: string
 }
 
 const containerVars = {
@@ -40,7 +41,9 @@ export function ProductsSection() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch('/api/products')
+        const response = await fetch('/api/products?t=' + new Date().getTime(), {
+          cache: 'no-store'
+        })
         if (!response.ok) {
           throw new Error('Failed to fetch products')
         }
@@ -80,6 +83,79 @@ export function ProductsSection() {
     )
   }
 
+  const section1Title = "Da Dợp Thập Cẩm"
+  const section2Title = "Trung Thu Nướng"
+
+  const section1Products = products.filter(p => {
+    const lower = p.name.toLowerCase()
+    const cat = p.category?.toLowerCase() || ""
+    return lower.includes("da dợp") || cat.includes("da dợp") || lower.includes("pía")
+  })
+  const section2Products = products.filter(p => !section1Products.includes(p))
+
+  const renderProduct = (product: Product) => {
+    const isSpecial = product.name.toLowerCase().includes('thập cẩm') && (product.category === section1Title || product.name.toLowerCase().includes('da dợp'));
+    
+    return (
+      <motion.article 
+        key={product.id} 
+        variants={itemVars}
+        className="group relative"
+        itemScope
+        itemType="https://schema.org/Product"
+        role="listitem"
+      >
+        <Link href={`#${product.slug}`} className="block">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-card border border-border/50 shadow-sm transition-all group-hover:shadow-2xl group-hover:border-gold/20">
+            <Image
+              src={product.image}
+              alt={"Bánh Trung Thu Văn Hòa Lạc (Van Hoa Lac) - " + product.name}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              sizes="(max-width: 768px) 100vw, 25vw"
+              itemProp="image"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            
+            {/* Badge */}
+            <div className={`absolute top-4 left-4 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm flex items-center gap-1 ${isSpecial ? 'bg-gold/90 text-white' : 'bg-white/90 text-primary'}`}>
+              {isSpecial ? (
+                <>
+                  <Star size={12} className="text-white fill-white" />
+                  <span>Da Dợp Thập Cẩm</span>
+                </>
+              ) : (
+                'Gia Truyền'
+              )}
+            </div>
+
+            {/* Actions Overlay */}
+            <div className="absolute inset-x-0 bottom-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex justify-between items-end">
+              <button 
+                className="bg-white text-primary w-10 h-10 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform active:scale-95"
+                aria-label="Thêm vào giỏ hàng"
+              >
+                <Plus size={18} />
+              </button>
+              <div className="bg-primary px-3 py-1.5 rounded-lg text-white font-bold text-sm shadow-xl">
+                {product.price}
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4 space-y-1 text-center">
+            <h3 className="font-serif text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[56px]" itemProp="name">
+              {product.shortName}
+            </h3>
+            <p className="text-muted-foreground text-xs md:text-sm line-clamp-2 leading-relaxed" itemProp="description">
+              {product.description}
+            </p>
+          </div>
+        </Link>
+      </motion.article>
+    )
+  }
+
   return (
     <section 
       id="products" 
@@ -109,67 +185,52 @@ export function ProductsSection() {
           </motion.h2>
         </header>
 
-        {/* Products Grid */}
+        {/* Products Grid Sections */}
+      </div>
+
+      {/* Section 1 Header */}
+      <div className="w-full bg-[#5c8793] py-4 mb-10 mt-12 shadow-sm border-y border-[#4a727d]">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <h3 className="text-white text-lg md:text-xl font-serif font-bold tracking-wider">
+            {section1Title}
+          </h3>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6">
         <motion.div 
           variants={containerVars}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14" 
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10" 
           role="list" 
-          aria-label="Danh sách sản phẩm bánh trung thu Văn Hòa Lạc"
+          aria-label={section1Title}
         >
-          {products.map((product) => (
-            <motion.article 
-              key={product.id} 
-              variants={itemVars}
-              className="group relative"
-              itemScope
-              itemType="https://schema.org/Product"
-              role="listitem"
-            >
-              <Link href={`#${product.slug}`} className="block">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-card border border-border/50 shadow-sm transition-all group-hover:shadow-2xl group-hover:border-gold/20">
-                  <Image
-                    src={product.image}
-                    alt={"Bánh Trung Thu Văn Hòa Lạc (Van Hoa Lac) - " + product.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    itemProp="image"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  {/* Badge */}
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-primary shadow-sm">
-                    Gia Truyền
-                  </div>
+          {section1Products.map(renderProduct)}
+        </motion.div>
+      </div>
 
-                  {/* Actions Overlay */}
-                  <div className="absolute inset-x-0 bottom-0 p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex justify-between items-end">
-                    <button 
-                      className="bg-white text-primary w-12 h-12 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform active:scale-95"
-                      aria-label="Thêm vào giỏ hàng"
-                    >
-                      <Plus size={20} />
-                    </button>
-                    <div className="bg-primary px-4 py-2 rounded-xl text-white font-bold text-sm shadow-xl">
-                      {product.price}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mt-6 space-y-2 text-center md:text-left">
-                  <h3 className="font-serif text-2xl font-bold text-foreground group-hover:text-primary transition-colors" itemProp="name">
-                    {product.shortName}
-                  </h3>
-                  <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed" itemProp="description">
-                    {product.description}
-                  </p>
-                </div>
-              </Link>
-            </motion.article>
-          ))}
+      {/* Section 2 Header */}
+      <div className="w-full bg-[#5c8793] py-4 mb-10 mt-20 shadow-sm border-y border-[#4a727d]">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <h3 className="text-white text-lg md:text-xl font-serif font-bold tracking-wider">
+            {section2Title}
+          </h3>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6">
+        <motion.div 
+          variants={containerVars}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10" 
+          role="list" 
+          aria-label={section2Title}
+        >
+          {section2Products.map(renderProduct)}
         </motion.div>
 
         {/* CTA Footer Section */}
