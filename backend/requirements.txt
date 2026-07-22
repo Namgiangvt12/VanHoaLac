@@ -9,3 +9,5 @@ firebase-admin
 pypdf
 pymongo
 dnspython
+python-dotenv
+certifi

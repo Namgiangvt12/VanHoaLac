@@ -1,10 +1,17 @@
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+import certifi
 
+# Load .env files from both root and backend directory
 env_local = os.path.join(os.path.dirname(__file__), "..", ".env.local")
 if os.path.exists(env_local):
     load_dotenv(env_local)
+
+env_backend = os.path.join(os.path.dirname(__file__), ".env.local")
+if os.path.exists(env_backend):
+    load_dotenv(env_backend)
+
 load_dotenv()
 
 mongo_client = None
@@ -19,15 +26,23 @@ def get_mongo_db():
 
     uri = os.getenv("MONGODB_URI", DEFAULT_MONGO_URI)
 
+    # Attempt 1: Standard TLS with certifi bundle (Linux compatible)
     try:
-        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-        # Verify connection
+        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=10000, tlsCAFile=certifi.where())
         mongo_client.admin.command('ping')
-        
-        # Get database name from URI or default to mooncake_db
         db_mongo = mongo_client.get_database("mooncake_db")
         print("🍃 MongoDB Atlas connected successfully!")
         return db_mongo
-    except Exception as e:
-        print(f"⚠️ MongoDB Atlas connection error: {e}")
+    except Exception as e1:
+        print(f"⚠️ MongoDB SSL standard connection attempt failed: {e1}")
+
+    # Attempt 2: Fallback TLS setting for Linux VPS environments with custom CA stores
+    try:
+        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=10000, tls=True, tlsAllowInvalidCertificates=True)
+        mongo_client.admin.command('ping')
+        db_mongo = mongo_client.get_database("mooncake_db")
+        print("🍃 MongoDB Atlas connected via SSL fallback!")
+        return db_mongo
+    except Exception as e2:
+        print(f"❌ MongoDB Atlas connection error: {e2}")
         return None
