@@ -8,10 +8,10 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from database import get_conn
-from database_firebase import get_firestore_db
 from database_mongo import get_mongo_db
 
 CURRENCY = "₫"
+
 
 
 

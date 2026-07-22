@@ -5,7 +5,6 @@ reportlab
 pydantic
 Pillow
 python-multipart
-firebase-admin
 pypdf
 pymongo
 dnspython
