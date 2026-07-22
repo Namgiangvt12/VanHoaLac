@@ -7,7 +7,8 @@ from database_mongo import get_mongo_db
 from schemas import OrderCreateSchema, OrderUpdateSchema, PaymentCreateSchema, PostCreateSchema
 import sqlite3
 from datetime import datetime, date
-from pdf_services import generate_order_pdf_bytes, merge_pdfs, generate_daily_report_pdf, _calc_daily_rows, normalize_date
+from pdf_services import generate_order_pdf_bytes, merge_pdfs, generate_daily_report_pdf, generate_merged_pdf_bytes, _calc_daily_rows, normalize_date
+
 import tempfile
 import os
 import shutil
@@ -771,49 +772,12 @@ def get_daily_pdf(date_iso: str):
 
 @app.get("/api/pdf/merge/{date_iso}")
 def get_merged_pdf(date_iso: str):
-    target_date = normalize_date(date_iso)
-    ids = []
-    try:
-        mdb = get_mongo_db()
-        if mdb is not None:
-            docs = list(mdb.orders.find({}, {"_id": 1, "id": 1, "receive_date": 1}))
-            for d in docs:
-                rdate = normalize_date(d.get("receive_date", ""))
-                if rdate == target_date:
-                    oid = d.get("id") or d.get("_id")
-                    if str(oid).isdigit():
-                        oid = int(oid)
-                    ids.append(oid)
-            ids.sort(key=lambda x: int(x) if str(x).isdigit() else 0)
-    except Exception as me:
-        print(f"MongoDB get_merged_pdf error: {me}")
-
-
-    if not ids:
-        con = get_conn()
-        cur = con.cursor()
-        cur.execute("SELECT id FROM orders WHERE date(receive_date) = date(?) ORDER BY id", (date_iso,))
-        ids = [r[0] for r in cur.fetchall()]
-        con.close()
-        
-    if not ids:
+    merged_buf = generate_merged_pdf_bytes(date_iso)
+    if not merged_buf:
         raise HTTPException(status_code=404, detail="No orders found for this date")
+    return StreamingResponse(
+        merged_buf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename=merged_{date_iso}.pdf"}
+    )
 
-        
-    pdf_paths = []
-    temp_dir = tempfile.mkdtemp(prefix="orders_tmp_")
-
-    try:
-        from pdf_services import _print_order_to_file
-        for oid in ids:
-            tmp_path = os.path.join(temp_dir, f"order_{oid}.pdf")
-            if _print_order_to_file(oid, tmp_path):
-                pdf_paths.append(tmp_path)
-                
-        merged_buf = merge_pdfs(pdf_paths)
-        if not merged_buf:
-             raise HTTPException(status_code=500, detail="Merge failed")
-        
-        return StreamingResponse(merged_buf, media_type="application/pdf", headers={"Content-Disposition": f"inline; filename=merged_{date_iso}.pdf"})
-    finally:
-        shutil.rmtree(temp_dir, ignore_errors=True)

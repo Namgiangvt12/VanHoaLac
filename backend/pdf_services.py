@@ -422,22 +422,20 @@ def _print_order_to_file(order_id, out_path):
 def merge_pdfs(pdf_paths):
     if not pdf_paths:
         return None
-        
-    # Try pypdf first
     try:
         from pypdf import PdfMerger
         merger = PdfMerger()
         for p in pdf_paths:
             try:
                 merger.append(p)
-            except Exception as e:
-                print(f"pypdf append error on {p}: {e}")
-        buf = io.BytesIO()
-        merger.write(buf)
+            except Exception:
+                pass
+        out_buf = io.BytesIO()
+        merger.write(out_buf)
         merger.close()
-        buf.seek(0)
-        return buf
-    except Exception as e1:
+        out_buf.seek(0)
+        return out_buf
+    except Exception:
         try:
             from PyPDF2 import PdfMerger
             merger = PdfMerger()
@@ -446,12 +444,124 @@ def merge_pdfs(pdf_paths):
                     merger.append(p)
                 except Exception:
                     pass
-            buf = io.BytesIO()
-            merger.write(buf)
+            out_buf = io.BytesIO()
+            merger.write(out_buf)
             merger.close()
-            buf.seek(0)
-            return buf
-        except Exception as e2:
-            print(f"PDF merge failed: {e1}, {e2}")
+            out_buf.seek(0)
+            return out_buf
+        except Exception:
             return None
+
+def merge_pdf_buffers(pdf_bufs):
+
+    if not pdf_bufs:
+        return None
+    try:
+        from pypdf import PdfMerger
+        merger = PdfMerger()
+        for buf in pdf_bufs:
+            try:
+                buf.seek(0)
+                merger.append(buf)
+            except Exception as e:
+                print(f"pypdf append buffer error: {e}")
+        out_buf = io.BytesIO()
+        merger.write(out_buf)
+        merger.close()
+        out_buf.seek(0)
+        return out_buf
+    except Exception as e1:
+        try:
+            from PyPDF2 import PdfMerger
+            merger = PdfMerger()
+            for buf in pdf_bufs:
+                try:
+                    buf.seek(0)
+                    merger.append(buf)
+                except Exception:
+                    pass
+            out_buf = io.BytesIO()
+            merger.write(out_buf)
+            merger.close()
+            out_buf.seek(0)
+            return out_buf
+        except Exception as e2:
+            print(f"PDF merge buffers failed: {e1}, {e2}")
+            return None
+
+def generate_merged_pdf_bytes(date_iso: str):
+    target_date = normalize_date(date_iso)
+    matching_docs = []
+    
+    try:
+        mdb = get_mongo_db()
+        if mdb is not None:
+            docs = list(mdb.orders.find())
+            for d in docs:
+                rdate = normalize_date(d.get("receive_date", ""))
+                if rdate == target_date:
+                    matching_docs.append(d)
+    except Exception as me:
+        print(f"MongoDB generate_merged_pdf_bytes error: {me}")
+        
+    if matching_docs:
+        matching_docs.sort(key=lambda d: int(d.get("id") or d.get("_id") or 0) if str(d.get("id") or d.get("_id")).isdigit() else 0)
+        pdf_bufs = []
+        for d in matching_docs:
+            try:
+                oid = d.get("id") or d.get("_id")
+                order_date = d.get("order_date", "")
+                receive_date = d.get("receive_date", "")
+                shipping_fee = d.get("shipping_fee", 0) or 0
+                discount = d.get("discount", 0) or 0
+                notes = d.get("notes", "")
+                cname = d.get("customer_name", "")
+                cphone = d.get("customer_phone", "")
+                caddr = d.get("customer_address", "")
+                
+                raw_items = d.get("items", [])
+                items = [
+                    {
+                        'product_name': i.get('product_name') or i.get('name', ''),
+                        'unit_price': i.get('unit_price') or i.get('price', 0),
+                        'quantity': i.get('quantity', 1)
+                    }
+                    for i in raw_items
+                ]
+                
+                tot_items = sum(i['unit_price'] * i['quantity'] for i in items)
+                subtotal = max(0, tot_items + shipping_fee - discount)
+                
+                payments = d.get("payments", [])
+                paid = sum(p.get("amount", 0) for p in payments)
+                outstanding = subtotal - paid
+                
+                data_tuple = (order_date, receive_date, shipping_fee, discount, notes, cname, cphone, caddr, oid)
+                buf = _render_order_pdf_from_data(data_tuple, items, tot_items, subtotal, paid, outstanding)
+                if buf:
+                    pdf_bufs.append(buf)
+            except Exception as render_err:
+                print(f"Render PDF error for order {d.get('id')}: {render_err}")
+                
+        if pdf_bufs:
+            return merge_pdf_buffers(pdf_bufs)
+
+    # Fallback to SQLite
+    con = get_conn()
+    cur = con.cursor()
+    cur.execute("SELECT id FROM orders WHERE date(receive_date) = date(?) ORDER BY id", (date_iso,))
+    ids = [r[0] for r in cur.fetchall()]
+    con.close()
+    
+    if not ids:
+        return None
+        
+    pdf_bufs = []
+    for oid in ids:
+        buf = generate_order_pdf_bytes(oid)
+        if buf:
+            pdf_bufs.append(buf)
+            
+    return merge_pdf_buffers(pdf_bufs)
+
 
