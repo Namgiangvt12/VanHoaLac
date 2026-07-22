@@ -13,3 +13,5 @@ data.db
 *.db
 backend/__pycache__/
 *.pyc
+backend/serviceAccountKey.json
+backend/*.json

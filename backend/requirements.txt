@@ -5,3 +5,4 @@ reportlab
 pydantic
 Pillow
 python-multipart
+firebase-admin

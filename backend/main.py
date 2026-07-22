@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db, get_conn
+from database_firebase import get_firestore_db
 from schemas import OrderCreateSchema, OrderUpdateSchema, PaymentCreateSchema, PostCreateSchema
 import sqlite3
 from datetime import datetime, date
@@ -37,6 +38,12 @@ PRODUCTS = [
 @app.on_event("startup")
 def startup_event():
     init_db()
+    try:
+        get_firestore_db()
+        print("🔥 Firebase Firestore initialized successfully!")
+    except Exception as e:
+        print(f"⚠️ Firebase initialization skipped or fallback to SQLite: {e}")
+
 
 app.add_middleware(
     CORSMiddleware,
