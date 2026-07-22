@@ -57,11 +57,20 @@ def get_vn_font():
         pass
     return "Helvetica"
 
-def generate_order_pdf_bytes(order_id: int):
+def generate_order_pdf_bytes(order_id):
     try:
         mdb = get_mongo_db()
         if mdb is not None:
-            data = mdb.orders.find_one({"_id": str(order_id)}) or mdb.orders.find_one({"id": order_id})
+            q_id = int(order_id) if str(order_id).isdigit() else order_id
+            data = mdb.orders.find_one({
+                "$or": [
+                    {"_id": str(order_id)},
+                    {"_id": q_id},
+                    {"id": order_id},
+                    {"id": q_id},
+                    {"id": str(order_id)}
+                ]
+            })
             if data:
                 order_date = data.get("order_date", "")
                 receive_date = data.get("receive_date", "")
@@ -93,7 +102,8 @@ def generate_order_pdf_bytes(order_id: int):
                 data_tuple = (order_date, receive_date, shipping_fee, discount, notes, cname, cphone, caddr, oid)
                 return _render_order_pdf_from_data(data_tuple, items, tot_items, subtotal, paid, outstanding)
     except Exception as me:
-        print(f"MongoDB generate_order_pdf_bytes error: {me}")
+        pass
+
 
 
     con = get_conn()
@@ -399,29 +409,49 @@ def generate_daily_report_pdf(day_iso: str):
 
 def _print_order_to_file(order_id, out_path):
     buf = generate_order_pdf_bytes(order_id)
-    if not buf: return False
+    if not buf:
+        return False
+    buf.seek(0)
+    bdata = buf.read()
+    if not bdata:
+        return False
     with open(out_path, "wb") as f:
-        f.write(buf.read())
+        f.write(bdata)
     return True
 
 def merge_pdfs(pdf_paths):
+    if not pdf_paths:
+        return None
+        
+    # Try pypdf first
     try:
-        from PyPDF2 import PdfMerger
-    except ImportError:
+        from pypdf import PdfMerger
+        merger = PdfMerger()
+        for p in pdf_paths:
+            try:
+                merger.append(p)
+            except Exception as e:
+                print(f"pypdf append error on {p}: {e}")
+        buf = io.BytesIO()
+        merger.write(buf)
+        merger.close()
+        buf.seek(0)
+        return buf
+    except Exception as e1:
         try:
-            from pypdf import PdfMerger
-        except ImportError:
+            from PyPDF2 import PdfMerger
+            merger = PdfMerger()
+            for p in pdf_paths:
+                try:
+                    merger.append(p)
+                except Exception:
+                    pass
+            buf = io.BytesIO()
+            merger.write(buf)
+            merger.close()
+            buf.seek(0)
+            return buf
+        except Exception as e2:
+            print(f"PDF merge failed: {e1}, {e2}")
             return None
-            
-    merger = PdfMerger()
-    for p in pdf_paths:
-        try:
-            merger.append(p)
-        except Exception:
-            pass
-            
-    buf = io.BytesIO()
-    merger.write(buf)
-    merger.close()
-    buf.seek(0)
-    return buf
+
