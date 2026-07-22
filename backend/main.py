@@ -770,17 +770,35 @@ def get_daily_pdf(date_iso: str):
 
 @app.get("/api/pdf/merge/{date_iso}")
 def get_merged_pdf(date_iso: str):
-    con = get_conn()
-    cur = con.cursor()
-    cur.execute("SELECT id FROM orders WHERE date(receive_date) = date(?) ORDER BY id", (date_iso,))
-    ids = [r[0] for r in cur.fetchall()]
-    con.close()
-    
+    ids = []
+    try:
+        db = get_firestore_db()
+        if db:
+            docs = list(db.collection("orders").stream())
+            for doc in docs:
+                d = doc.to_dict()
+                rdate_raw = str(d.get("receive_date", ""))
+                rdate = rdate_raw.split(" ")[0] if " " in rdate_raw else rdate_raw
+                if rdate == date_iso or rdate_raw.startswith(date_iso):
+                    oid = int(doc.id) if doc.id.isdigit() else doc.id
+                    ids.append(oid)
+            ids.sort()
+    except Exception as fe:
+        print(f"Firestore get_merged_pdf error: {fe}")
+
+    if not ids:
+        con = get_conn()
+        cur = con.cursor()
+        cur.execute("SELECT id FROM orders WHERE date(receive_date) = date(?) ORDER BY id", (date_iso,))
+        ids = [r[0] for r in cur.fetchall()]
+        con.close()
+        
     if not ids:
         raise HTTPException(status_code=404, detail="No orders found for this date")
         
     pdf_paths = []
     temp_dir = tempfile.mkdtemp(prefix="orders_tmp_")
+
     try:
         from pdf_services import _print_order_to_file
         for oid in ids:

@@ -8,8 +8,10 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from database import get_conn
+from database_firebase import get_firestore_db
 
 CURRENCY = "₫"
+
 
 def money(v):
     try:
@@ -54,6 +56,45 @@ def get_vn_font():
     return "Helvetica"
 
 def generate_order_pdf_bytes(order_id: int):
+    try:
+        db = get_firestore_db()
+        if db:
+            doc = db.collection("orders").document(str(order_id)).get()
+            if doc.exists:
+                data = doc.to_dict()
+                order_date = data.get("order_date", "")
+                receive_date = data.get("receive_date", "")
+                shipping_fee = data.get("shipping_fee", 0) or 0
+                discount = data.get("discount", 0) or 0
+                notes = data.get("notes", "")
+                cname = data.get("customer_name", "")
+                cphone = data.get("customer_phone", "")
+                caddr = data.get("customer_address", "")
+                oid = order_id
+                
+                raw_items = data.get("items", [])
+                items = [
+                    {
+                        'product_name': i.get('product_name') or i.get('name', ''),
+                        'unit_price': i.get('unit_price') or i.get('price', 0),
+                        'quantity': i.get('quantity', 1)
+                    }
+                    for i in raw_items
+                ]
+                
+                tot_items = sum(i['unit_price'] * i['quantity'] for i in items)
+                subtotal = max(0, tot_items + shipping_fee - discount)
+                
+                payments = data.get("payments", [])
+                paid = sum(p.get("amount", 0) for p in payments)
+                outstanding = subtotal - paid
+                
+                # Format to expected tuple structure
+                data_tuple = (order_date, receive_date, shipping_fee, discount, notes, cname, cphone, caddr, oid)
+                return _render_order_pdf_from_data(data_tuple, items, tot_items, subtotal, paid, outstanding)
+    except Exception as fe:
+        print(f"Firestore generate_order_pdf_bytes error: {fe}")
+
     con = get_conn()
     cur = con.cursor()
     cur.execute("""
@@ -72,13 +113,17 @@ def generate_order_pdf_bytes(order_id: int):
     cur.execute("SELECT product_name, unit_price, quantity FROM order_items WHERE order_id=?", (order_id,))
     items = cur.fetchall()
     
-    # Compute summary
     tot_items = sum(i['unit_price'] * i['quantity'] for i in items)
     subtotal = max(0, tot_items + (shipping_fee or 0) - (discount or 0))
     cur.execute("SELECT COALESCE(SUM(amount),0) FROM payments WHERE order_id=?", (order_id,))
     paid = cur.fetchone()[0] or 0
     outstanding = subtotal - paid
+    con.close()
     
+    return _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstanding)
+
+def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstanding):
+    order_date, receive_date, shipping_fee, discount, notes, cname, cphone, caddr, oid = data
     summary = {
         "total_items": tot_items,
         "discount": discount,
@@ -86,7 +131,7 @@ def generate_order_pdf_bytes(order_id: int):
         "paid": paid,
         "outstanding": outstanding
     }
-    con.close()
+
 
     W = 72 * mm
     margin_x = 6 * mm
@@ -253,6 +298,31 @@ def _boxes_for_product(product_name: str, qty: int) -> int:
     return qty
 
 def _calc_daily_rows(day_iso):
+    try:
+        db = get_firestore_db()
+        if db:
+            docs = list(db.collection("orders").stream())
+            if docs:
+                product_counts = {}
+                for doc in docs:
+                    d = doc.to_dict()
+                    rdate_raw = str(d.get("receive_date", ""))
+                    rdate = rdate_raw.split(" ")[0] if " " in rdate_raw else rdate_raw
+                    if rdate == day_iso or rdate_raw.startswith(day_iso):
+                        items = d.get("items", [])
+                        for i in items:
+                            pname = i.get("product_name") or i.get("name") or "Khác"
+                            qty = int(i.get("quantity") or 1)
+                            product_counts[pname] = product_counts.get(pname, 0) + qty
+                            
+                if product_counts:
+                    return [
+                        {"product_name": k, "qty": v}
+                        for k, v in sorted(product_counts.items())
+                    ]
+    except Exception as fe:
+        print(f"Firestore _calc_daily_rows error: {fe}")
+
     con = get_conn()
     cur = con.cursor()
     cur.execute("""
@@ -261,9 +331,10 @@ def _calc_daily_rows(day_iso):
         WHERE date(o.receive_date) = date(?)
         GROUP BY oi.product_name ORDER BY oi.product_name
     """, (day_iso,))
-    rows = cur.fetchall()
+    rows = [dict(r) for r in cur.fetchall()]
     con.close()
     return rows
+
 
 def generate_daily_report_pdf(day_iso: str):
     rows = _calc_daily_rows(day_iso)
