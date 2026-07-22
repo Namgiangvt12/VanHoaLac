@@ -6,7 +6,7 @@ from database_firebase import get_firestore_db
 from schemas import OrderCreateSchema, OrderUpdateSchema, PaymentCreateSchema, PostCreateSchema
 import sqlite3
 from datetime import datetime, date
-from pdf_services import generate_order_pdf_bytes, merge_pdfs, generate_daily_report_pdf, _calc_daily_rows
+from pdf_services import generate_order_pdf_bytes, merge_pdfs, generate_daily_report_pdf, _calc_daily_rows, normalize_date
 import tempfile
 import os
 import shutil
@@ -770,6 +770,7 @@ def get_daily_pdf(date_iso: str):
 
 @app.get("/api/pdf/merge/{date_iso}")
 def get_merged_pdf(date_iso: str):
+    target_date = normalize_date(date_iso)
     ids = []
     try:
         db = get_firestore_db()
@@ -777,12 +778,11 @@ def get_merged_pdf(date_iso: str):
             docs = list(db.collection("orders").stream())
             for doc in docs:
                 d = doc.to_dict()
-                rdate_raw = str(d.get("receive_date", ""))
-                rdate = rdate_raw.split(" ")[0] if " " in rdate_raw else rdate_raw
-                if rdate == date_iso or rdate_raw.startswith(date_iso):
-                    oid = int(doc.id) if doc.id.isdigit() else doc.id
+                rdate = normalize_date(d.get("receive_date", ""))
+                if rdate == target_date:
+                    oid = int(doc.id) if str(doc.id).isdigit() else doc.id
                     ids.append(oid)
-            ids.sort()
+            ids.sort(key=lambda x: int(x) if str(x).isdigit() else 0)
     except Exception as fe:
         print(f"Firestore get_merged_pdf error: {fe}")
 
@@ -795,6 +795,7 @@ def get_merged_pdf(date_iso: str):
         
     if not ids:
         raise HTTPException(status_code=404, detail="No orders found for this date")
+
         
     pdf_paths = []
     temp_dir = tempfile.mkdtemp(prefix="orders_tmp_")

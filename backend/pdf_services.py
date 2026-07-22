@@ -298,7 +298,23 @@ def _boxes_for_product(product_name: str, qty: int) -> int:
         return ceil(qty / 4)
     return qty
 
+def normalize_date(d_str):
+    if not d_str:
+        return ""
+    s = str(d_str).strip().split()[0].replace("/", "-")
+    parts = s.split("-")
+    if len(parts) == 3:
+        try:
+            if len(parts[0]) == 2 and len(parts[2]) == 4:
+                return f"{int(parts[2]):04d}-{int(parts[1]):02d}-{int(parts[0]):02d}"
+            elif len(parts[0]) == 4:
+                return f"{int(parts[0]):04d}-{int(parts[1]):02d}-{int(parts[2]):02d}"
+        except Exception:
+            pass
+    return s
+
 def _calc_daily_rows(day_iso):
+    target_date = normalize_date(day_iso)
     try:
         db = get_firestore_db()
         if db:
@@ -307,9 +323,8 @@ def _calc_daily_rows(day_iso):
                 product_counts = {}
                 for doc in docs:
                     d = doc.to_dict()
-                    rdate_raw = str(d.get("receive_date", ""))
-                    rdate = rdate_raw.split(" ")[0] if " " in rdate_raw else rdate_raw
-                    if rdate == day_iso or rdate_raw.startswith(day_iso):
+                    rdate = normalize_date(d.get("receive_date", ""))
+                    if rdate == target_date:
                         items = d.get("items", [])
                         for i in items:
                             pname = i.get("product_name") or i.get("name") or "Khác"
@@ -323,6 +338,7 @@ def _calc_daily_rows(day_iso):
                     ]
     except Exception as fe:
         print(f"Firestore _calc_daily_rows error: {fe}")
+
 
     con = get_conn()
     cur = con.cursor()
