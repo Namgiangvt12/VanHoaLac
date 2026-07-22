@@ -61,13 +61,23 @@ export function ProductsSection() {
 
   if (loading) {
     return (
-      <section id="products" className="py-24 md:py-32 px-6 bg-background">
-        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
-          />
+      <section id="products" className="py-24 md:py-32 px-6 bg-background" aria-label="Đang tải sản phẩm">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="text-center space-y-4 max-w-xl mx-auto">
+            <div className="h-4 bg-muted animate-pulse rounded-full w-48 mx-auto" />
+            <div className="h-10 bg-muted animate-pulse rounded-xl w-3/4 mx-auto" />
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="space-y-4">
+                <div className="aspect-[4/5] rounded-3xl bg-muted/60 animate-pulse border border-border/40" />
+                <div className="space-y-2 text-center">
+                  <div className="h-5 bg-muted animate-pulse rounded-lg w-3/4 mx-auto" />
+                  <div className="h-4 bg-muted/80 animate-pulse rounded-md w-1/2 mx-auto" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     )
@@ -189,11 +199,13 @@ export function ProductsSection() {
       </div>
 
       {/* Section 1 Header */}
-      <div className="w-full bg-[#5c8793] py-4 mb-10 mt-12 shadow-sm border-y border-[#4a727d]">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h3 className="text-white text-lg md:text-xl font-serif font-bold tracking-wider">
+      <div className="w-full bg-primary/95 py-4 mb-10 mt-12 shadow-md border-y border-gold/30 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 text-center flex items-center justify-center gap-3">
+          <span className="h-px w-8 bg-gold/50 hidden sm:block" />
+          <h3 className="text-white font-serif text-lg md:text-xl font-bold tracking-widest uppercase">
             {section1Title}
           </h3>
+          <span className="h-px w-8 bg-gold/50 hidden sm:block" />
         </div>
       </div>
 
@@ -212,11 +224,13 @@ export function ProductsSection() {
       </div>
 
       {/* Section 2 Header */}
-      <div className="w-full bg-[#5c8793] py-4 mb-10 mt-20 shadow-sm border-y border-[#4a727d]">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h3 className="text-white text-lg md:text-xl font-serif font-bold tracking-wider">
+      <div className="w-full bg-primary/95 py-4 mb-10 mt-20 shadow-md border-y border-gold/30 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 text-center flex items-center justify-center gap-3">
+          <span className="h-px w-8 bg-gold/50 hidden sm:block" />
+          <h3 className="text-white font-serif text-lg md:text-xl font-bold tracking-widest uppercase">
             {section2Title}
           </h3>
+          <span className="h-px w-8 bg-gold/50 hidden sm:block" />
         </div>
       </div>
 

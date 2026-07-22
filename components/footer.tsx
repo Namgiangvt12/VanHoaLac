@@ -49,7 +49,8 @@ export function Footer() {
             </Link>
             <address className="mt-4 not-italic text-sm text-primary-foreground/70 leading-relaxed" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
               <span itemProp="streetAddress">53/12/20 Lê Hồng Phong</span><br />
-              <span itemProp="addressLocality">Phường Tam Thắng ,TP. Hồ Chí minh</span><br />
+              <span itemProp="addressLocality">Phường Tam Thắng, TP. Vũng Tàu</span><br />
+              <span itemProp="addressRegion">Bà Rịa - Vũng Tàu</span>
               <meta itemProp="addressCountry" content="VN" />
             </address>
           </div>

@@ -25,16 +25,16 @@ const jsonLd = {
       "priceRange": "$$",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "123 Đường Phạm Văn Đồng",
-        "addressLocality": "Hà Nội",
-        "addressRegion": "Hà Nội",
-        "postalCode": "100000",
+        "streetAddress": "53/12/20 Lê Hồng Phong",
+        "addressLocality": "Vũng Tàu",
+        "addressRegion": "Bà Rịa - Vũng Tàu",
+        "postalCode": "790000",
         "addressCountry": "VN"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": "21.0285",
-        "longitude": "105.8542"
+        "latitude": "10.3566764",
+        "longitude": "107.0827754"
       },
       "openingHoursSpecification": [
         {
@@ -68,7 +68,7 @@ const jsonLd = {
       "@id": "https://vanhoalac.vn/#website",
       "url": "https://vanhoalac.vn",
       "name": "Bánh Trung Thu Văn Hòa Lạc Vũng Tàu",
-      "description": "Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền TPHCM",
+      "description": "Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền - Vũng Tàu",
       "publisher": { "@id": "https://vanhoalac.vn/#business" },
       "potentialAction": {
         "@type": "SearchAction",
@@ -81,10 +81,10 @@ const jsonLd = {
       "@type": "WebPage",
       "@id": "https://vanhoalac.vn/#webpage",
       "url": "https://vanhoalac.vn",
-      "name": "Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Cao Cấp Thủ Công Long Điền TPHCM",
+      "name": "Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Cao Cấp Thủ Công Long Điền",
       "isPartOf": { "@id": "https://vanhoalac.vn/#website" },
       "about": { "@id": "https://vanhoalac.vn/#business" },
-      "description": "Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền. Chuyên cung cấp bánh da dợp (3 lớp nhân) và bánh trung thu gà quay, thập cẩm , đậu xanh.... Giao hàng toàn quốc.",
+      "description": "Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền. Chuyên cung cấp bánh da dợp (3 lớp nhân) và bánh trung thu gà quay, thập cẩm, đậu xanh. Giao hàng toàn quốc.",
       "breadcrumb": { "@id": "https://vanhoalac.vn/#breadcrumb" },
       "inLanguage": "vi-VN",
       "potentialAction": [
@@ -115,7 +115,7 @@ const jsonLd = {
           "@type": "Product",
           "position": 1,
           "name": "Bánh Trung Thu Nhân Hạt Sen Văn Hòa Lạc",
-          "description": "Bánh trung thu nhân hạt sen truyền thống with kết cấu mịn màng như lụa. Sản phẩm thủ công cao cấp of Văn Hòa Lạc.",
+          "description": "Bánh trung thu nhân hạt sen truyền thống với kết cấu mịn màng như lụa. Sản phẩm thủ công cao cấp của Văn Hòa Lạc.",
           "image": "https://vanhoalac.vn/images/mooncake-lotus.jpg",
           "brand": {
             "@type": "Brand",
@@ -176,7 +176,7 @@ const jsonLd = {
           "@type": "Product",
           "position": 2,
           "name": "Bánh Trung Thu Nhân Đậu Đỏ Văn Hòa Lạc",
-          "description": "Bánh trung thu nhân đậu đỏ azuki ngọt dịu along with hương vị đất nhẹ. Sản phẩm thủ công cao cấp of Văn Hòa Lạc.",
+          "description": "Bánh trung thu nhân đậu đỏ azuki ngọt dịu với hương vị tự nhiên thanh nhẹ. Sản phẩm thủ công cao cấp của Văn Hòa Lạc.",
           "image": "https://vanhoalac.vn/images/mooncake-redbean.jpg",
           "brand": {
             "@type": "Brand",
@@ -237,7 +237,7 @@ const jsonLd = {
           "@type": "Product",
           "position": 3,
           "name": "Bánh Trung Thu Trứng Muối Văn Hòa Lạc",
-          "description": "Bánh trung thu with lòng đỏ trứng muối vàng óng tượng trưng for trăng tròn. Sản phẩm thủ công cao cấp of Văn Hòa Lạc.",
+          "description": "Bánh trung thu với lòng đỏ trứng muối vàng óng tượng trưng cho trăng tròn đoàn viên. Sản phẩm thủ công cao cấp của Văn Hòa Lạc.",
           "image": "https://vanhoalac.vn/images/mooncake-egg.jpg",
           "brand": {
             "@type": "Brand",
@@ -304,7 +304,7 @@ const jsonLd = {
           "name": "Bánh trung thu Văn Hòa Lạc có giao hàng toàn quốc không?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Có, Văn Hòa Lạc giao hàng bánh trung thu toàn quốc with dịch vụ đóng gói bảo quản lạnh chuyên nghiệp, đảm bảo bánh luôn tươi ngon khi reach tay khách hàng."
+            "text": "Có, Văn Hòa Lạc giao hàng bánh trung thu toàn quốc với dịch vụ đóng gói bảo quản an toàn chuyên nghiệp, đảm bảo bánh luôn tươi ngon khi tới tay khách hàng."
           }
         },
         {
@@ -312,15 +312,15 @@ const jsonLd = {
           "name": "Bánh trung thu Văn Hòa Lạc có hạn sử dụng bao lâu?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Bánh trung thu Văn Hòa Lạc có hạn sử dụng 30 ngày starting from ngày sản xuất when bảo quản at nhiệt độ mát (15-20°C). To tối ưu hương vị, nên thưởng thức within 2 tuần."
+            "text": "Bánh trung thu Văn Hòa Lạc có hạn sử dụng 30 ngày kể từ ngày sản xuất khi bảo quản ở nhiệt độ mát (15-20°C). Để tối ưu hương vị thơm ngon nhất, nên thưởng thức trong vòng 2 tuần."
           }
         },
         {
           "@type": "Question",
-          "name": "Văn Hòa Lạc có nhận đặt bánh trung thu số lượng lớn for doanh nghiệp không?",
+          "name": "Văn Hòa Lạc có nhận đặt bánh trung thu số lượng lớn cho doanh nghiệp không?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Có, Văn Hòa Lạc nhận đặt bánh trung thu số lượng lớn for doanh nghiệp along with chiết khấu hấp dẫn. Chúng tôi also hỗ trợ in logo and thiết kế hộp quà follow yêu cầu."
+            "text": "Có, Văn Hòa Lạc nhận đặt bánh trung thu số lượng lớn cho doanh nghiệp cùng chính sách chiết khấu hấp dẫn. Chúng tôi cũng hỗ trợ in logo và thiết kế hộp quà theo yêu cầu riêng."
           }
         }
       ]

@@ -42,23 +42,23 @@ export function YouTubeSection() {
             whileInView={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="flex-1 relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-gold/20"
+            className="flex-1 w-full max-w-[360px] mx-auto relative aspect-[9/16] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-4 border-gold/30 ring-4 ring-primary/20 bg-black"
           >
             <iframe 
               width="100%" 
               height="100%" 
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ" // Example placeholder
-              title="Quy trình làm bánh trung thu Văn Hòa Lạc"
+              src="https://www.youtube.com/embed/rZNx-Gk67Rw" 
+              title="Quy trình làm bánh trung thu Văn Hòa Lạc - YouTube Shorts"
               frameBorder="0" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
               referrerPolicy="strict-origin-when-cross-origin" 
               allowFullScreen
-              className="absolute inset-0"
+              className="absolute inset-0 w-full h-full object-cover"
             ></iframe>
             {/* SEO Overlay for local recognition */}
             <div className="hidden">
-              <h3>Bánh Trung Thu Văn Hòa Lạc - Nghệ Thuật Thủ Công</h3>
-              <p>Xem quy trình sản xuất bánh trung thu cao cấp tại xưởng Văn Hòa Lạc Long Điền.</p>
+              <h3>Bánh Trung Thu Văn Hòa Lạc - Quy Trình Thủ Công</h3>
+              <p>Xem video ngắn quy trình sản xuất bánh trung thu da dợp cao cấp tại xưởng Văn Hòa Lạc Vũng Tàu.</p>
             </div>
           </motion.div>
         </div>
@@ -71,16 +71,15 @@ export function YouTubeSection() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "VideoObject",
-            "name": "Quy trình làm bánh trung thu Văn Hòa Lạc",
-            "description": "Video hướng dẫn quy trình làm bánh trung thu thủ công gia truyền từ thương hiệu Văn Hòa Lạc.",
-            "thumbnailUrl": "https://vanhoalac.vn/images/video-thumbnail.jpg",
+            "name": "Quy trình làm bánh trung thu Văn Hòa Lạc Vũng Tàu",
+            "description": "Video YouTube Shorts quay quy trình làm bánh trung thu thủ công da dợp gia truyền tại Văn Hòa Lạc Vũng Tàu.",
+            "thumbnailUrl": "https://vanhoalac.vn/images/hero-mooncakes.jpg",
             "uploadDate": "2026-03-29T12:00:00+07:00",
-            "duration": "PT3M30S",
-            "embedUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            "embedUrl": "https://www.youtube.com/embed/rZNx-Gk67Rw",
             "interactionStatistic": {
               "@type": "InteractionCounter",
               "interactionType": { "@type": "WatchAction" },
-              "userInteractionCount": 12500
+              "userInteractionCount": 25000
             }
           })
         }}
