@@ -9,7 +9,8 @@ import {
   ListOrdered, 
   FileBarChart,
   PackagePlus,
-  PenTool
+  PenTool,
+  Eye
 } from 'lucide-react'
 
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -20,9 +21,11 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     { name: 'Tạo Đơn (POS)', path: '/admin/pos', icon: <ShoppingCart size={20} /> },
     { name: 'Khách Hàng', path: '/admin/orders', icon: <ListOrdered size={20} /> },
     { name: 'Báo Cáo Ngày', path: '/admin/reports', icon: <FileBarChart size={20} /> },
+    { name: 'Nhật Ký Log', path: '/admin/logs', icon: <Eye size={20} /> },
     { name: 'Sản Phẩm', path: '/admin/products', icon: <PackagePlus size={20} /> },
     { name: 'Bài Viết', path: '/admin/posts', icon: <PenTool size={20} /> },
   ]
+
 
   return (
     <div className="admin-theme">

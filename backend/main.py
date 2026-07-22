@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, Query, UploadFile, File
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File, Request
+
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db, get_conn
@@ -806,4 +807,137 @@ def get_merged_pdf(date_iso: str):
         media_type="application/pdf",
         headers={"Content-Disposition": f"inline; filename=merged_{date_iso}.pdf"}
     )
+
+# --- VISITOR TRACKING & LOGS ANALYTICS ---
+
+def parse_device_type(user_agent: str) -> str:
+    ua = (user_agent or "").lower()
+    if "iphone" in ua:
+        return "Mobile (iPhone / iOS)"
+    elif "ipad" in ua:
+        return "Tablet (iPad)"
+    elif "android" in ua:
+        if "mobile" in ua:
+            return "Mobile (Android)"
+        return "Tablet (Android)"
+    elif "mobile" in ua:
+        return "Mobile"
+    elif "windows" in ua:
+        return "Desktop (Windows)"
+    elif "macintosh" in ua or "mac os" in ua:
+        return "Desktop (macOS)"
+    elif "linux" in ua:
+        return "Desktop (Linux)"
+    return "Desktop / Other"
+
+def parse_traffic_source(referrer: str, page_url: str) -> str:
+    ref = (referrer or "").lower()
+    url = (page_url or "").lower()
+    
+    if "utm_source=google" in url or "google." in ref or "gclid=" in url:
+        return "Google"
+    elif "utm_source=facebook" in url or "facebook.com" in ref or "fb.com" in ref or "fbclid=" in url:
+        return "Facebook"
+    elif "utm_source=zalo" in url or "zalo.me" in ref or "zalo" in ref:
+        return "Zalo"
+    elif "utm_source=tiktok" in url or "tiktok.com" in ref:
+        return "TikTok"
+    elif ref == "" or "vanhoalac.vn" in ref or "localhost" in ref or "127.0.0.1" in ref:
+        return "Trực tiếp (Direct)"
+    return "Nguồn khác (Referral)"
+
+@app.post("/api/analytics/track")
+def track_visitor(payload: dict, request: Request):
+    session_id = payload.get("session_id")
+    if not session_id:
+        return {"status": "skipped", "reason": "No session_id"}
+        
+    page_url = payload.get("page_url", "/")
+    referrer = payload.get("referrer", "")
+    clicked_buy = bool(payload.get("clicked_buy_now", False))
+    
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        client_ip = forwarded.split(",")[0].strip()
+    else:
+        client_ip = request.client.host if request.client else "127.0.0.1"
+        
+    user_agent = request.headers.get("User-Agent", "")
+    device_type = parse_device_type(user_agent)
+    source_label = parse_traffic_source(referrer, page_url)
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    try:
+        mdb = get_mongo_db()
+        if mdb is not None:
+            existing = mdb.visitor_logs.find_one({"_id": session_id})
+            if existing:
+                pages = existing.get("pages_visited", [])
+                if page_url not in pages:
+                    pages.append(page_url)
+                buy_status = existing.get("clicked_buy_now", False) or clicked_buy
+                
+                mdb.visitor_logs.update_one(
+                    {"_id": session_id},
+                    {"$set": {
+                        "last_activity": now_str,
+                        "pages_visited": pages,
+                        "clicked_buy_now": buy_status
+                    }}
+                )
+            else:
+                doc = {
+                    "_id": session_id,
+                    "session_id": session_id,
+                    "ip": client_ip,
+                    "device_type": device_type,
+                    "user_agent": user_agent,
+                    "referrer": referrer,
+                    "source": source_label,
+                    "pages_visited": [page_url],
+                    "clicked_buy_now": clicked_buy,
+                    "first_visit": now_str,
+                    "last_activity": now_str
+                }
+                mdb.visitor_logs.insert_one(doc)
+            return {"status": "success"}
+    except Exception as me:
+        print(f"Analytics track error: {me}")
+        
+    return {"status": "ok"}
+
+@app.get("/api/analytics/logs")
+def get_visitor_logs(limit: int = 150):
+    try:
+        mdb = get_mongo_db()
+        if mdb is not None:
+            logs = list(mdb.visitor_logs.find({}, {"_id": 0}).sort("last_activity", -1).limit(limit))
+            
+            total_visitors = len(logs)
+            buy_now_clicks = sum(1 for l in logs if l.get("clicked_buy_now"))
+            mobile_count = sum(1 for l in logs if "Mobile" in l.get("device_type", ""))
+            
+            sources = {}
+            for l in logs:
+                src = l.get("source", "Trực tiếp (Direct)")
+                sources[src] = sources.get(src, 0) + 1
+                
+            stats = {
+                "total_visitors": total_visitors,
+                "buy_now_clicks": buy_now_clicks,
+                "buy_conversion_rate": round((buy_now_clicks / total_visitors * 100), 1) if total_visitors > 0 else 0,
+                "mobile_count": mobile_count,
+                "mobile_percentage": round((mobile_count / total_visitors * 100), 1) if total_visitors > 0 else 0,
+                "sources": sources
+            }
+            
+            return {
+                "logs": logs,
+                "stats": stats
+            }
+    except Exception as me:
+        print(f"Analytics get_logs error: {me}")
+        
+    return {"logs": [], "stats": {"total_visitors": 0, "buy_now_clicks": 0, "buy_conversion_rate": 0, "mobile_count": 0, "mobile_percentage": 0, "sources": {}}}
+
 
