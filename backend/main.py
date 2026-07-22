@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db, get_conn
 from database_firebase import get_firestore_db
+from database_mongo import get_mongo_db
 from schemas import OrderCreateSchema, OrderUpdateSchema, PaymentCreateSchema, PostCreateSchema
 import sqlite3
 from datetime import datetime, date
@@ -39,10 +40,10 @@ PRODUCTS = [
 def startup_event():
     init_db()
     try:
-        get_firestore_db()
-        print("🔥 Firebase Firestore initialized successfully!")
+        get_mongo_db()
     except Exception as e:
-        print(f"⚠️ Firebase initialization skipped or fallback to SQLite: {e}")
+        print(f"⚠️ MongoDB initialization error: {e}")
+
 
 
 app.add_middleware(
@@ -73,45 +74,44 @@ def get_orders(
     keyword: str = Query(None)
 ):
     try:
-        db = get_firestore_db()
-        if db:
-            docs = list(db.collection("orders").stream())
-            if docs:
-                results = []
-                for doc in docs:
-                    data = doc.to_dict()
-                    oid = int(doc.id) if doc.id.isdigit() else doc.id
-                    data['id'] = oid
-                    
-                    items = data.get('items', [])
-                    tot_items = sum((i.get('unit_price') or i.get('price') or 0) * (i.get('quantity') or 1) for i in items)
-                    shipping = data.get('shipping_fee', 0) or 0
-                    discount = data.get('discount', 0) or 0
-                    total = max(0, tot_items + shipping - discount)
-                    
-                    payments = data.get('payments', [])
-                    paid = sum(p.get('amount', 0) for p in payments)
-                    due = total - paid
-                    
-                    data['tot_items'] = tot_items
-                    data['shipping_fee'] = shipping
-                    data['discount'] = discount
-                    data['total'] = total
-                    data['paid'] = paid
-                    data['due'] = max(0, due)
-                    data['items'] = [{"name": i.get('product_name') or i.get('name'), "price": i.get('unit_price') or i.get('price'), "quantity": i.get('quantity', 1)} for i in items]
-                    results.append(data)
+        mdb = get_mongo_db()
+        if mdb is not None:
+            docs = list(mdb.orders.find({}, {"_id": 0}))
+            results = []
+            for data in docs:
+                oid = data.get('id')
+                items = data.get('items', [])
+                tot_items = sum((i.get('unit_price') or i.get('price') or 0) * (i.get('quantity') or 1) for i in items)
+                shipping = data.get('shipping_fee', 0) or 0
+                discount = data.get('discount', 0) or 0
+                total = max(0, tot_items + shipping - discount)
+                
+                payments = data.get('payments', [])
+                paid = sum(p.get('amount', 0) for p in payments)
+                due = total - paid
+                
+                data['tot_items'] = tot_items
+                data['shipping_fee'] = shipping
+                data['discount'] = discount
+                data['total'] = total
+                data['paid'] = paid
+                data['due'] = max(0, due)
+                data['items'] = [{"name": i.get('product_name') or i.get('name'), "price": i.get('unit_price') or i.get('price'), "quantity": i.get('quantity', 1)} for i in items]
                 
                 if keyword:
                     kw = keyword.lower()
-                    results = [r for r in results if kw in str(r.get('id')).lower() or kw in str(r.get('customer_name', '')).lower() or kw in str(r.get('customer_phone', '')).lower()]
+                    if not (kw in str(oid).lower() or kw in str(data.get('customer_name', '')).lower() or kw in str(data.get('customer_phone', '')).lower()):
+                        continue
+                        
+                results.append(data)
                 
-                results.sort(key=lambda x: x.get('id', 0) if isinstance(x.get('id'), int) else 0, reverse=True)
-                return results
+            results.sort(key=lambda x: x.get('id', 0) if isinstance(x.get('id'), int) else 0, reverse=True)
+            return results
     except Exception as e:
-        print(f"Firestore get_orders error/fallback: {e}")
+        print(f"MongoDB get_orders error/fallback: {e}")
 
     con = get_conn()
+
     cur = con.cursor()
 
     
@@ -168,11 +168,10 @@ def get_orders(
 @app.get("/api/orders/{order_id}")
 def get_order(order_id: int):
     try:
-        db = get_firestore_db()
-        if db:
-            doc = db.collection("orders").document(str(order_id)).get()
-            if doc.exists:
-                data = doc.to_dict()
+        mdb = get_mongo_db()
+        if mdb is not None:
+            data = mdb.orders.find_one({"_id": str(order_id)}) or mdb.orders.find_one({"id": order_id})
+            if data:
                 payments = data.get('payments', [])
                 dep = sum(p.get('amount', 0) for p in payments if p.get('type') == 'deposit')
                 items = data.get('items', [])
@@ -198,7 +197,8 @@ def get_order(order_id: int):
                     ]
                 }
     except Exception as e:
-        print(f"Firestore get_order error: {e}")
+        print(f"MongoDB get_order error: {e}")
+
 
     con = get_conn()
     cur = con.cursor()
@@ -271,10 +271,10 @@ def create_order(order: OrderCreateSchema):
             
         con.commit()
 
-        # Sync to Firestore
+        # Sync to MongoDB Atlas
         try:
-            db = get_firestore_db()
-            if db:
+            mdb = get_mongo_db()
+            if mdb is not None:
                 payments_list = []
                 if order.deposit > 0:
                     payments_list.append({"pay_date": now, "amount": order.deposit, "type": "deposit", "method": ""})
@@ -283,21 +283,27 @@ def create_order(order: OrderCreateSchema):
                 if order.full_pay and subtotal - paid_so_far > 0:
                     payments_list.append({"pay_date": now, "amount": subtotal - paid_so_far, "type": "full", "method": ""})
 
-                db.collection("orders").document(str(order_id)).set({
-                    "customer_id": cust_id,
-                    "customer_name": order.customer_name,
-                    "customer_phone": order.customer_phone,
-                    "customer_address": order.customer_address,
-                    "order_date": now,
-                    "receive_date": order.receive_date,
-                    "discount": order.discount,
-                    "shipping_fee": order.shipping_fee,
-                    "notes": order.notes,
-                    "items": [{"product_name": i.product_name, "unit_price": i.unit_price, "quantity": i.quantity} for i in order.items],
-                    "payments": payments_list
-                })
-        except Exception as fe:
-            print(f"Firestore sync create_order error: {fe}")
+                mdb.orders.replace_one(
+                    {"_id": str(order_id)},
+                    {
+                        "_id": str(order_id),
+                        "id": order_id,
+                        "customer_id": cust_id,
+                        "customer_name": order.customer_name,
+                        "customer_phone": order.customer_phone,
+                        "customer_address": order.customer_address,
+                        "order_date": now,
+                        "receive_date": order.receive_date,
+                        "discount": order.discount,
+                        "shipping_fee": order.shipping_fee,
+                        "notes": order.notes,
+                        "items": [{"product_name": i.product_name, "unit_price": i.unit_price, "quantity": i.quantity} for i in order.items],
+                        "payments": payments_list
+                    },
+                    upsert=True
+                )
+        except Exception as me:
+            print(f"MongoDB sync create_order error: {me}")
 
     except Exception as e:
         con.rollback()
@@ -310,11 +316,10 @@ def create_order(order: OrderCreateSchema):
 @app.put("/api/orders/{order_id}")
 def update_order(order_id: int, order: OrderUpdateSchema):
     try:
-        db = get_firestore_db()
-        if db:
-            order_ref = db.collection("orders").document(str(order_id))
-            doc = order_ref.get()
-            existing_payments = doc.to_dict().get("payments", []) if doc.exists else []
+        mdb = get_mongo_db()
+        if mdb is not None:
+            doc = mdb.orders.find_one({"_id": str(order_id)}) or mdb.orders.find_one({"id": order_id})
+            existing_payments = doc.get("payments", []) if doc else []
             filtered_payments = [p for p in existing_payments if p.get("type") != "deposit"]
             if order.deposit > 0:
                 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -325,19 +330,24 @@ def update_order(order_id: int, order: OrderUpdateSchema):
                     "method": ""
                 })
 
-            order_ref.set({
-                "customer_name": order.customer_name,
-                "customer_phone": order.customer_phone,
-                "customer_address": order.customer_address,
-                "receive_date": order.receive_date,
-                "discount": order.discount,
-                "shipping_fee": order.shipping_fee,
-                "notes": order.notes,
-                "items": [{"product_name": i.product_name, "unit_price": i.unit_price, "quantity": i.quantity} for i in order.items],
-                "payments": filtered_payments
-            }, merge=True)
-    except Exception as fe:
-        print(f"Firestore update_order error: {fe}")
+            mdb.orders.update_one(
+                {"_id": str(order_id)},
+                {"$set": {
+                    "customer_name": order.customer_name,
+                    "customer_phone": order.customer_phone,
+                    "customer_address": order.customer_address,
+                    "receive_date": order.receive_date,
+                    "discount": order.discount,
+                    "shipping_fee": order.shipping_fee,
+                    "notes": order.notes,
+                    "items": [{"product_name": i.product_name, "unit_price": i.unit_price, "quantity": i.quantity} for i in order.items],
+                    "payments": filtered_payments
+                }},
+                upsert=True
+            )
+    except Exception as me:
+        print(f"MongoDB update_order error: {me}")
+
 
     con = get_conn()
     cur = con.cursor()
@@ -377,11 +387,12 @@ def update_order(order_id: int, order: OrderUpdateSchema):
 @app.delete("/api/orders/{order_id}")
 def delete_order(order_id: int):
     try:
-        db = get_firestore_db()
-        if db:
-            db.collection("orders").document(str(order_id)).delete()
-    except Exception as fe:
-        print(f"Firestore delete_order error: {fe}")
+        mdb = get_mongo_db()
+        if mdb is not None:
+            mdb.orders.delete_one({"_id": str(order_id)})
+            mdb.orders.delete_one({"id": order_id})
+    except Exception as me:
+        print(f"MongoDB delete_order error: {me}")
 
     con = get_conn()
     cur = con.cursor()
@@ -400,11 +411,10 @@ def delete_order(order_id: int):
 @app.get("/api/payments/{order_id}")
 def get_payments(order_id: int):
     try:
-        db = get_firestore_db()
-        if db:
-            doc = db.collection("orders").document(str(order_id)).get()
-            if doc.exists:
-                data = doc.to_dict()
+        mdb = get_mongo_db()
+        if mdb is not None:
+            data = mdb.orders.find_one({"_id": str(order_id)}) or mdb.orders.find_one({"id": order_id})
+            if data:
                 payments = data.get("payments", [])
                 items = data.get("items", [])
                 tot_items = sum((i.get("unit_price") or i.get("price") or 0) * (i.get("quantity") or 1) for i in items)
@@ -421,8 +431,8 @@ def get_payments(order_id: int):
                         "outstanding": outstanding
                     }
                 }
-    except Exception as fe:
-        print(f"Firestore get_payments error: {fe}")
+    except Exception as me:
+        print(f"MongoDB get_payments error: {me}")
 
     con = get_conn()
     cur = con.cursor()
@@ -456,21 +466,15 @@ def get_payments(order_id: int):
 def create_payment(order_id: int, p: PaymentCreateSchema):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
-        db = get_firestore_db()
-        if db:
-            order_ref = db.collection("orders").document(str(order_id))
-            doc = order_ref.get()
-            if doc.exists:
-                payments = doc.to_dict().get("payments", [])
-                payments.append({
-                    "pay_date": now,
-                    "amount": p.amount,
-                    "type": p.type,
-                    "method": p.method
-                })
-                order_ref.set({"payments": payments}, merge=True)
-    except Exception as fe:
-        print(f"Firestore create_payment error: {fe}")
+        mdb = get_mongo_db()
+        if mdb is not None:
+            new_p = {"pay_date": now, "amount": p.amount, "type": p.type, "method": p.method}
+            mdb.orders.update_one(
+                {"$or": [{"_id": str(order_id)}, {"id": order_id}]},
+                {"$push": {"payments": new_p}}
+            )
+    except Exception as me:
+        print(f"MongoDB create_payment error: {me}")
 
     con = get_conn()
     cur = con.cursor()
@@ -488,15 +492,14 @@ def create_payment(order_id: int, p: PaymentCreateSchema):
 @app.get("/api/reports/summary")
 def get_report_summary(from_date: str, to_date: str):
     try:
-        db = get_firestore_db()
-        if db:
-            docs = list(db.collection("orders").stream())
+        mdb = get_mongo_db()
+        if mdb is not None:
+            docs = list(mdb.orders.find({}, {"_id": 0}))
             if docs:
                 total_orders = 0
                 sum_items = sum_ship = sum_disc = sum_total = sum_paid = sum_due = total_profit = 0
                 
-                for doc in docs:
-                    d = doc.to_dict()
+                for d in docs:
                     odate_raw = str(d.get("order_date", ""))
                     odate = odate_raw.split(" ")[0] if " " in odate_raw else odate_raw
                     
@@ -537,8 +540,9 @@ def get_report_summary(from_date: str, to_date: str):
                     "total_profit_raw": total_profit,
                     "final_profit": final_profit
                 }
-    except Exception as fe:
-        print(f"Firestore get_report_summary error: {fe}")
+    except Exception as me:
+        print(f"MongoDB get_report_summary error: {me}")
+
 
     con = get_conn()
     cur = con.cursor()
@@ -683,19 +687,15 @@ async def upload_image(file: UploadFile = File(...)):
 @app.get("/api/posts")
 def get_posts(published_only: bool = False):
     try:
-        db = get_firestore_db()
-        if db:
-            ref = db.collection("posts")
-            if published_only:
-                docs = ref.where("published", "==", True).stream()
-            else:
-                docs = ref.stream()
-            posts = [d.to_dict() for d in docs]
+        mdb = get_mongo_db()
+        if mdb is not None:
+            query = {"published": True} if published_only else {}
+            posts = list(mdb.posts.find(query, {"_id": 0}))
             posts.sort(key=lambda x: x.get('id', 0), reverse=True)
             if posts:
                 return posts
-    except Exception as e:
-        print(f"Firestore get_posts error/fallback: {e}")
+    except Exception as me:
+        print(f"MongoDB get_posts error/fallback: {me}")
 
     con = get_conn()
     cur = con.cursor()
@@ -710,13 +710,13 @@ def get_posts(published_only: bool = False):
 @app.get("/api/posts/{slug}")
 def get_post(slug: str):
     try:
-        db = get_firestore_db()
-        if db:
-            docs = list(db.collection("posts").where("slug", "==", slug).limit(1).stream())
-            if docs:
-                return docs[0].to_dict()
-    except Exception as e:
-        print(f"Firestore get_post error/fallback: {e}")
+        mdb = get_mongo_db()
+        if mdb is not None:
+            post = mdb.posts.find_one({"slug": slug}, {"_id": 0})
+            if post:
+                return post
+    except Exception as me:
+        print(f"MongoDB get_post error/fallback: {me}")
 
     con = get_conn()
     cur = con.cursor()
@@ -730,11 +730,12 @@ def get_post(slug: str):
 @app.delete("/api/posts/{post_id}")
 def delete_post(post_id: int):
     try:
-        db = get_firestore_db()
-        if db:
-            db.collection("posts").document(str(post_id)).delete()
-    except Exception as e:
-        print(f"Firestore delete_post error: {e}")
+        mdb = get_mongo_db()
+        if mdb is not None:
+            mdb.posts.delete_one({"_id": str(post_id)})
+            mdb.posts.delete_one({"id": post_id})
+    except Exception as me:
+        print(f"MongoDB delete_post error: {me}")
 
     con = get_conn()
     cur = con.cursor()
@@ -773,18 +774,20 @@ def get_merged_pdf(date_iso: str):
     target_date = normalize_date(date_iso)
     ids = []
     try:
-        db = get_firestore_db()
-        if db:
-            docs = list(db.collection("orders").stream())
-            for doc in docs:
-                d = doc.to_dict()
+        mdb = get_mongo_db()
+        if mdb is not None:
+            docs = list(mdb.orders.find({}, {"_id": 1, "id": 1, "receive_date": 1}))
+            for d in docs:
                 rdate = normalize_date(d.get("receive_date", ""))
                 if rdate == target_date:
-                    oid = int(doc.id) if str(doc.id).isdigit() else doc.id
+                    oid = d.get("id") or d.get("_id")
+                    if str(oid).isdigit():
+                        oid = int(oid)
                     ids.append(oid)
             ids.sort(key=lambda x: int(x) if str(x).isdigit() else 0)
-    except Exception as fe:
-        print(f"Firestore get_merged_pdf error: {fe}")
+    except Exception as me:
+        print(f"MongoDB get_merged_pdf error: {me}")
+
 
     if not ids:
         con = get_conn()

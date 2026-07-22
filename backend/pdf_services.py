@@ -9,8 +9,10 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from database import get_conn
 from database_firebase import get_firestore_db
+from database_mongo import get_mongo_db
 
 CURRENCY = "₫"
+
 
 
 def money(v):
@@ -57,11 +59,10 @@ def get_vn_font():
 
 def generate_order_pdf_bytes(order_id: int):
     try:
-        db = get_firestore_db()
-        if db:
-            doc = db.collection("orders").document(str(order_id)).get()
-            if doc.exists:
-                data = doc.to_dict()
+        mdb = get_mongo_db()
+        if mdb is not None:
+            data = mdb.orders.find_one({"_id": str(order_id)}) or mdb.orders.find_one({"id": order_id})
+            if data:
                 order_date = data.get("order_date", "")
                 receive_date = data.get("receive_date", "")
                 shipping_fee = data.get("shipping_fee", 0) or 0
@@ -89,11 +90,11 @@ def generate_order_pdf_bytes(order_id: int):
                 paid = sum(p.get("amount", 0) for p in payments)
                 outstanding = subtotal - paid
                 
-                # Format to expected tuple structure
                 data_tuple = (order_date, receive_date, shipping_fee, discount, notes, cname, cphone, caddr, oid)
                 return _render_order_pdf_from_data(data_tuple, items, tot_items, subtotal, paid, outstanding)
-    except Exception as fe:
-        print(f"Firestore generate_order_pdf_bytes error: {fe}")
+    except Exception as me:
+        print(f"MongoDB generate_order_pdf_bytes error: {me}")
+
 
     con = get_conn()
     cur = con.cursor()
@@ -316,13 +317,12 @@ def normalize_date(d_str):
 def _calc_daily_rows(day_iso):
     target_date = normalize_date(day_iso)
     try:
-        db = get_firestore_db()
-        if db:
-            docs = list(db.collection("orders").stream())
+        mdb = get_mongo_db()
+        if mdb is not None:
+            docs = list(mdb.orders.find({}, {"_id": 0, "receive_date": 1, "items": 1}))
             if docs:
                 product_counts = {}
-                for doc in docs:
-                    d = doc.to_dict()
+                for d in docs:
                     rdate = normalize_date(d.get("receive_date", ""))
                     if rdate == target_date:
                         items = d.get("items", [])
@@ -336,8 +336,9 @@ def _calc_daily_rows(day_iso):
                         {"product_name": k, "qty": v}
                         for k, v in sorted(product_counts.items())
                     ]
-    except Exception as fe:
-        print(f"Firestore _calc_daily_rows error: {fe}")
+    except Exception as me:
+        print(f"MongoDB _calc_daily_rows error: {me}")
+
 
 
     con = get_conn()
