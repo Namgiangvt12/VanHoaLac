@@ -1,6 +1,7 @@
 'use client'
 
-import '../admin.css' // Import the unified admin CSS
+import '../admin.css'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { 
@@ -10,11 +11,24 @@ import {
   FileBarChart,
   PackagePlus,
   PenTool,
-  Eye
+  Eye,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Menu,
+  X
 } from 'lucide-react'
 
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+
+  // State for sidebar toggle
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
+
+  // Auto close mobile sidebar when navigating to a new page
+  useEffect(() => {
+    setIsMobileOpen(false)
+  }, [pathname])
 
   const menu = [
     { name: 'Bảng Điều Khiển', path: '/admin', icon: <LayoutDashboard size={20} /> },
@@ -26,32 +40,71 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     { name: 'Bài Viết', path: '/admin/posts', icon: <PenTool size={20} /> },
   ]
 
+  const toggleSidebar = () => {
+    if (window.innerWidth <= 768) {
+      setIsMobileOpen(prev => !prev)
+    } else {
+      setIsCollapsed(prev => !prev)
+    }
+  }
 
   return (
     <div className="admin-theme">
       <div className="app-layout">
+        {/* Mobile & Desktop Overlay */}
+        <div 
+          className={`sidebar-overlay ${isMobileOpen ? 'active' : ''}`}
+          onClick={() => setIsMobileOpen(false)}
+        />
+
         {/* Sidebar */}
-        <aside className="sidebar glass">
+        <aside className={`sidebar glass ${isCollapsed ? 'collapsed' : ''} ${isMobileOpen ? 'mobile-open' : ''}`}>
           <div className="sidebar-header">
-            <div className="logo-box">🌕</div>
-            <h2>TrungThu</h2>
+            <Link href="/admin" className="sidebar-brand">
+              <div className="logo-box">🌕</div>
+              {!isCollapsed && <h2>Văn Hòa Lạc</h2>}
+            </Link>
+            <button 
+              className="sidebar-toggle-btn sm-only"
+              onClick={() => setIsMobileOpen(false)}
+              style={{ padding: '0.4rem', border: 'none', background: 'transparent' }}
+            >
+              <X size={20} />
+            </button>
           </div>
+
           <nav className="sidebar-nav">
             {menu.map((item) => (
               <Link 
                 key={item.path} 
                 href={item.path} 
                 className={`nav-link ${pathname === item.path ? 'active' : ''}`}
+                title={item.name}
               >
                 {item.icon}
-                <span>{item.name}</span>
+                {!isCollapsed && <span>{item.name}</span>}
               </Link>
             ))}
           </nav>
         </aside>
 
-        {/* Main Content */}
-        <main className="main-content">
+        {/* Main Content Area */}
+        <main className={`main-content ${isCollapsed ? 'expanded' : ''}`}>
+          {/* Top Navbar */}
+          <div className="top-bar">
+            <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
+              {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+              <span className="hidden sm:inline">
+                {isCollapsed ? 'Hiện Menu' : 'Ẩn Menu'}
+              </span>
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Quản trị hệ thống</span>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} title="Online" />
+            </div>
+          </div>
+
           {children}
         </main>
       </div>
