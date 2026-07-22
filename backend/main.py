@@ -167,6 +167,39 @@ def get_orders(
 
 @app.get("/api/orders/{order_id}")
 def get_order(order_id: int):
+    try:
+        db = get_firestore_db()
+        if db:
+            doc = db.collection("orders").document(str(order_id)).get()
+            if doc.exists:
+                data = doc.to_dict()
+                payments = data.get('payments', [])
+                dep = sum(p.get('amount', 0) for p in payments if p.get('type') == 'deposit')
+                items = data.get('items', [])
+                
+                return {
+                    "id": order_id,
+                    "order_date": data.get("order_date", ""),
+                    "receive_date": data.get("receive_date", ""),
+                    "customer_name": data.get("customer_name", ""),
+                    "customer_phone": data.get("customer_phone", ""),
+                    "customer_address": data.get("customer_address", ""),
+                    "shipping_fee": data.get("shipping_fee", 0),
+                    "discount": data.get("discount", 0),
+                    "notes": data.get("notes", ""),
+                    "deposit": dep,
+                    "items": [
+                        {
+                            "product_name": i.get("product_name") or i.get("name", ""),
+                            "unit_price": i.get("unit_price") or i.get("price", 0),
+                            "quantity": i.get("quantity", 1)
+                        }
+                        for i in items
+                    ]
+                }
+    except Exception as e:
+        print(f"Firestore get_order error: {e}")
+
     con = get_conn()
     cur = con.cursor()
     cur.execute("""
@@ -198,6 +231,7 @@ def get_order(order_id: int):
 def create_order(order: OrderCreateSchema):
     con = get_conn()
     cur = con.cursor()
+    order_id = None
     try:
         cur.execute("SELECT id FROM customers WHERE phone=? AND name=?", (order.customer_phone, order.customer_name))
         row = cur.fetchone()
@@ -236,6 +270,35 @@ def create_order(order: OrderCreateSchema):
                         (order_id, now, subtotal - paid_so_far, 'full', ''))
             
         con.commit()
+
+        # Sync to Firestore
+        try:
+            db = get_firestore_db()
+            if db:
+                payments_list = []
+                if order.deposit > 0:
+                    payments_list.append({"pay_date": now, "amount": order.deposit, "type": "deposit", "method": ""})
+                if order.pay_ship_now and order.shipping_fee > 0:
+                    payments_list.append({"pay_date": now, "amount": order.shipping_fee, "type": "shipping", "method": ""})
+                if order.full_pay and subtotal - paid_so_far > 0:
+                    payments_list.append({"pay_date": now, "amount": subtotal - paid_so_far, "type": "full", "method": ""})
+
+                db.collection("orders").document(str(order_id)).set({
+                    "customer_id": cust_id,
+                    "customer_name": order.customer_name,
+                    "customer_phone": order.customer_phone,
+                    "customer_address": order.customer_address,
+                    "order_date": now,
+                    "receive_date": order.receive_date,
+                    "discount": order.discount,
+                    "shipping_fee": order.shipping_fee,
+                    "notes": order.notes,
+                    "items": [{"product_name": i.product_name, "unit_price": i.unit_price, "quantity": i.quantity} for i in order.items],
+                    "payments": payments_list
+                })
+        except Exception as fe:
+            print(f"Firestore sync create_order error: {fe}")
+
     except Exception as e:
         con.rollback()
         raise HTTPException(status_code=400, detail=str(e))
@@ -246,6 +309,36 @@ def create_order(order: OrderCreateSchema):
 
 @app.put("/api/orders/{order_id}")
 def update_order(order_id: int, order: OrderUpdateSchema):
+    try:
+        db = get_firestore_db()
+        if db:
+            order_ref = db.collection("orders").document(str(order_id))
+            doc = order_ref.get()
+            existing_payments = doc.to_dict().get("payments", []) if doc.exists else []
+            filtered_payments = [p for p in existing_payments if p.get("type") != "deposit"]
+            if order.deposit > 0:
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                filtered_payments.append({
+                    "pay_date": now,
+                    "amount": order.deposit,
+                    "type": "deposit",
+                    "method": ""
+                })
+
+            order_ref.set({
+                "customer_name": order.customer_name,
+                "customer_phone": order.customer_phone,
+                "customer_address": order.customer_address,
+                "receive_date": order.receive_date,
+                "discount": order.discount,
+                "shipping_fee": order.shipping_fee,
+                "notes": order.notes,
+                "items": [{"product_name": i.product_name, "unit_price": i.unit_price, "quantity": i.quantity} for i in order.items],
+                "payments": filtered_payments
+            }, merge=True)
+    except Exception as fe:
+        print(f"Firestore update_order error: {fe}")
+
     con = get_conn()
     cur = con.cursor()
     try:
@@ -283,6 +376,13 @@ def update_order(order_id: int, order: OrderUpdateSchema):
 
 @app.delete("/api/orders/{order_id}")
 def delete_order(order_id: int):
+    try:
+        db = get_firestore_db()
+        if db:
+            db.collection("orders").document(str(order_id)).delete()
+    except Exception as fe:
+        print(f"Firestore delete_order error: {fe}")
+
     con = get_conn()
     cur = con.cursor()
     try:
@@ -299,6 +399,31 @@ def delete_order(order_id: int):
 
 @app.get("/api/payments/{order_id}")
 def get_payments(order_id: int):
+    try:
+        db = get_firestore_db()
+        if db:
+            doc = db.collection("orders").document(str(order_id)).get()
+            if doc.exists:
+                data = doc.to_dict()
+                payments = data.get("payments", [])
+                items = data.get("items", [])
+                tot_items = sum((i.get("unit_price") or i.get("price") or 0) * (i.get("quantity") or 1) for i in items)
+                ship = data.get("shipping_fee", 0) or 0
+                disc = data.get("discount", 0) or 0
+                subtotal = max(0, tot_items + ship - disc)
+                paid = sum(p.get("amount", 0) for p in payments)
+                outstanding = max(0, subtotal - paid)
+                return {
+                    "payments": payments,
+                    "summary": {
+                        "subtotal": subtotal,
+                        "paid": paid,
+                        "outstanding": outstanding
+                    }
+                }
+    except Exception as fe:
+        print(f"Firestore get_payments error: {fe}")
+
     con = get_conn()
     cur = con.cursor()
     cur.execute("SELECT id, pay_date, amount, type, method FROM payments WHERE order_id=? ORDER BY id DESC", (order_id,))
@@ -329,10 +454,27 @@ def get_payments(order_id: int):
 
 @app.post("/api/payments/{order_id}")
 def create_payment(order_id: int, p: PaymentCreateSchema):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        db = get_firestore_db()
+        if db:
+            order_ref = db.collection("orders").document(str(order_id))
+            doc = order_ref.get()
+            if doc.exists:
+                payments = doc.to_dict().get("payments", [])
+                payments.append({
+                    "pay_date": now,
+                    "amount": p.amount,
+                    "type": p.type,
+                    "method": p.method
+                })
+                order_ref.set({"payments": payments}, merge=True)
+    except Exception as fe:
+        print(f"Firestore create_payment error: {fe}")
+
     con = get_conn()
     cur = con.cursor()
     try:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         cur.execute("INSERT INTO payments(order_id, pay_date, amount, type, method) VALUES(?,?,?,?,?)",
                     (order_id, now, p.amount, p.type, p.method))
         con.commit()
@@ -345,6 +487,59 @@ def create_payment(order_id: int, p: PaymentCreateSchema):
 
 @app.get("/api/reports/summary")
 def get_report_summary(from_date: str, to_date: str):
+    try:
+        db = get_firestore_db()
+        if db:
+            docs = list(db.collection("orders").stream())
+            if docs:
+                total_orders = 0
+                sum_items = sum_ship = sum_disc = sum_total = sum_paid = sum_due = total_profit = 0
+                
+                for doc in docs:
+                    d = doc.to_dict()
+                    odate_raw = str(d.get("order_date", ""))
+                    odate = odate_raw.split(" ")[0] if " " in odate_raw else odate_raw
+                    
+                    if (not from_date or not to_date) or (from_date <= odate <= to_date) or not odate_raw:
+                        total_orders += 1
+                        ship = d.get("shipping_fee", 0) or 0
+                        disc = d.get("discount", 0) or 0
+                        items = d.get("items", [])
+                        
+                        items_total = sum((i.get("unit_price") or i.get("price") or 0) * (i.get("quantity") or 1) for i in items)
+                        subtotal = max(0, items_total + ship - disc)
+                        
+                        payments = d.get("payments", [])
+                        paid = sum(p.get("amount", 0) for p in payments)
+                        due = subtotal - paid
+                        
+                        for i in items:
+                            name_lower = (i.get("product_name") or i.get("name") or "").lower()
+                            profit_per_unit = 20000 if re.search(r'\b(2|3)\s*trứng\b', name_lower) else 80000
+                            total_profit += profit_per_unit * (i.get("quantity") or 1)
+                            
+                        sum_items += items_total
+                        sum_ship += ship
+                        sum_disc += disc
+                        sum_total += subtotal
+                        sum_paid += paid
+                        sum_due += max(0, due)
+                        
+                final_profit = max(0, total_profit - sum_disc)
+                return {
+                    "total_orders": total_orders,
+                    "sum_items": sum_items,
+                    "sum_ship": sum_ship,
+                    "sum_disc": sum_disc,
+                    "sum_total": sum_total,
+                    "sum_paid": sum_paid,
+                    "sum_due": sum_due,
+                    "total_profit_raw": total_profit,
+                    "final_profit": final_profit
+                }
+    except Exception as fe:
+        print(f"Firestore get_report_summary error: {fe}")
+
     con = get_conn()
     cur = con.cursor()
     cur.execute("SELECT id, shipping_fee, discount FROM orders WHERE date(order_date) >= date(?) AND date(order_date) <= date(?)", (from_date, to_date))
@@ -365,7 +560,6 @@ def get_report_summary(from_date: str, to_date: str):
         paid = cur.fetchone()[0] or 0
         due = subtotal - paid
         
-        # profit calc
         for i in items:
             name_lower = i['product_name'].lower()
             profit_per_unit = 20000 if re.search(r'\b(2|3)\s*trứng\b', name_lower) else 80000
@@ -393,6 +587,7 @@ def get_report_summary(from_date: str, to_date: str):
         "total_profit_raw": total_profit,
         "final_profit": final_profit
     }
+
 
 @app.get("/api/reports/daily_products/{date_iso}")
 def get_daily_products(date_iso: str):
