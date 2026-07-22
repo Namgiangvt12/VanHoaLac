@@ -196,8 +196,9 @@ def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstand
     y -= hr_gap
 
     c.setFont(get_vn_font(), body_fs)
-    c.drawString(margin_x, y, f"Mã đơn: #{order_id}")
+    c.drawString(margin_x, y, f"Mã đơn: #{oid}")
     c.drawRightString(W - margin_x, y, f"Ngày đặt: {_display_from_iso(order_date.split(' ')[0]) if order_date else ''}")
+
     y -= line_gap
     c.drawRightString(W - margin_x, y, f"Ngày nhận: {_display_from_iso(receive_date) if receive_date else ''}")
     y -= line_gap
