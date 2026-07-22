@@ -1,5 +1,11 @@
 import os
+from dotenv import load_dotenv
 from pymongo import MongoClient
+
+env_local = os.path.join(os.path.dirname(__file__), "..", ".env.local")
+if os.path.exists(env_local):
+    load_dotenv(env_local)
+load_dotenv()
 
 mongo_client = None
 db_mongo = None
@@ -12,6 +18,7 @@ def get_mongo_db():
         return db_mongo
 
     uri = os.getenv("MONGODB_URI", DEFAULT_MONGO_URI)
+
     try:
         mongo_client = MongoClient(uri, serverSelectionTimeoutMS=5000)
         # Verify connection
