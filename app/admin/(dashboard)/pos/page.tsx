@@ -63,11 +63,43 @@ function PosForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
     const checked = (e.target as HTMLInputElement).checked
+
+    if (name === 'pay_ship_now') {
+      const isChecked = checked
+      let currentNotes = form.notes || ''
+      const tag = 'Đã thanh toán phí ship'
+      if (isChecked) {
+        if (!currentNotes.includes(tag)) {
+          currentNotes = currentNotes ? `${currentNotes}\n${tag}` : tag
+        }
+      } else {
+        currentNotes = currentNotes
+          .split('\n')
+          .filter(line => line.trim() !== tag)
+          .join('\n')
+          .trim()
+      }
+      setForm(prev => ({
+        ...prev,
+        pay_ship_now: isChecked,
+        notes: currentNotes
+      }))
+      return
+    }
+
     setForm(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }))
   }
+
+  const handleMoneyBlur = (field: 'shipping_fee' | 'discount' | 'deposit') => {
+    const val = Number(form[field]) || 0
+    if (val > 0 && val < 1000) {
+      setForm(prev => ({ ...prev, [field]: val * 1000 }))
+    }
+  }
+
 
   const handleAddToCart = () => {
     const prod = products.find(p => p.name === selectedProduct)
@@ -353,8 +385,13 @@ function PosForm() {
                 name="shipping_fee" 
                 value={form.shipping_fee} 
                 onChange={handleChange} 
+                onBlur={() => handleMoneyBlur('shipping_fee')}
+                placeholder="Nhập 30 -> 30.000đ"
                 style={inputStyle} 
               />
+              <div style={{ fontSize: '0.75rem', color: '#fbbf24', marginTop: '0.2rem', minHeight: '1.2em' }}>
+                {Number(form.shipping_fee) > 0 && formatMoney(Number(form.shipping_fee) < 1000 ? Number(form.shipping_fee) * 1000 : Number(form.shipping_fee))}
+              </div>
             </div>
 
             <div>
@@ -364,8 +401,13 @@ function PosForm() {
                 name="discount" 
                 value={form.discount} 
                 onChange={handleChange} 
+                onBlur={() => handleMoneyBlur('discount')}
+                placeholder="Nhập 50 -> 50.000đ"
                 style={inputStyle} 
               />
+              <div style={{ fontSize: '0.75rem', color: '#fbbf24', marginTop: '0.2rem', minHeight: '1.2em' }}>
+                {Number(form.discount) > 0 && formatMoney(Number(form.discount) < 1000 ? Number(form.discount) * 1000 : Number(form.discount))}
+              </div>
             </div>
           </div>
 
@@ -376,9 +418,15 @@ function PosForm() {
               name="deposit" 
               value={form.deposit} 
               onChange={handleChange} 
+              onBlur={() => handleMoneyBlur('deposit')}
+              placeholder="Nhập 300 -> 300.000đ"
               style={inputStyle} 
             />
+            <div style={{ fontSize: '0.75rem', color: '#fbbf24', marginTop: '0.2rem', minHeight: '1.2em' }}>
+              {Number(form.deposit) > 0 && formatMoney(Number(form.deposit) < 1000 ? Number(form.deposit) * 1000 : Number(form.deposit))}
+            </div>
           </div>
+
 
           {!isEditMode && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0.6rem 0' }}>
