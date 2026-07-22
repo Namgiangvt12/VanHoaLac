@@ -50,10 +50,10 @@ def get_mongo_db():
         mongo_client.admin.command('ping')
         db_mongo = mongo_client.get_database("mooncake_db")
         _ensure_indexes(db_mongo)
-        print("🍃 MongoDB Atlas connected & indexed successfully!")
+        print("MongoDB Atlas connected & indexed successfully!")
         return db_mongo
     except Exception as e1:
-        print(f"⚠️ MongoDB SSL standard connection attempt failed: {e1}")
+        print(f"MongoDB SSL standard connection attempt failed: {e1}")
 
     # Attempt 2: Fallback TLS setting for Linux VPS environments
     try:
@@ -61,8 +61,8 @@ def get_mongo_db():
         mongo_client.admin.command('ping')
         db_mongo = mongo_client.get_database("mooncake_db")
         _ensure_indexes(db_mongo)
-        print("🍃 MongoDB Atlas connected via SSL fallback!")
+        print("MongoDB Atlas connected via SSL fallback!")
         return db_mongo
     except Exception as e2:
-        print(f"❌ MongoDB Atlas connection error: {e2}")
+        print(f"MongoDB Atlas connection error: {e2}")
         return None

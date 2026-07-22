@@ -92,14 +92,16 @@ function PosForm() {
   const totalItems = cart.reduce((acc, c) => acc + (c.unit_price * c.quantity), 0)
   const ship = Number(form.shipping_fee) || 0
   const disc = Number(form.discount) || 0
-  const dep = Number(form.deposit) || 0
+  const rawDep = Math.max(0, Number(form.deposit) || 0)
   const subtotal = Math.max(0, totalItems + ship - disc)
+  const dep = Math.min(rawDep, subtotal)
   
   let paid = dep
-  if (form.pay_ship_now) paid += ship
+  if (form.pay_ship_now) paid = Math.min(subtotal, paid + ship)
   if (form.full_pay) paid = subtotal
   
   const due = Math.max(0, subtotal - paid)
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

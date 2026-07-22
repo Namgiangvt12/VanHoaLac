@@ -230,9 +230,34 @@ def get_order(order_id: int):
 
 @app.post("/api/orders")
 def create_order(order: OrderCreateSchema):
+    # Calculate subtotal and cap deposit
+    tot_items = sum(i.unit_price * i.quantity for i in order.items)
+    subtotal = max(0, tot_items + order.shipping_fee - order.discount)
+    capped_deposit = min(max(0, order.deposit), subtotal)
+
+    # Determine next order_id from MongoDB Atlas (continuing from max ID, e.g. 1030 -> 1031)
+    new_order_id = 1031
+    mdb = get_mongo_db()
+    if mdb is not None:
+        try:
+            docs = list(mdb.orders.find({}, {"_id": 1, "id": 1}))
+            max_id = 1030
+            for d in docs:
+                try:
+                    val = int(d.get("id") or d.get("_id") or 0)
+                    if val > max_id:
+                        max_id = val
+                except Exception:
+                    pass
+            new_order_id = max_id + 1
+        except Exception as me:
+            print(f"MongoDB determine next order_id error: {me}")
+
+    order_id = new_order_id
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     con = get_conn()
     cur = con.cursor()
-    order_id = None
     try:
         cur.execute("SELECT id FROM customers WHERE phone=? AND name=?", (order.customer_phone, order.customer_name))
         row = cur.fetchone()
@@ -244,28 +269,25 @@ def create_order(order: OrderCreateSchema):
                         (order.customer_name, order.customer_phone, order.customer_address))
             cust_id = cur.lastrowid
             
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cur.execute("""INSERT INTO orders(customer_id, order_date, receive_date, discount, shipping_fee, notes) 
-                       VALUES(?,?,?,?,?,?)""",
-                    (cust_id, now, order.receive_date, order.discount, order.shipping_fee, order.notes))
-        order_id = cur.lastrowid
+        cur.execute("""INSERT INTO orders(id, customer_id, order_date, receive_date, discount, shipping_fee, notes) 
+                       VALUES(?,?,?,?,?,?,?)""",
+                    (order_id, cust_id, now, order.receive_date, order.discount, order.shipping_fee, order.notes))
         
         for item in order.items:
             cur.execute("INSERT INTO order_items(order_id, product_name, unit_price, quantity) VALUES(?,?,?,?)",
                         (order_id, item.product_name, item.unit_price, item.quantity))
             
         paid_so_far = 0
-        if order.deposit > 0:
+        if capped_deposit > 0:
             cur.execute("INSERT INTO payments(order_id, pay_date, amount, type, method) VALUES(?,?,?,?,?)",
-                        (order_id, now, order.deposit, 'deposit', ''))
-            paid_so_far += order.deposit
+                        (order_id, now, capped_deposit, 'deposit', ''))
+            paid_so_far += capped_deposit
         
         if order.pay_ship_now and order.shipping_fee > 0:
             cur.execute("INSERT INTO payments(order_id, pay_date, amount, type, method) VALUES(?,?,?,?,?)",
                         (order_id, now, order.shipping_fee, 'shipping', ''))
             paid_so_far += order.shipping_fee
             
-        subtotal = max(0, sum(i.unit_price * i.quantity for i in order.items) + order.shipping_fee - order.discount)
         if order.full_pay and subtotal - paid_so_far > 0:
             cur.execute("INSERT INTO payments(order_id, pay_date, amount, type, method) VALUES(?,?,?,?,?)",
                         (order_id, now, subtotal - paid_so_far, 'full', ''))
@@ -274,11 +296,10 @@ def create_order(order: OrderCreateSchema):
 
         # Sync to MongoDB Atlas
         try:
-            mdb = get_mongo_db()
             if mdb is not None:
                 payments_list = []
-                if order.deposit > 0:
-                    payments_list.append({"pay_date": now, "amount": order.deposit, "type": "deposit", "method": ""})
+                if capped_deposit > 0:
+                    payments_list.append({"pay_date": now, "amount": capped_deposit, "type": "deposit", "method": ""})
                 if order.pay_ship_now and order.shipping_fee > 0:
                     payments_list.append({"pay_date": now, "amount": order.shipping_fee, "type": "shipping", "method": ""})
                 if order.full_pay and subtotal - paid_so_far > 0:
@@ -316,23 +337,27 @@ def create_order(order: OrderCreateSchema):
 
 @app.put("/api/orders/{order_id}")
 def update_order(order_id: int, order: OrderUpdateSchema):
+    tot_items = sum(i.unit_price * i.quantity for i in order.items)
+    subtotal = max(0, tot_items + order.shipping_fee - order.discount)
+    capped_deposit = min(max(0, order.deposit), subtotal)
+
     try:
         mdb = get_mongo_db()
         if mdb is not None:
             doc = mdb.orders.find_one({"_id": str(order_id)}) or mdb.orders.find_one({"id": order_id})
             existing_payments = doc.get("payments", []) if doc else []
             filtered_payments = [p for p in existing_payments if p.get("type") != "deposit"]
-            if order.deposit > 0:
+            if capped_deposit > 0:
                 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 filtered_payments.append({
                     "pay_date": now,
-                    "amount": order.deposit,
+                    "amount": capped_deposit,
                     "type": "deposit",
                     "method": ""
                 })
 
             mdb.orders.update_one(
-                {"_id": str(order_id)},
+                {"$or": [{"_id": str(order_id)}, {"id": order_id}]},
                 {"$set": {
                     "customer_name": order.customer_name,
                     "customer_phone": order.customer_phone,
@@ -348,6 +373,7 @@ def update_order(order_id: int, order: OrderUpdateSchema):
             )
     except Exception as me:
         print(f"MongoDB update_order error: {me}")
+
 
 
     con = get_conn()
