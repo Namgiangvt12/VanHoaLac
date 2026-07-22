@@ -72,8 +72,48 @@ def get_orders(
     to_date: str = Query(None), 
     keyword: str = Query(None)
 ):
+    try:
+        db = get_firestore_db()
+        if db:
+            docs = list(db.collection("orders").stream())
+            if docs:
+                results = []
+                for doc in docs:
+                    data = doc.to_dict()
+                    oid = int(doc.id) if doc.id.isdigit() else doc.id
+                    data['id'] = oid
+                    
+                    items = data.get('items', [])
+                    tot_items = sum((i.get('unit_price') or i.get('price') or 0) * (i.get('quantity') or 1) for i in items)
+                    shipping = data.get('shipping_fee', 0) or 0
+                    discount = data.get('discount', 0) or 0
+                    total = max(0, tot_items + shipping - discount)
+                    
+                    payments = data.get('payments', [])
+                    paid = sum(p.get('amount', 0) for p in payments)
+                    due = total - paid
+                    
+                    data['tot_items'] = tot_items
+                    data['shipping_fee'] = shipping
+                    data['discount'] = discount
+                    data['total'] = total
+                    data['paid'] = paid
+                    data['due'] = max(0, due)
+                    data['items'] = [{"name": i.get('product_name') or i.get('name'), "price": i.get('unit_price') or i.get('price'), "quantity": i.get('quantity', 1)} for i in items]
+                    results.append(data)
+                
+                if keyword:
+                    kw = keyword.lower()
+                    results = [r for r in results if kw in str(r.get('id')).lower() or kw in str(r.get('customer_name', '')).lower() or kw in str(r.get('customer_phone', '')).lower()]
+                
+                results.sort(key=lambda x: x.get('id', 0) if isinstance(x.get('id'), int) else 0, reverse=True)
+                return results
+    except Exception as e:
+        print(f"Firestore get_orders error/fallback: {e}")
+
     con = get_conn()
     cur = con.cursor()
+
     
     sql = """
         SELECT o.id, o.order_date, c.name, c.phone, o.shipping_fee, o.discount, o.notes, o.receive_date
@@ -447,6 +487,21 @@ async def upload_image(file: UploadFile = File(...)):
 
 @app.get("/api/posts")
 def get_posts(published_only: bool = False):
+    try:
+        db = get_firestore_db()
+        if db:
+            ref = db.collection("posts")
+            if published_only:
+                docs = ref.where("published", "==", True).stream()
+            else:
+                docs = ref.stream()
+            posts = [d.to_dict() for d in docs]
+            posts.sort(key=lambda x: x.get('id', 0), reverse=True)
+            if posts:
+                return posts
+    except Exception as e:
+        print(f"Firestore get_posts error/fallback: {e}")
+
     con = get_conn()
     cur = con.cursor()
     if published_only:
@@ -459,6 +514,15 @@ def get_posts(published_only: bool = False):
 
 @app.get("/api/posts/{slug}")
 def get_post(slug: str):
+    try:
+        db = get_firestore_db()
+        if db:
+            docs = list(db.collection("posts").where("slug", "==", slug).limit(1).stream())
+            if docs:
+                return docs[0].to_dict()
+    except Exception as e:
+        print(f"Firestore get_post error/fallback: {e}")
+
     con = get_conn()
     cur = con.cursor()
     cur.execute("SELECT * FROM posts WHERE slug=?", (slug,))
@@ -470,6 +534,13 @@ def get_post(slug: str):
 
 @app.delete("/api/posts/{post_id}")
 def delete_post(post_id: int):
+    try:
+        db = get_firestore_db()
+        if db:
+            db.collection("posts").document(str(post_id)).delete()
+    except Exception as e:
+        print(f"Firestore delete_post error: {e}")
+
     con = get_conn()
     cur = con.cursor()
     try:
@@ -481,6 +552,7 @@ def delete_post(post_id: int):
     finally:
         con.close()
     return {"status": "success"}
+
 
 @app.get("/api/pdf/order/{order_id}")
 def get_order_pdf(order_id: int):
