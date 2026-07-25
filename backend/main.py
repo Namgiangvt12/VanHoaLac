@@ -647,12 +647,35 @@ def create_post(post: PostCreateSchema):
     cur = con.cursor()
     try:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        is_published = 1 if post.published else 0
         cur.execute("""
             INSERT INTO posts(title, slug, excerpt, content, image_url, category, published, created_at)
             VALUES(?,?,?,?,?,?,?,?)
-        """, (post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, post.published, now))
+        """, (post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, is_published, now))
         con.commit()
-        return {"status": "success", "id": cur.lastrowid}
+        new_id = cur.lastrowid
+
+        # Sync to MongoDB Atlas if active
+        try:
+            mdb = get_mongo_db()
+            if mdb is not None:
+                post_doc = {
+                    "_id": str(new_id),
+                    "id": new_id,
+                    "title": post.title,
+                    "slug": post.slug,
+                    "excerpt": post.excerpt or "",
+                    "content": post.content or "",
+                    "image_url": post.image_url or "",
+                    "category": post.category or "Tin tức",
+                    "published": bool(post.published),
+                    "created_at": now
+                }
+                mdb.posts.replace_one({'_id': str(new_id)}, post_doc, upsert=True)
+        except Exception as me:
+            print(f"MongoDB create_post sync notice: {me}")
+
+        return {"status": "success", "id": new_id}
     except sqlite3.IntegrityError:
         con.rollback()
         raise HTTPException(status_code=400, detail="Slug đã tồn tại (hoặc lỗi dữ liệu)")
@@ -667,11 +690,36 @@ def update_post(post_id: int, p: PostCreateSchema):
     con = get_conn()
     cur = con.cursor()
     try:
+        is_published = 1 if p.published else 0
         cur.execute("""
             UPDATE posts SET title=?, slug=?, excerpt=?, content=?, image_url=?, category=?, published=?
             WHERE id=?
-        """, (p.title, p.slug, p.excerpt, p.content, p.image_url, p.category, 1 if p.published else 0, post_id))
+        """, (p.title, p.slug, p.excerpt, p.content, p.image_url, p.category, is_published, post_id))
         con.commit()
+
+        # Sync to MongoDB Atlas if active
+        try:
+            mdb = get_mongo_db()
+            if mdb is not None:
+                existing = mdb.posts.find_one({"$or": [{"_id": str(post_id)}, {"id": post_id}]})
+                created_at = existing.get("created_at") if existing and isinstance(existing, dict) else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                post_doc = {
+                    "_id": str(post_id),
+                    "id": post_id,
+                    "title": p.title,
+                    "slug": p.slug,
+                    "excerpt": p.excerpt or "",
+                    "content": p.content or "",
+                    "image_url": p.image_url or "",
+                    "category": p.category or "Tin tức",
+                    "published": bool(p.published),
+                    "created_at": created_at
+                }
+                mdb.posts.replace_one({'_id': str(post_id)}, post_doc, upsert=True)
+        except Exception as me:
+            print(f"MongoDB update_post sync notice: {me}")
+
     except sqlite3.IntegrityError:
         con.rollback()
         raise HTTPException(status_code=400, detail="Slug đã tồn tại (hoặc lỗi dữ liệu)")
@@ -687,27 +735,27 @@ async def upload_image(file: UploadFile = File(...)):
     try:
         contents = await file.read()
         image = Image.open(io.BytesIO(contents))
-        
+
         # Resize if width > 1920 to save space
         if image.width > 1920:
             ratio = 1920 / image.width
             new_height = int(image.height * ratio)
             image = image.resize((1920, new_height), Image.Resampling.LANCZOS)
-        
-        # Convert to RGB if it has alpha channel to save as JPEG/WebP
-        if image.mode in ('RGBA', 'P'):
+
+        # Convert to RGB/RGBA if image mode is not already supported
+        if image.mode not in ('RGB', 'RGBA'):
             image = image.convert('RGB')
-            
+
         filename = f"{uuid.uuid4().hex}.webp"
-        
+
         # Ensure public/uploads exists
         upload_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "public", "uploads")
         os.makedirs(upload_dir, exist_ok=True)
-        
+
         filepath = os.path.join(upload_dir, filename)
-        
+
         image.save(filepath, format="WEBP", quality=80)
-        
+
         return {"url": f"/api/uploads/{filename}"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Lỗi tải ảnh: {str(e)}")
@@ -717,7 +765,7 @@ def get_posts(published_only: bool = False):
     try:
         mdb = get_mongo_db()
         if mdb is not None:
-            query = {"published": True} if published_only else {}
+            query = {"published": {"$in": [True, 1]}} if published_only else {}
             posts = list(mdb.posts.find(query, {"_id": 0}))
             posts.sort(key=lambda x: x.get('id', 0), reverse=True)
             if posts:
@@ -760,10 +808,16 @@ def delete_post(post_id: int):
     try:
         mdb = get_mongo_db()
         if mdb is not None:
-            mdb.posts.delete_one({"_id": str(post_id)})
-            mdb.posts.delete_one({"id": post_id})
+            res = mdb.posts.delete_many({
+                "$or": [
+                    {"_id": str(post_id)},
+                    {"id": post_id},
+                    {"id": str(post_id)}
+                ]
+            })
+            print(f"MongoDB deleted {res.deleted_count} posts for ID {post_id}")
     except Exception as me:
-        print(f"MongoDB delete_post error: {me}")
+        print(f"MongoDB delete_post notice: {me}")
 
     con = get_conn()
     cur = con.cursor()

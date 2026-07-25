@@ -36,7 +36,10 @@ export function BlogList({ onEdit }: BlogListProps) {
       const res = await fetch(`/api/posts/${id}`, {
         method: "DELETE"
       })
-      if (!res.ok) throw new Error("Lỗi khi xóa bài viết")
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.detail || "Lỗi khi xóa bài viết")
+      }
       
       // Refresh list
       fetchPosts()
@@ -45,8 +48,8 @@ export function BlogList({ onEdit }: BlogListProps) {
     }
   }
 
-  if (loading) return <div className="text-gray-500">Đang tải danh sách bài viết...</div>
-  if (error) return <div className="text-red-500">Lỗi: {error}</div>
+  if (loading) return <div className="text-gray-500 py-4">Đang tải danh sách bài viết...</div>
+  if (error) return <div className="text-red-500 py-4">Lỗi: {error}</div>
 
   return (
     <div className="mt-8">
@@ -55,8 +58,9 @@ export function BlogList({ onEdit }: BlogListProps) {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tiêu đề</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ảnh</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tiêu đề & Slug</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Danh mục</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ngày đăng</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
@@ -66,17 +70,27 @@ export function BlogList({ onEdit }: BlogListProps) {
           <tbody className="bg-white divide-y divide-gray-200">
             {posts.map((post) => (
               <tr key={post.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{post.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{post.id}</td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                  {post.image_url ? (
+                    <div className="w-12 h-12 rounded overflow-hidden bg-gray-100 relative border border-gray-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={post.image_url} alt={post.title} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center text-xs text-gray-400">Không ảnh</div>
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900">
                   <div className="font-medium">{post.title}</div>
-                  <div className="text-gray-500 text-xs">/{post.slug}</div>
+                  <div className="text-gray-500 text-xs font-mono">/{post.slug}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{post.category}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(post.created_at).toLocaleDateString("vi-VN")}
+                  {post.created_at ? new Date(post.created_at).toLocaleDateString("vi-VN") : "N/A"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${post.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                  <span className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${post.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                     {post.published ? 'Đã đăng' : 'Bản nháp'}
                   </span>
                 </td>
@@ -98,7 +112,7 @@ export function BlogList({ onEdit }: BlogListProps) {
             ))}
             {posts.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">Chưa có bài viết nào</td>
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-500">Chưa có bài viết nào</td>
               </tr>
             )}
           </tbody>

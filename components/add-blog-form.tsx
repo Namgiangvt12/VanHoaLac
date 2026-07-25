@@ -45,7 +45,15 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData)
+      setFormData({
+        title: initialData.title || '',
+        slug: initialData.slug || '',
+        excerpt: initialData.excerpt || '',
+        content: initialData.content || '',
+        image_url: initialData.image_url || '',
+        category: initialData.category || 'Tin tức',
+        published: Boolean(initialData.published),
+      })
     } else {
       setFormData({
         title: '',
@@ -58,6 +66,18 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
       })
     }
   }, [initialData])
+
+  const toSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[đĐ]/g, "d")
+      .replace(/([^0-9a-z-\s])/g, "")
+      .replace(/(\s+)/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "")
+  }
 
   const imageHandler = () => {
     const input = document.createElement("input")
@@ -92,7 +112,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         const data = await res.json()
         if (data.url) {
           const quill = quillRef.current.getEditor()
-          const range = quill.getSelection(true) // gets current cursor position
+          const range = quill.getSelection(true) || { index: quill.getLength() }
           quill.insertEmbed(range.index, "image", data.url)
         } else {
           alert('Lỗi: ' + (data.detail || 'Không thể upload ảnh'))
@@ -154,6 +174,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
       alert("Lỗi kết nối upload: " + err.message)
     } finally {
       setUploadingImage(false)
+      e.target.value = ''
     }
   }
 
@@ -178,7 +199,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
       const data = await response.json()
 
       if (response.ok) {
-        setMessage(isEdit ? 'Bài viết đã được cập nhật!' : 'Bài viết đã được thêm thành công!')
+        setMessage(isEdit ? 'Bài viết đã được cập nhật thành công!' : 'Bài viết đã được thêm thành công!')
         if (!isEdit) {
           setFormData({
             title: '',
@@ -192,10 +213,10 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         }
         if (onSuccess) onSuccess()
       } else {
-        setMessage(`Lỗi: ${data.detail || data.error}`)
+        setMessage(`Lỗi: ${data.detail || data.error || 'Không thể lưu bài viết'}`)
       }
-    } catch (error) {
-      setMessage('Có lỗi xảy ra khi lưu bài viết')
+    } catch (error: any) {
+      setMessage('Có lỗi xảy ra khi lưu bài viết: ' + (error.message || 'Lỗi mạng'))
     } finally {
       setLoading(false)
     }
@@ -205,10 +226,16 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
     const { name, value, type } = e.target
     const checked = (e.target as HTMLInputElement).checked
 
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }))
+    setFormData(prev => {
+      const next = {
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      }
+      if (name === 'title' && !initialData) {
+        next.slug = toSlug(value)
+      }
+      return next
+    })
   }
 
   return (
@@ -218,12 +245,12 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
           {initialData ? 'Chỉnh Sửa Bài Viết' : 'Thêm Bài Viết Mới'}
         </h2>
         {initialData && onCancel && (
-          <button type="button" onClick={onCancel} className="text-sm text-gray-500 hover:text-gray-700">Hủy (Về Thêm Mới)</button>
+          <button type="button" onClick={onCancel} className="text-sm text-gray-500 hover:text-gray-700 font-medium underline">Hủy (Về Thêm Mới)</button>
         )}
       </div>
 
       {message && (
-        <div className={`mb-4 p-3 rounded ${message.includes('thành công') || message.includes('cập nhật') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+        <div className={`mb-4 p-3 rounded font-medium ${message.includes('thành công') || message.includes('cập nhật') ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
           {message}
         </div>
       )}
@@ -282,9 +309,8 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
             Nội dung *
           </label>
           <div className="bg-white">
-            {/* @ts-ignore */}
             <ReactQuill 
-              ref={quillRef}
+              {...({ ref: quillRef } as any)}
               theme="snow"
               value={formData.content}
               onChange={(value: string) => setFormData(prev => ({ ...prev, content: value }))}
@@ -310,11 +336,17 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
                 placeholder="URL ảnh hoặc tải file lên..."
               />
             </div>
-            <label className="whitespace-nowrap cursor-pointer bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 py-2 px-4 rounded-md">
+            <label className="whitespace-nowrap cursor-pointer bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 py-2 px-4 rounded-md flex items-center justify-center font-medium">
               {uploadingImage ? 'Đang tải...' : '📂 Tải lên'}
               <input type="file" accept="image/*" className="hidden" disabled={uploadingImage} onChange={handleThumbnailUpload} />
             </label>
           </div>
+          {formData.image_url && (
+            <div className="mt-2 relative w-32 h-20 rounded border border-gray-200 overflow-hidden bg-gray-50">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={formData.image_url} alt="Thumbnail preview" className="w-full h-full object-cover" />
+            </div>
+          )}
         </div>
 
         <div>
@@ -351,7 +383,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         <button
           type="submit"
           disabled={loading || uploadingImage}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 font-semibold"
         >
           {loading ? 'Đang lưu...' : (initialData ? 'Lưu Thay Đổi Bài Viết' : 'Thêm Bài Viết Mới')}
         </button>
