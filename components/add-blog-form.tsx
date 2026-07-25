@@ -36,7 +36,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
     content: '',
     image_url: '',
     category: 'Tin tức',
-    published: false,
+    published: true,
   })
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
@@ -62,7 +62,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         content: '',
         image_url: '',
         category: 'Tin tức',
-        published: false,
+        published: true,
       })
     }
   }, [initialData])
@@ -208,7 +208,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
             content: '',
             image_url: '',
             category: 'Tin tức',
-            published: false,
+            published: true,
           })
         }
         if (onSuccess) onSuccess()

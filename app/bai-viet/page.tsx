@@ -34,7 +34,7 @@ const defaultPosts = [
 
 async function getAllPosts() {
   try {
-    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { next: { revalidate: 60 } })
+    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { cache: 'no-store' })
     if (res.ok) {
       return await res.json()
     }
