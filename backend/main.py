@@ -762,26 +762,76 @@ async def upload_image(file: UploadFile = File(...)):
 
 @app.get("/api/posts")
 def get_posts(published_only: bool = False):
+    sqlite_posts = []
+    try:
+        con = get_conn()
+        cur = con.cursor()
+        if published_only:
+            cur.execute("SELECT * FROM posts WHERE (published = 1 OR published = '1' OR LOWER(published) = 'true') ORDER BY id DESC")
+        else:
+            cur.execute("SELECT * FROM posts ORDER BY id DESC")
+        rows = cur.fetchall()
+        sqlite_posts = [dict(r) for r in rows]
+        con.close()
+    except Exception as se:
+        print(f"SQLite get_posts error: {se}")
+
+    mongo_posts = []
+    mdb = None
     try:
         mdb = get_mongo_db()
         if mdb is not None:
-            query = {"published": {"$in": [True, 1]}} if published_only else {}
-            posts = list(mdb.posts.find(query, {"_id": 0}))
-            posts.sort(key=lambda x: x.get('id', 0), reverse=True)
-            if posts:
-                return posts
+            query = {"published": {"$in": [True, 1, "true", "True", "1"]}} if published_only else {}
+            mongo_posts = list(mdb.posts.find(query, {"_id": 0}))
     except Exception as me:
-        print(f"MongoDB get_posts error/fallback: {me}")
+        print(f"MongoDB get_posts error: {me}")
 
-    con = get_conn()
-    cur = con.cursor()
-    if published_only:
-        cur.execute("SELECT * FROM posts WHERE published = 1 ORDER BY id DESC")
-    else:
-        cur.execute("SELECT * FROM posts ORDER BY id DESC")
-    rows = cur.fetchall()
-    con.close()
-    return [dict(r) for r in rows]
+    if mdb is None or not mongo_posts:
+        for p in sqlite_posts:
+            p['published'] = str(p.get('published')).lower() in ('true', '1')
+        return sqlite_posts
+
+    posts_by_slug = {}
+
+    for p in sqlite_posts:
+        slug = p.get('slug')
+        if slug:
+            p['published'] = str(p.get('published')).lower() in ('true', '1')
+            posts_by_slug[slug] = p
+
+    for p in mongo_posts:
+        slug = p.get('slug')
+        if slug:
+            p['published'] = str(p.get('published')).lower() in ('true', '1')
+            posts_by_slug[slug] = p
+
+    if mdb is not None and sqlite_posts:
+        mongo_slugs = {mp.get('slug') for mp in mongo_posts if mp.get('slug')}
+        for p in sqlite_posts:
+            pslug = p.get('slug')
+            if pslug and pslug not in mongo_slugs:
+                try:
+                    pid = p.get('id')
+                    is_pub = str(p.get('published')).lower() in ('true', '1')
+                    post_doc = {
+                        "_id": str(pid),
+                        "id": pid,
+                        "title": p.get('title'),
+                        "slug": pslug,
+                        "excerpt": p.get('excerpt', ''),
+                        "content": p.get('content', ''),
+                        "image_url": p.get('image_url', ''),
+                        "category": p.get('category', 'Tin tức'),
+                        "published": is_pub,
+                        "created_at": p.get('created_at', '')
+                    }
+                    mdb.posts.replace_one({'_id': str(pid)}, post_doc, upsert=True)
+                except Exception as sync_e:
+                    print(f"Auto-sync sqlite post to mongo notice: {sync_e}")
+
+    result = list(posts_by_slug.values())
+    result.sort(key=lambda x: x.get('id', 0) if isinstance(x.get('id'), int) else 0, reverse=True)
+    return result
 
 @app.get("/api/posts/{slug}")
 def get_post(slug: str):
