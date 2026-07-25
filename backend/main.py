@@ -641,19 +641,49 @@ def get_daily_products(date_iso: str):
         })
     return {"items": results, "total_cakes": total_cakes, "total_boxes": total_boxes}
 
+def get_next_post_id() -> int:
+    max_id = 0
+    try:
+        con = get_conn()
+        cur = con.cursor()
+        cur.execute("SELECT COALESCE(MAX(id), 0) FROM posts")
+        row = cur.fetchone()
+        if row and row[0]:
+            max_id = max(max_id, int(row[0]))
+        con.close()
+    except Exception as e:
+        print(f"SQLite max post_id error: {e}")
+
+    try:
+        mdb = get_mongo_db()
+        if mdb is not None:
+            docs = list(mdb.posts.find({}, {"_id": 1, "id": 1}))
+            for d in docs:
+                try:
+                    val = int(d.get("id") or d.get("_id") or 0)
+                    if val > max_id:
+                        max_id = val
+                except Exception:
+                    pass
+    except Exception as me:
+        print(f"MongoDB max post_id error: {me}")
+
+    return max_id + 1
+
 @app.post("/api/posts")
 def create_post(post: PostCreateSchema):
+    new_id = get_next_post_id()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    is_published = 1 if post.published else 0
+
     con = get_conn()
     cur = con.cursor()
     try:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        is_published = 1 if post.published else 0
         cur.execute("""
-            INSERT INTO posts(title, slug, excerpt, content, image_url, category, published, created_at)
-            VALUES(?,?,?,?,?,?,?,?)
-        """, (post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, is_published, now))
+            INSERT INTO posts(id, title, slug, excerpt, content, image_url, category, published, created_at)
+            VALUES(?,?,?,?,?,?,?,?,?)
+        """, (new_id, post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, is_published, now))
         con.commit()
-        new_id = cur.lastrowid
 
         # Sync to MongoDB Atlas if active
         try:
@@ -678,7 +708,7 @@ def create_post(post: PostCreateSchema):
         return {"status": "success", "id": new_id}
     except sqlite3.IntegrityError:
         con.rollback()
-        raise HTTPException(status_code=400, detail="Slug đã tồn tại (hoặc lỗi dữ liệu)")
+        raise HTTPException(status_code=400, detail="Slug hoặc ID đã tồn tại (hoặc lỗi dữ liệu)")
     except Exception as e:
         con.rollback()
         raise HTTPException(status_code=400, detail=str(e))
