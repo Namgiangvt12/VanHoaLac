@@ -48,9 +48,9 @@ export function Footer() {
               Văn Hòa Lạc
             </Link>
             <address className="mt-4 not-italic text-sm text-primary-foreground/70 leading-relaxed" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-              <span itemProp="streetAddress">53/12/20 Lê Hồng Phong</span><br />
-              <span itemProp="addressLocality">Phường Tam Thắng, TP. Vũng Tàu</span><br />
-              <span itemProp="addressRegion">Bà Rịa - Vũng Tàu</span>
+              <span itemProp="streetAddress">174 Nguyễn Văn Trỗi</span><br />
+              <span itemProp="addressLocality">Phường Vũng Tàu</span><br />
+              <span itemProp="addressRegion">TP. Hồ Chí Minh</span>
               <meta itemProp="addressCountry" content="VN" />
             </address>
           </div>

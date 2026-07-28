@@ -20,9 +20,9 @@ const jsonLd = {
       "description": "Thương hiệu bánh trung thu truyền thống lâu đời tại Vũng Tàu, nổi tiếng với bánh da dợp và các loại nhân truyền thống chất lượng cao.",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Số 351 Võ Thị Sáu, khu phố Long Tân, thị trấn Long Điền",
-        "addressLocality": "Long Điền",
-        "addressRegion": "Bà Rịa - Vũng Tàu",
+        "streetAddress": "174 Nguyễn Văn Trỗi",
+        "addressLocality": "Phường Vũng Tàu",
+        "addressRegion": "TP. Hồ Chí Minh",
         "addressCountry": "VN"
       }
     },

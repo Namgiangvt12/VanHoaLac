@@ -25,16 +25,16 @@ const jsonLd = {
       "priceRange": "$$",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "53/12/20 Lê Hồng Phong",
-        "addressLocality": "Vũng Tàu",
-        "addressRegion": "Bà Rịa - Vũng Tàu",
-        "postalCode": "790000",
+        "streetAddress": "174 Nguyễn Văn Trỗi",
+        "addressLocality": "Phường Vũng Tàu",
+        "addressRegion": "TP. Hồ Chí Minh",
+        "postalCode": "700000",
         "addressCountry": "VN"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": "10.3566764",
-        "longitude": "107.0827754"
+        "latitude": "10.7923",
+        "longitude": "106.6775"
       },
       "openingHoursSpecification": [
         {
