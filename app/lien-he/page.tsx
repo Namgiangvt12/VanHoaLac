@@ -86,7 +86,7 @@ export default function ContactPage() {
             {/* Bản Đồ Google Map */}
             <div className="h-full min-h-[400px] rounded-2xl overflow-hidden shadow-2xl relative border border-border">
               <iframe
-                src="https://maps.google.com/maps?q=10.3585406,107.076507&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=174%20Nguy%E1%BB%85n%20V%C4%83n%20Tr%E1%BB%97i,%20V%C5%A9ng%20T%C3%A0u,%20H%E1%BB%93%20Ch%C3%AD%20Minh,%20Vi%E1%BB%87t%20Nam&t=&z=17&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
