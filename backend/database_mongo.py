@@ -46,7 +46,7 @@ def get_mongo_db():
 
     # Attempt 1: Standard TLS with certifi bundle (Linux compatible)
     try:
-        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=10000, tlsCAFile=certifi.where())
+        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=3000, tlsCAFile=certifi.where())
         mongo_client.admin.command('ping')
         db_mongo = mongo_client.get_database("mooncake_db")
         _ensure_indexes(db_mongo)
@@ -57,7 +57,7 @@ def get_mongo_db():
 
     # Attempt 2: Fallback TLS setting for Linux VPS environments
     try:
-        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=5000, tls=True, tlsAllowInvalidCertificates=True)
+        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=3000, tls=True, tlsAllowInvalidCertificates=True)
         mongo_client.admin.command('ping')
         db_mongo = mongo_client.get_database("mooncake_db")
         _ensure_indexes(db_mongo)
@@ -68,7 +68,7 @@ def get_mongo_db():
 
     # Attempt 3: Default connection without explicit TLS flags
     try:
-        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        mongo_client = MongoClient(uri, serverSelectionTimeoutMS=3000)
         mongo_client.admin.command('ping')
         db_mongo = mongo_client.get_database("mooncake_db")
         _ensure_indexes(db_mongo)
