@@ -133,7 +133,7 @@ def generate_order_pdf_bytes(order_id):
     
     return _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstanding)
 
-def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstanding):
+def _draw_order_on_canvas(c, data, items, tot_items, subtotal, paid, outstanding):
     order_date, receive_date, shipping_fee, discount, notes, cname, cphone, caddr, oid = data
     summary = {
         "total_items": tot_items,
@@ -143,7 +143,6 @@ def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstand
         "outstanding": outstanding
     }
 
-
     W = 72 * mm
     margin_x = 6 * mm
     margin_y = 6 * mm
@@ -152,7 +151,6 @@ def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstand
     title_fs = 12
     body_fs = 9
     total_fs = 9
-    note_fs = 8
     col_amt_w = 24 * mm
     col_qty_w = 14 * mm
     col_name_w = W - 2*margin_x - col_qty_w - col_amt_w - 2*mm
@@ -197,8 +195,7 @@ def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstand
     est_base = margin_y + est_header_h + hr_gap + rows_h + est_totals_h + est_note_h + margin_y
     page_height_mm = max(80 * mm, est_base) / mm
 
-    buf = io.BytesIO()
-    c = canvas.Canvas(buf, pagesize=(W, page_height_mm * mm))
+    c.setPageSize((W, page_height_mm * mm))
     y = page_height_mm * mm - margin_y
 
     # Header
@@ -244,6 +241,7 @@ def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstand
         for idx, line in enumerate(wrapped):
             if y < (margin_y + 8 * line_gap):
                 c.showPage()
+                c.setPageSize((W, page_height_mm * mm))
                 y = page_height_mm * mm - margin_y
                 c.setFont(get_vn_font(), body_fs)
             c.drawString(x_name, y, line)
@@ -290,12 +288,18 @@ def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstand
         for line in _wrap_full(f"Ghi chú: {notes} .", 8, W - 2*margin_x):
             if y < (margin_y + 4 * line_gap):
                 c.showPage()
+                c.setPageSize((W, page_height_mm * mm))
                 y = page_height_mm * mm - margin_y
                 c.setFont(get_vn_font(), 8)
             c.drawString(margin_x, y, line)
             y -= line_gap
 
     c.showPage()
+
+def _render_order_pdf_from_data(data, items, tot_items, subtotal, paid, outstanding):
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf)
+    _draw_order_on_canvas(c, data, items, tot_items, subtotal, paid, outstanding)
     c.save()
     buf.seek(0)
     return buf
@@ -509,25 +513,27 @@ def generate_merged_pdf_bytes(date_iso: str):
         
     if matching_docs:
         matching_docs.sort(key=lambda d: int(d.get("id") or d.get("_id") or 0) if str(d.get("id") or d.get("_id")).isdigit() else 0)
-        pdf_bufs = []
+        buf = io.BytesIO()
+        c = canvas.Canvas(buf)
+        rendered_count = 0
         for d in matching_docs:
             try:
                 oid = d.get("id") or d.get("_id")
-                order_date = d.get("order_date", "")
-                receive_date = d.get("receive_date", "")
+                order_date = str(d.get("order_date", ""))
+                receive_date = str(d.get("receive_date", ""))
                 shipping_fee = d.get("shipping_fee", 0) or 0
                 discount = d.get("discount", 0) or 0
-                notes = d.get("notes", "")
-                cname = d.get("customer_name") or d.get("name", "")
-                cphone = d.get("customer_phone") or d.get("phone", "")
-                caddr = d.get("customer_address") or d.get("address", "")
+                notes = str(d.get("notes", ""))
+                cname = str(d.get("customer_name") or d.get("name", ""))
+                cphone = str(d.get("customer_phone") or d.get("phone", ""))
+                caddr = str(d.get("customer_address") or d.get("address", ""))
                 
                 raw_items = d.get("items", [])
                 items = [
                     {
-                        'product_name': i.get('product_name') or i.get('name', ''),
-                        'unit_price': i.get('unit_price') or i.get('price', 0),
-                        'quantity': i.get('quantity', 1)
+                        'product_name': str(i.get('product_name') or i.get('name') or ''),
+                        'unit_price': int(i.get('unit_price') or i.get('price') or 0),
+                        'quantity': int(i.get('quantity') or 1)
                     }
                     for i in raw_items
                 ]
@@ -540,16 +546,15 @@ def generate_merged_pdf_bytes(date_iso: str):
                 outstanding = subtotal - paid
                 
                 data_tuple = (order_date, receive_date, shipping_fee, discount, notes, cname, cphone, caddr, oid)
-                buf = _render_order_pdf_from_data(data_tuple, items, tot_items, subtotal, paid, outstanding)
-                if buf:
-                    pdf_bufs.append(buf)
+                _draw_order_on_canvas(c, data_tuple, items, tot_items, subtotal, paid, outstanding)
+                rendered_count += 1
             except Exception as render_err:
                 print(f"Render PDF error for order {d.get('id')}: {render_err}")
                 
-        if pdf_bufs:
-            merged = merge_pdf_buffers(pdf_bufs)
-            if merged:
-                return merged
+        if rendered_count > 0:
+            c.save()
+            buf.seek(0)
+            return buf
 
     # Fallback to SQLite
     try:
@@ -561,14 +566,39 @@ def generate_merged_pdf_bytes(date_iso: str):
         
         if not ids:
             return None
-            
-        pdf_bufs = []
+
+        buf = io.BytesIO()
+        c = canvas.Canvas(buf)
+        rendered_count = 0
         for oid in ids:
-            buf = generate_order_pdf_bytes(oid)
-            if buf:
-                pdf_bufs.append(buf)
-                
-        return merge_pdf_buffers(pdf_bufs)
+            con = get_conn()
+            cur = con.cursor()
+            cur.execute("""
+                SELECT o.order_date, o.receive_date, o.shipping_fee, o.discount, o.notes,
+                       c.name, c.phone, c.address, o.id
+                FROM orders o
+                JOIN customers c ON o.customer_id=c.id
+                WHERE o.id=?
+            """, (oid,))
+            data = cur.fetchone()
+            if data:
+                order_date, receive_date, shipping_fee, discount, notes, cname, cphone, caddr, oid = data
+                cur.execute("SELECT product_name, unit_price, quantity FROM order_items WHERE order_id=?", (oid,))
+                items = cur.fetchall()
+                tot_items = sum(i['unit_price'] * i['quantity'] for i in items)
+                subtotal = max(0, tot_items + (shipping_fee or 0) - (discount or 0))
+                cur.execute("SELECT COALESCE(SUM(amount),0) FROM payments WHERE order_id=?", (oid,))
+                paid = cur.fetchone()[0] or 0
+                outstanding = subtotal - paid
+                _draw_order_on_canvas(c, data, items, tot_items, subtotal, paid, outstanding)
+                rendered_count += 1
+            con.close()
+
+        if rendered_count > 0:
+            c.save()
+            buf.seek(0)
+            return buf
+        return None
     except Exception as sqle:
         print(f"SQLite generate_merged_pdf_bytes fallback notice: {sqle}")
         return None
