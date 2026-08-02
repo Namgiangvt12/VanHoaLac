@@ -312,14 +312,15 @@ def _boxes_for_product(product_name: str, qty: int) -> int:
 def normalize_date(d_str):
     if not d_str:
         return ""
-    s = str(d_str).strip().split()[0].replace("/", "-")
+    s = str(d_str).strip().replace("T", " ").split()[0].replace("/", "-")
     parts = s.split("-")
     if len(parts) == 3:
         try:
-            if len(parts[0]) == 2 and len(parts[2]) == 4:
-                return f"{int(parts[2]):04d}-{int(parts[1]):02d}-{int(parts[0]):02d}"
-            elif len(parts[0]) == 4:
-                return f"{int(parts[0]):04d}-{int(parts[1]):02d}-{int(parts[2]):02d}"
+            p0, p1, p2 = parts[0].strip(), parts[1].strip(), parts[2].strip()
+            if len(p0) == 2 and len(p2) == 4:
+                return f"{int(p2):04d}-{int(p1):02d}-{int(p0):02d}"
+            elif len(p0) == 4:
+                return f"{int(p0):04d}-{int(p1):02d}-{int(p2):02d}"
         except Exception:
             pass
     return s
@@ -329,11 +330,11 @@ def _calc_daily_rows(day_iso):
     try:
         mdb = get_mongo_db()
         if mdb is not None:
-            docs = list(mdb.orders.find({}, {"_id": 0, "receive_date": 1, "items": 1}))
+            docs = list(mdb.orders.find({}, {"_id": 0, "receive_date": 1, "order_date": 1, "items": 1}))
             if docs:
                 product_counts = {}
                 for d in docs:
-                    rdate = normalize_date(d.get("receive_date", ""))
+                    rdate = normalize_date(d.get("receive_date") or d.get("order_date") or "")
                     if rdate == target_date:
                         items = d.get("items", [])
                         for i in items:
@@ -349,19 +350,21 @@ def _calc_daily_rows(day_iso):
     except Exception as me:
         print(f"MongoDB _calc_daily_rows error: {me}")
 
-
-
-    con = get_conn()
-    cur = con.cursor()
-    cur.execute("""
-        SELECT oi.product_name, SUM(oi.quantity) as qty
-        FROM orders o JOIN order_items oi ON oi.order_id = o.id
-        WHERE date(o.receive_date) = date(?)
-        GROUP BY oi.product_name ORDER BY oi.product_name
-    """, (day_iso,))
-    rows = [dict(r) for r in cur.fetchall()]
-    con.close()
-    return rows
+    try:
+        con = get_conn()
+        cur = con.cursor()
+        cur.execute("""
+            SELECT oi.product_name, SUM(oi.quantity) as qty
+            FROM orders o JOIN order_items oi ON oi.order_id = o.id
+            WHERE date(o.receive_date) = date(?)
+            GROUP BY oi.product_name ORDER BY oi.product_name
+        """, (day_iso,))
+        rows = [dict(r) for r in cur.fetchall()]
+        con.close()
+        return rows
+    except Exception as sqle:
+        print(f"SQLite _calc_daily_rows error: {sqle}")
+        return []
 
 
 def generate_daily_report_pdf(day_iso: str):
@@ -498,7 +501,7 @@ def generate_merged_pdf_bytes(date_iso: str):
         if mdb is not None:
             docs = list(mdb.orders.find())
             for d in docs:
-                rdate = normalize_date(d.get("receive_date", ""))
+                rdate = normalize_date(d.get("receive_date") or d.get("order_date") or "")
                 if rdate == target_date:
                     matching_docs.append(d)
     except Exception as me:
@@ -515,9 +518,9 @@ def generate_merged_pdf_bytes(date_iso: str):
                 shipping_fee = d.get("shipping_fee", 0) or 0
                 discount = d.get("discount", 0) or 0
                 notes = d.get("notes", "")
-                cname = d.get("customer_name", "")
-                cphone = d.get("customer_phone", "")
-                caddr = d.get("customer_address", "")
+                cname = d.get("customer_name") or d.get("name", "")
+                cphone = d.get("customer_phone") or d.get("phone", "")
+                caddr = d.get("customer_address") or d.get("address", "")
                 
                 raw_items = d.get("items", [])
                 items = [
@@ -529,7 +532,7 @@ def generate_merged_pdf_bytes(date_iso: str):
                     for i in raw_items
                 ]
                 
-                tot_items = sum(i['unit_price'] * i['quantity'] for i in items)
+                tot_items = sum((i.get('unit_price') or 0) * (i.get('quantity') or 1) for i in items)
                 subtotal = max(0, tot_items + shipping_fee - discount)
                 
                 payments = d.get("payments", [])
@@ -544,24 +547,30 @@ def generate_merged_pdf_bytes(date_iso: str):
                 print(f"Render PDF error for order {d.get('id')}: {render_err}")
                 
         if pdf_bufs:
-            return merge_pdf_buffers(pdf_bufs)
+            merged = merge_pdf_buffers(pdf_bufs)
+            if merged:
+                return merged
 
     # Fallback to SQLite
-    con = get_conn()
-    cur = con.cursor()
-    cur.execute("SELECT id FROM orders WHERE date(receive_date) = date(?) ORDER BY id", (date_iso,))
-    ids = [r[0] for r in cur.fetchall()]
-    con.close()
-    
-    if not ids:
-        return None
+    try:
+        con = get_conn()
+        cur = con.cursor()
+        cur.execute("SELECT id FROM orders WHERE date(receive_date) = date(?) ORDER BY id", (date_iso,))
+        ids = [r[0] for r in cur.fetchall()]
+        con.close()
         
-    pdf_bufs = []
-    for oid in ids:
-        buf = generate_order_pdf_bytes(oid)
-        if buf:
-            pdf_bufs.append(buf)
+        if not ids:
+            return None
             
-    return merge_pdf_buffers(pdf_bufs)
+        pdf_bufs = []
+        for oid in ids:
+            buf = generate_order_pdf_bytes(oid)
+            if buf:
+                pdf_bufs.append(buf)
+                
+        return merge_pdf_buffers(pdf_bufs)
+    except Exception as sqle:
+        print(f"SQLite generate_merged_pdf_bytes fallback notice: {sqle}")
+        return None
 
 
