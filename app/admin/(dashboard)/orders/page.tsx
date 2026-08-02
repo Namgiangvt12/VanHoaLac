@@ -35,6 +35,16 @@ export default function AdminOrdersPage() {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)
   }
 
+  const formatReceiveDate = (dateStr?: string) => {
+    if (!dateStr) return '-'
+    const parts = dateStr.split('T')[0].split('-')
+    if (parts.length === 3) {
+      const [year, month, day] = parts
+      return `${day}/${month}/${year}`
+    }
+    return new Date(dateStr).toLocaleDateString('vi-VN')
+  }
+
   const handlePrintPdf = (e: React.MouseEvent, orderId: number) => {
     e.preventDefault()
     window.open(`/api/pdf/order/${orderId}`, '_blank')
@@ -82,6 +92,7 @@ export default function AdminOrdersPage() {
               <th>ID</th>
               <th>Ngày Đặt</th>
               <th>Khách Hàng</th>
+              <th>Ngày Nhận</th>
               <th>Tiền Hàng</th>
               <th>Còn Thiếu</th>
               <th>Hành Động</th>
@@ -89,7 +100,7 @@ export default function AdminOrdersPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Đang tải dữ liệu...</td></tr>
+              <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem' }}>Đang tải dữ liệu...</td></tr>
             ) : orders.map(order => (
               <tr key={order.id}>
                 <td>
@@ -107,6 +118,11 @@ export default function AdminOrdersPage() {
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                     {order.customer_phone || 'Không có SĐT'}
                   </div>
+                </td>
+                <td>
+                  <span style={{ fontWeight: 500, color: '#f59e0b' }}>
+                    {formatReceiveDate(order.receive_date)}
+                  </span>
                 </td>
                 <td className="currency">{formatMoney(order.total)}</td>
                 <td className={order.due > 0 ? "due-positive" : "due-zero"}>
@@ -128,7 +144,7 @@ export default function AdminOrdersPage() {
               </tr>
             ))}
             {!loading && orders.length === 0 && (
-              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem' }}>Không tìm thấy đơn hàng</td></tr>
+              <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem' }}>Không tìm thấy đơn hàng</td></tr>
             )}
           </tbody>
         </table>

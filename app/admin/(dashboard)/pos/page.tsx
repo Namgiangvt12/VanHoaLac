@@ -10,6 +10,23 @@ function PosForm() {
   const editId = searchParams.get('editId')
   const isEditMode = !!editId
 
+  const getTodayDateStr = () => {
+    const d = new Date()
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const getTomorrowDateStr = () => {
+    const d = new Date()
+    d.setDate(d.getDate() + 1)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const [products, setProducts] = useState<any[]>([])
   const [cart, setCart] = useState<any[]>([])
   
@@ -18,7 +35,7 @@ function PosForm() {
     customer_name: '',
     customer_phone: '',
     customer_address: '',
-    receive_date: new Date().toISOString().split('T')[0],
+    receive_date: getTodayDateStr(),
     shipping_fee: 0,
     deposit: 0,
     discount: 0,
@@ -171,7 +188,7 @@ function PosForm() {
         setCart([])
         setForm({
           customer_name: '', customer_phone: '', customer_address: '',
-          receive_date: new Date().toISOString().split('T')[0],
+          receive_date: getTodayDateStr(),
           shipping_fee: 0, deposit: 0, discount: 0,
           pay_ship_now: false, full_pay: false, notes: ''
         })
@@ -366,7 +383,25 @@ function PosForm() {
           </h3>
           
           <div>
-            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Ngày nhận bánh *</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
+              <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Ngày nhận bánh *</label>
+              <label style={{ fontSize: '0.825rem', color: '#fbbf24', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', userSelect: 'none' }}>
+                <input 
+                  type="checkbox" 
+                  checked={form.receive_date === getTomorrowDateStr()} 
+                  onChange={(e) => {
+                    const tomorrow = getTomorrowDateStr()
+                    const today = getTodayDateStr()
+                    setForm(prev => ({
+                      ...prev,
+                      receive_date: e.target.checked ? tomorrow : today
+                    }))
+                  }}
+                  style={{ accentColor: '#f59e0b', cursor: 'pointer' }}
+                />
+                <span>Ngày nhận là ngày mai</span>
+              </label>
+            </div>
             <input 
               type="date" 
               name="receive_date" 
