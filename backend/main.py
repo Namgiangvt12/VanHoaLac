@@ -21,21 +21,21 @@ import uuid
 app = FastAPI(title="Mooncake App API v7 - Web Full")
 
 PRODUCTS = [
-    ("Da dợp 2 trứng", 125000),
-    ("Da dợp 3 trứng", 160000),
-    ("Trung thu thập cẩm 2 trứng", 125000),
-    ("Trung thu Đậu xanh 2 trứng", 125000),
-    ("Trung thu Dừa Mè 2 trứng", 110000),
-    ("Trung thu Gà Quay 2 trứng", 135000),
-    ("Trung thu thập cẩm 3 trứng", 150000),
-    ("Trung thu Đậu xanh 3 trứng", 150000),
-    ("Da dợp 6 trứng", 450000),
-    ("Da dợp 10 trứng", 600000),
-    ("Da dợp 12 Trứng", 660000),
-    ("Da dợp 14 Trứng", 720000),
-    ("Da dợp chay", 125000),
-    ("Da dợp chay lớn", 660000),
-    ("Trung Thu Nướng chay", 125000),
+    ("Da dợp 2 trứng", 130000),
+    ("Da dợp 3 trứng", 165000),
+    ("Trung thu thập cẩm 2 trứng", 130000),
+    ("Trung thu Đậu xanh 2 trứng", 130000),
+    ("Trung thu Dừa Mè 2 trứng", 115000),
+    ("Trung thu Gà Quay 2 trứng", 140000),
+    ("Trung thu thập cẩm 3 trứng", 155000),
+    ("Trung thu Đậu xanh 3 trứng", 155000),
+    ("Da dợp 6 trứng", 460000),
+    ("Da dợp 10 trứng", 620000),
+    ("Da dợp 12 Trứng", 680000),
+    ("Da dợp 14 Trứng", 740000),
+    ("Da dợp chay", 130000),
+    ("Da dợp chay lớn", 680000),
+    ("Trung Thu Nướng chay", 130000),
 ]
 
 @app.on_event("startup")
