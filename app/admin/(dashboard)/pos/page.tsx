@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ShoppingCart, Plus, Trash2, ArrowLeft, CheckCircle, Save, User, Package, CreditCard } from 'lucide-react'
+import { ShoppingCart, Plus, Trash2, ArrowLeft, CheckCircle, Save, User, Package, CreditCard, UserCheck, Loader2 } from 'lucide-react'
 
 function PosForm() {
   const searchParams = useSearchParams()
@@ -44,9 +44,55 @@ function PosForm() {
     notes: ''
   })
 
+  // Customer lookup state
+  const [isSearchingCustomer, setIsSearchingCustomer] = useState(false)
+  const [customerFoundInfo, setCustomerFoundInfo] = useState<{ name: string; phone: string; address?: string } | null>(null)
+
   // Current select product state
   const [selectedProduct, setSelectedProduct] = useState('')
   const [qty, setQty] = useState<number>(1)
+
+  // Debounced Phone Lookup Effect
+  useEffect(() => {
+    const phone = form.customer_phone.trim()
+    const digitsOnly = phone.replace(/\D/g, '')
+
+    if (digitsOnly.length < 8) {
+      setCustomerFoundInfo(null)
+      setIsSearchingCustomer(false)
+      return
+    }
+
+    setIsSearchingCustomer(true)
+    const timer = setTimeout(() => {
+      fetch(`/api/customers/lookup?phone=${encodeURIComponent(phone)}`)
+        .then(res => res.json())
+        .then(data => {
+          setIsSearchingCustomer(false)
+          if (data.found && data.customer_name) {
+            setCustomerFoundInfo({
+              name: data.customer_name,
+              phone: data.customer_phone || phone,
+              address: data.customer_address || ''
+            })
+            setForm(prev => ({
+              ...prev,
+              customer_name: data.customer_name,
+              customer_address: data.customer_address || prev.customer_address
+            }))
+          } else {
+            setCustomerFoundInfo(null)
+          }
+        })
+        .catch(() => {
+          setIsSearchingCustomer(false)
+          setCustomerFoundInfo(null)
+        })
+    }, 350)
+
+    return () => clearTimeout(timer)
+  }, [form.customer_phone])
+
 
   useEffect(() => {
     fetch('/api/pos_products')
@@ -186,6 +232,7 @@ function PosForm() {
       .then(data => {
         alert(`Đã tạo thành công đơn hàng #${data.order_id}!`)
         setCart([])
+        setCustomerFoundInfo(null)
         setForm({
           customer_name: '', customer_phone: '', customer_address: '',
           receive_date: getTodayDateStr(),
@@ -233,10 +280,29 @@ function PosForm() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Customer Info Card */}
           <div className="glass" style={{ padding: '1.5rem' }}>
-            <h3 style={{ marginBottom: '1rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}>
-              <User size={18} />
-              <span>Thông Tin Khách Hàng</span>
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem', margin: 0 }}>
+                <User size={18} />
+                <span>Thông Tin Khách Hàng</span>
+              </h3>
+              {customerFoundInfo && (
+                <span style={{
+                  fontSize: '0.78rem',
+                  color: '#34d399',
+                  background: 'rgba(52, 211, 153, 0.12)',
+                  border: '1px solid rgba(52, 211, 153, 0.3)',
+                  padding: '0.25rem 0.6rem',
+                  borderRadius: '20px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  animation: 'fadeIn 0.3s ease'
+                }}>
+                  <UserCheck size={14} />
+                  <span>Khách hàng cũ ({customerFoundInfo.name})</span>
+                </span>
+              )}
+            </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
               <div>
@@ -248,12 +314,23 @@ function PosForm() {
                   onChange={handleChange} 
                   placeholder="Ví dụ: Nguyễn Văn A"
                   required 
-                  style={inputStyle} 
+                  style={{
+                    ...inputStyle,
+                    borderColor: customerFoundInfo ? '#10b981' : 'var(--border)',
+                    boxShadow: customerFoundInfo ? '0 0 8px rgba(16, 185, 129, 0.2)' : 'none'
+                  }} 
                 />
               </div>
               
               <div>
-                <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Số điện thoại</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Số điện thoại</label>
+                  {isSearchingCustomer && (
+                    <span style={{ fontSize: '0.75rem', color: '#fbbf24', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Đang tìm...
+                    </span>
+                  )}
+                </div>
                 <input 
                   type="text" 
                   name="customer_phone" 
@@ -272,11 +349,15 @@ function PosForm() {
                   value={form.customer_address} 
                   onChange={handleChange} 
                   placeholder="Số nhà, tên đường, phường/xã, TP..."
-                  style={inputStyle} 
+                  style={{
+                    ...inputStyle,
+                    borderColor: customerFoundInfo && form.customer_address ? '#10b981' : 'var(--border)'
+                  }} 
                 />
               </div>
             </div>
           </div>
+
 
           {/* Product Selection Card */}
           <div className="glass" style={{ padding: '1.5rem' }}>

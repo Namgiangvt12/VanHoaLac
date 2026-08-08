@@ -69,6 +69,97 @@ def read_root():
 def get_products():
     return [{"name": p[0], "price": p[1]} for p in PRODUCTS]
 
+@app.get("/api/customers/lookup")
+def lookup_customer(phone: str = Query("")):
+    phone_clean = phone.strip()
+    digits_only = re.sub(r'\D', '', phone_clean)
+    if not digits_only or len(digits_only) < 3:
+        return {"found": False}
+
+    # 1. Check MongoDB Atlas if available
+    try:
+        mdb = get_mongo_db()
+        if mdb is not None:
+            # Check db.customers first
+            cust = mdb.customers.find_one({
+                "$or": [
+                    {"phone": phone_clean},
+                    {"phone": digits_only},
+                    {"phone": {"$regex": re.escape(digits_only) + "$"}}
+                ]
+            }, {"_id": 0})
+            if cust and cust.get("name"):
+                return {
+                    "found": True,
+                    "customer_name": cust.get("name"),
+                    "customer_phone": cust.get("phone", phone_clean),
+                    "customer_address": cust.get("address", "")
+                }
+            
+            # If not in db.customers, check latest order in db.orders
+            ord_doc = mdb.orders.find_one({
+                "$or": [
+                    {"customer_phone": phone_clean},
+                    {"customer_phone": digits_only},
+                    {"customer_phone": {"$regex": re.escape(digits_only) + "$"}}
+                ]
+            }, {"_id": 0}, sort=[("id", -1)])
+            if ord_doc and ord_doc.get("customer_name"):
+                return {
+                    "found": True,
+                    "customer_name": ord_doc.get("customer_name"),
+                    "customer_phone": ord_doc.get("customer_phone", phone_clean),
+                    "customer_address": ord_doc.get("customer_address", "")
+                }
+    except Exception as me:
+        print(f"MongoDB customer lookup error: {me}")
+
+    # 2. Check SQLite database
+    con = get_conn()
+    cur = con.cursor()
+    try:
+        # Check SQLite customers table
+        cur.execute("""
+            SELECT name, phone, address FROM customers
+            WHERE phone = ? OR REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '.', '') = ?
+            ORDER BY id DESC LIMIT 1
+        """, (phone_clean, digits_only))
+        row = cur.fetchone()
+        if row and row['name']:
+            con.close()
+            return {
+                "found": True,
+                "customer_name": row['name'],
+                "customer_phone": row['phone'],
+                "customer_address": row['address'] or ""
+            }
+
+        # Check SQLite orders JOIN customers table
+        cur.execute("""
+            SELECT c.name, c.phone, c.address FROM orders o
+            JOIN customers c ON o.customer_id = c.id
+            WHERE c.phone = ? OR REPLACE(REPLACE(REPLACE(c.phone, ' ', ''), '-', ''), '.', '') = ?
+            ORDER BY o.id DESC LIMIT 1
+        """, (phone_clean, digits_only))
+        row = cur.fetchone()
+        con.close()
+        if row and row['name']:
+            return {
+                "found": True,
+                "customer_name": row['name'],
+                "customer_phone": row['phone'],
+                "customer_address": row['address'] or ""
+            }
+    except Exception as e:
+        print(f"SQLite customer lookup error: {e}")
+        try:
+            con.close()
+        except Exception:
+            pass
+
+    return {"found": False}
+
+
 @app.get("/api/orders")
 def get_orders(
     from_date: str = Query(None), 
@@ -325,6 +416,18 @@ def create_order(order: OrderCreateSchema):
                     },
                     upsert=True
                 )
+                if order.customer_phone:
+                    mdb.customers.replace_one(
+                        {"phone": order.customer_phone},
+                        {
+                            "id": cust_id,
+                            "name": order.customer_name,
+                            "phone": order.customer_phone,
+                            "address": order.customer_address
+                        },
+                        upsert=True
+                    )
+
         except Exception as me:
             print(f"MongoDB sync create_order error: {me}")
 
