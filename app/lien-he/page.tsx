@@ -86,14 +86,14 @@ export default function ContactPage() {
             {/* Bản Đồ Google Map */}
             <div className="h-full min-h-[400px] rounded-2xl overflow-hidden shadow-2xl relative border border-border">
               <iframe
-                src="https://maps.google.com/maps?q=174%20Nguy%E1%BB%85n%20V%C4%83n%20Tr%E1%BB%97i,%20V%C5%A9ng%20T%C3%A0u,%20H%E1%BB%93%20Ch%C3%AD%20Minh,%20Vi%E1%BB%87t%20Nam&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d493876.87854994397!2d106.2749405590492!3d10.760837067423681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31756f7c553778ed%3A0x932f5ef477b3d205!2zQsOhbmggVHJ1bmcgVGh1IFbEg24gSMOyYSBM4bqhYyBMb25nIMSQaeG7gW4!5e1!3m2!1sen!2s!4v1787454828241!5m2!1sen!2s"
                 width="100%"
                 height="100%"
                 style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
                 allowFullScreen={true}
                 loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Bản đồ đường đi đến Bánh Trung Thu Văn Hòa Lạc"
+                referrerPolicy="strict-origin-when-cross-origin"
+                title="Bản đồ đường đi đến Bánh Trung Thu Văn Hòa Lạc Long Điền"
               ></iframe>
             </div>
           </div>

@@ -110,6 +110,10 @@ const jsonLd = {
     "opens": "07:00",
     "closes": "21:00"
   },
+  "sameAs": [
+    "https://www.facebook.com/banh.vanhoalac",
+    "https://www.google.com/maps?cid=10604868065099837957"
+  ],
   "priceRange": "$$"
 };
 

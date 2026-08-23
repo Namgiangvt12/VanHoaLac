@@ -51,9 +51,10 @@ const jsonLd = {
         }
       ],
       "sameAs": [
-        "https://facebook.com/vanhoalac",
+        "https://www.facebook.com/banh.vanhoalac",
         "https://instagram.com/vanhoalac",
-        "https://tiktok.com/@vanhoalac"
+        "https://tiktok.com/@vanhoalac",
+        "https://www.google.com/maps?cid=10604868065099837957"
       ],
       "aggregateRating": {
         "@type": "AggregateRating",

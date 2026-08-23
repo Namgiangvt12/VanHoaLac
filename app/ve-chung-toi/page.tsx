@@ -18,6 +18,10 @@ const jsonLd = {
       "url": "https://vanhoalac.vn",
       "logo": "https://vanhoalac.vn/images/logo.png",
       "description": "Thương hiệu bánh trung thu truyền thống lâu đời tại Vũng Tàu, nổi tiếng với bánh da dợp và các loại nhân truyền thống chất lượng cao.",
+      "sameAs": [
+        "https://www.facebook.com/banh.vanhoalac",
+        "https://www.google.com/maps?cid=10604868065099837957"
+      ],
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "174 Nguyễn Văn Trỗi",
