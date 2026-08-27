@@ -429,6 +429,160 @@ html:has(.admin-theme), body:has(.admin-theme) {
   border-color: var(--primary);
 }
 
+/* POS Specific Mobile Enhancements */
+.admin-theme .date-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.admin-theme .date-chip {
+  padding: 0.45rem 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  user-select: none;
+}
+
+.admin-theme .date-chip:hover {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.admin-theme .date-chip.active {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border-color: #f59e0b;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+.admin-theme .preset-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.admin-theme .preset-chip {
+  padding: 0.25rem 0.55rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-theme .preset-chip:hover {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fef08a;
+  border-color: #f59e0b;
+}
+
+/* Cart Quantity Controls */
+.admin-theme .qty-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.2rem 0.4rem;
+}
+
+.admin-theme .qty-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-theme .qty-btn:hover {
+  background: var(--primary);
+  color: black;
+}
+
+.admin-theme .qty-val {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Mobile & Desktop Cart View Logic */
+.admin-theme .pos-cart-desktop {
+  display: block;
+}
+.admin-theme .pos-cart-mobile {
+  display: none;
+}
+
+/* Mobile Sticky Bottom Bar */
+.admin-theme .pos-mobile-sticky-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .admin-theme input, .admin-theme select, .admin-theme textarea {
+    font-size: 16px !important; /* Prevents auto-zoom on mobile devices */
+  }
+
+  .admin-theme .pos-cart-desktop {
+    display: none;
+  }
+  
+  .admin-theme .pos-cart-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .admin-theme .cart-item-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .admin-theme .pos-mobile-sticky-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    z-index: 50;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+  }
+}
+
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
@@ -443,3 +597,4 @@ html:has(.admin-theme), body:has(.admin-theme) {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+

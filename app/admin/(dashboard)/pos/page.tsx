@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ShoppingCart, Plus, Trash2, ArrowLeft, CheckCircle, Save, User, Package, CreditCard, UserCheck, Loader2 } from 'lucide-react'
+import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, CheckCircle, Save, User, Package, CreditCard, UserCheck, Loader2, Calendar } from 'lucide-react'
 
 function PosForm() {
   const searchParams = useSearchParams()
@@ -27,15 +27,32 @@ function PosForm() {
     return `${year}-${month}-${day}`
   }
 
+  const formatDateLabel = (dateStr: string) => {
+    if (!dateStr) return ''
+    const parts = dateStr.split('-')
+    if (parts.length !== 3) return dateStr
+    const year = Number(parts[0])
+    const month = Number(parts[1])
+    const day = Number(parts[2])
+    if (isNaN(year) || isNaN(month) || isNaN(day)) return dateStr
+    
+    const dateObj = new Date(year, month - 1, day)
+    const daysOfWeek = ['CN', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7']
+    const dayOfWeekStr = daysOfWeek[dateObj.getDay()]
+    const formattedMonth = String(month).padStart(2, '0')
+    const formattedDay = String(day).padStart(2, '0')
+    return `${dayOfWeekStr}, ${formattedDay}/${formattedMonth}`
+  }
+
   const [products, setProducts] = useState<any[]>([])
   const [cart, setCart] = useState<any[]>([])
   
-  // Form state
+  // Form state - Default receive_date set to TOMORROW
   const [form, setForm] = useState({
     customer_name: '',
     customer_phone: '',
     customer_address: '',
-    receive_date: getTodayDateStr(),
+    receive_date: getTomorrowDateStr(),
     shipping_fee: 0,
     deposit: 0,
     discount: 0,
@@ -93,7 +110,6 @@ function PosForm() {
     return () => clearTimeout(timer)
   }, [form.customer_phone])
 
-
   useEffect(() => {
     fetch('/api/pos_products')
       .then(res => res.json())
@@ -110,7 +126,7 @@ function PosForm() {
             customer_name: data.customer_name || '',
             customer_phone: data.customer_phone || '',
             customer_address: data.customer_address || '',
-            receive_date: data.receive_date || new Date().toISOString().split('T')[0],
+            receive_date: data.receive_date || getTomorrowDateStr(),
             shipping_fee: data.shipping_fee || 0,
             discount: data.discount || 0,
             deposit: data.deposit || 0,
@@ -163,7 +179,6 @@ function PosForm() {
     }
   }
 
-
   const handleAddToCart = () => {
     const prod = products.find(p => p.name === selectedProduct)
     if (!prod) return
@@ -174,6 +189,16 @@ function PosForm() {
     } else {
       setCart([...cart, { product_name: prod.name, unit_price: prod.price, quantity: Number(qty) }])
     }
+  }
+
+  const updateCartQty = (name: string, delta: number) => {
+    setCart(prev => prev.map(c => {
+      if (c.product_name === name) {
+        const newQty = c.quantity + delta
+        return newQty > 0 ? { ...c, quantity: newQty } : c
+      }
+      return c
+    }))
   }
 
   const removeCartItem = (name: string) => {
@@ -235,7 +260,7 @@ function PosForm() {
         setCustomerFoundInfo(null)
         setForm({
           customer_name: '', customer_phone: '', customer_address: '',
-          receive_date: getTodayDateStr(),
+          receive_date: getTomorrowDateStr(),
           shipping_fee: 0, deposit: 0, discount: 0,
           pay_ship_now: false, full_pay: false, notes: ''
         })
@@ -253,23 +278,23 @@ function PosForm() {
     color: 'white',
     outline: 'none',
     marginTop: '0.3rem',
-    fontSize: '0.9rem'
+    fontSize: '0.95rem'
   }
 
   return (
-    <div style={{ animation: 'fadeIn 0.4s ease', paddingBottom: '3rem' }}>
+    <div style={{ animation: 'fadeIn 0.4s ease', paddingBottom: '5rem' }}>
       {/* Top Header */}
-      <div className="header" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="header" style={{ marginBottom: '1.2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', width: '100%' }}>
           {isEditMode && (
             <button className="btn btn-outline" onClick={() => router.push('/admin/orders')} style={{ padding: '0.5rem 0.8rem' }}>
               <ArrowLeft size={18} />
             </button>
           )}
           <div>
-            <h1>{isEditMode ? `Chỉnh Sửa Đơn Hàng #${editId}` : 'Tạo Đơn Hàng Mới (POS)'}</h1>
+            <h1 style={{ fontSize: '1.5rem' }}>{isEditMode ? `Sửa Đơn #${editId}` : 'Tạo Đơn Hàng Mới (POS)'}</h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
-              Tạo mới và quản lý đơn đặt bánh thủ công Văn Hòa Lạc
+              Quản lý đơn đặt bánh trung thu Văn Hòa Lạc
             </p>
           </div>
         </div>
@@ -277,11 +302,11 @@ function PosForm() {
       
       <div className="pos-grid">
         {/* Left Column: Customer & Product Selection */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           {/* Customer Info Card */}
-          <div className="glass" style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem', margin: 0 }}>
+          <div className="glass" style={{ padding: '1.2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <h3 style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.05rem', margin: 0 }}>
                 <User size={18} />
                 <span>Thông Tin Khách Hàng</span>
               </h3>
@@ -295,16 +320,15 @@ function PosForm() {
                   borderRadius: '20px',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
-                  animation: 'fadeIn 0.3s ease'
+                  gap: '0.35rem'
                 }}>
                   <UserCheck size={14} />
-                  <span>Khách hàng cũ ({customerFoundInfo.name})</span>
+                  <span>Khách cũ ({customerFoundInfo.name})</span>
                 </span>
               )}
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.9rem' }}>
               <div>
                 <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Họ và tên khách *</label>
                 <input 
@@ -327,7 +351,7 @@ function PosForm() {
                   <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Số điện thoại</label>
                   {isSearchingCustomer && (
                     <span style={{ fontSize: '0.75rem', color: '#fbbf24', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Đang tìm...
+                      <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Tìm...
                     </span>
                   )}
                 </div>
@@ -348,7 +372,7 @@ function PosForm() {
                   name="customer_address" 
                   value={form.customer_address} 
                   onChange={handleChange} 
-                  placeholder="Số nhà, tên đường, phường/xã, TP..."
+                  placeholder="Số nhà, tên đường, TP..."
                   style={{
                     ...inputStyle,
                     borderColor: customerFoundInfo && form.customer_address ? '#10b981' : 'var(--border)'
@@ -360,20 +384,20 @@ function PosForm() {
 
 
           {/* Product Selection Card */}
-          <div className="glass" style={{ padding: '1.5rem' }}>
-            <h3 style={{ marginBottom: '1rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}>
+          <div className="glass" style={{ padding: '1.2rem' }}>
+            <h3 style={{ marginBottom: '1rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.05rem', margin: '0 0 1rem 0' }}>
               <Package size={18} />
               <span>Chọn Sản Phẩm</span>
             </h3>
 
-            {/* Responsive Input Control Bar */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.8rem', alignItems: 'end', marginBottom: '1.5rem' }}>
-              <div style={{ gridColumn: 'span 2' }}>
+            {/* Responsive Input Control Container */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '1.2rem' }}>
+              <div>
                 <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Loại bánh</label>
                 <select 
                   value={selectedProduct} 
                   onChange={e => setSelectedProduct(e.target.value)} 
-                  style={{ ...inputStyle, height: '42px', cursor: 'pointer' }}
+                  style={{ ...inputStyle, height: '44px', cursor: 'pointer' }}
                 >
                   {products.map(p => (
                     <option key={p.name} value={p.name} style={{ background: '#1e293b', color: '#fff' }}>
@@ -383,23 +407,32 @@ function PosForm() {
                 </select>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Số lượng</label>
-                <input 
-                  type="number" 
-                  min="1" 
-                  value={qty} 
-                  onChange={e => setQty(Math.max(1, Number(e.target.value)))} 
-                  style={{ ...inputStyle, height: '42px' }} 
-                />
-              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.8rem', alignItems: 'end' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Số lượng</label>
+                    <div className="preset-chip-group" style={{ margin: 0 }}>
+                      {[1, 2, 4, 10].map(n => (
+                        <button key={n} type="button" className="preset-chip" onClick={() => setQty(n)}>
+                          +{n}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <input 
+                    type="number" 
+                    min="1" 
+                    value={qty} 
+                    onChange={e => setQty(Math.max(1, Number(e.target.value)))} 
+                    style={{ ...inputStyle, height: '44px' }} 
+                  />
+                </div>
 
-              <div>
                 <button 
                   type="button" 
                   className="btn btn-primary" 
                   onClick={handleAddToCart} 
-                  style={{ width: '100%', height: '42px', justifyContent: 'center', marginTop: '0.3rem' }}
+                  style={{ height: '44px', padding: '0 1.2rem', justifyContent: 'center', whiteSpace: 'nowrap' }}
                 >
                   <Plus size={18} />
                   <span>Thêm Vào Đơn</span>
@@ -407,92 +440,161 @@ function PosForm() {
               </div>
             </div>
 
-            {/* Selected Products Table */}
-            <div className="table-container" style={{ boxShadow: 'none', background: 'rgba(0,0,0,0.15)', borderRadius: '12px' }}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Sản phẩm</th>
-                    <th style={{ textAlign: 'center' }}>Đơn giá</th>
-                    <th style={{ textAlign: 'center' }}>SL</th>
-                    <th style={{ textAlign: 'right' }}>Thành tiền</th>
-                    <th style={{ textAlign: 'center', width: '60px' }}>Xoá</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cart.map(c => (
-                    <tr key={c.product_name}>
-                      <td style={{ fontWeight: '500' }}>{c.product_name}</td>
-                      <td style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                        {formatMoney(c.unit_price)}
-                      </td>
-                      <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{c.quantity}</td>
-                      <td className="currency" style={{ textAlign: 'right' }}>
-                        {formatMoney(c.quantity * c.unit_price)}
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <button 
-                          type="button" 
-                          onClick={() => removeCartItem(c.product_name)} 
-                          style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.4rem', borderRadius: '6px' }}
-                          title="Xóa sản phẩm"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {cart.length === 0 && (
+            {/* Cart Display: Desktop Table View */}
+            <div className="pos-cart-desktop">
+              <div className="table-container" style={{ boxShadow: 'none', background: 'rgba(0,0,0,0.15)', borderRadius: '12px' }}>
+                <table>
+                  <thead>
                     <tr>
-                      <td colSpan={5} style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
-                        <ShoppingCart size={36} style={{ margin: '0 auto 0.5rem auto', opacity: 0.4 }} />
-                        <div>Chưa có sản phẩm nào trong giỏ hàng</div>
-                      </td>
+                      <th>Sản phẩm</th>
+                      <th style={{ textAlign: 'center' }}>Đơn giá</th>
+                      <th style={{ textAlign: 'center', width: '130px' }}>Số lượng</th>
+                      <th style={{ textAlign: 'right' }}>Thành tiền</th>
+                      <th style={{ textAlign: 'center', width: '50px' }}>Xoá</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {cart.map(c => (
+                      <tr key={c.product_name}>
+                        <td style={{ fontWeight: '500' }}>{c.product_name}</td>
+                        <td style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          {formatMoney(c.unit_price)}
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div className="qty-control">
+                            <button type="button" className="qty-btn" onClick={() => updateCartQty(c.product_name, -1)}>
+                              <Minus size={14} />
+                            </button>
+                            <span className="qty-val">{c.quantity}</span>
+                            <button type="button" className="qty-btn" onClick={() => updateCartQty(c.product_name, 1)}>
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="currency" style={{ textAlign: 'right' }}>
+                          {formatMoney(c.quantity * c.unit_price)}
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <button 
+                            type="button" 
+                            onClick={() => removeCartItem(c.product_name)} 
+                            style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.4rem', borderRadius: '6px' }}
+                            title="Xóa sản phẩm"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {cart.length === 0 && (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
+                          <ShoppingCart size={36} style={{ margin: '0 auto 0.5rem auto', opacity: 0.4 }} />
+                          <div>Chưa có sản phẩm nào trong giỏ hàng</div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Cart Display: Mobile Card View */}
+            <div className="pos-cart-mobile">
+              {cart.map(c => (
+                <div key={c.product_name} className="cart-item-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <div style={{ fontWeight: '600', fontSize: '0.95rem', color: '#fff' }}>{c.product_name}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Đơn giá: {formatMoney(c.unit_price)}</div>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => removeCartItem(c.product_name)} 
+                      style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', padding: '0.4rem', borderRadius: '8px' }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.2rem', paddingTop: '0.5rem', borderTop: '1px dashed var(--border)' }}>
+                    <div className="qty-control">
+                      <button type="button" className="qty-btn" onClick={() => updateCartQty(c.product_name, -1)}>
+                        <Minus size={14} />
+                      </button>
+                      <span className="qty-val">{c.quantity}</span>
+                      <button type="button" className="qty-btn" onClick={() => updateCartQty(c.product_name, 1)}>
+                        <Plus size={14} />
+                      </button>
+                    </div>
+
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Thành tiền</span>
+                      <span className="currency" style={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                        {formatMoney(c.quantity * c.unit_price)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {cart.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)', background: 'rgba(0,0,0,0.15)', borderRadius: '12px' }}>
+                  <ShoppingCart size={32} style={{ margin: '0 auto 0.5rem auto', opacity: 0.4 }} />
+                  <div style={{ fontSize: '0.9rem' }}>Chưa có sản phẩm nào trong giỏ hàng</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Right Column: Payment & Summary Panel */}
-        <div className="glass" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.2rem', height: 'fit-content' }}>
-          <h3 style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}>
+        <div className="glass" style={{ padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '1rem', height: 'fit-content' }}>
+          <h3 style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.05rem', margin: 0 }}>
             <CreditCard size={18} />
             <span>Thanh Toán & Giao Hàng</span>
           </h3>
           
+          {/* Receive Date Selector with Quick Chips */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
-              <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Ngày nhận bánh *</label>
-              <label style={{ fontSize: '0.825rem', color: '#fbbf24', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', userSelect: 'none' }}>
-                <input 
-                  type="checkbox" 
-                  checked={form.receive_date === getTomorrowDateStr()} 
-                  onChange={(e) => {
-                    const tomorrow = getTomorrowDateStr()
-                    const today = getTodayDateStr()
-                    setForm(prev => ({
-                      ...prev,
-                      receive_date: e.target.checked ? tomorrow : today
-                    }))
-                  }}
-                  style={{ accentColor: '#f59e0b', cursor: 'pointer' }}
-                />
-                <span>Ngày nhận là ngày mai</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+              <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <Calendar size={14} />
+                <span>Ngày nhận bánh *</span>
               </label>
+              <span style={{ fontSize: '0.8rem', color: '#fbbf24', fontWeight: '600' }}>
+                {formatDateLabel(form.receive_date)}
+              </span>
             </div>
+
+            <div className="date-chip-group">
+              <button 
+                type="button" 
+                className={`date-chip ${form.receive_date === getTomorrowDateStr() ? 'active' : ''}`}
+                onClick={() => setForm(prev => ({ ...prev, receive_date: getTomorrowDateStr() }))}
+              >
+                🌅 Ngày mai ({formatDateLabel(getTomorrowDateStr())})
+              </button>
+              <button 
+                type="button" 
+                className={`date-chip ${form.receive_date === getTodayDateStr() ? 'active' : ''}`}
+                onClick={() => setForm(prev => ({ ...prev, receive_date: getTodayDateStr() }))}
+              >
+                📅 Hôm nay ({formatDateLabel(getTodayDateStr())})
+              </button>
+            </div>
+
             <input 
               type="date" 
               name="receive_date" 
               value={form.receive_date} 
               onChange={handleChange} 
               required 
-              style={inputStyle} 
+              style={{ ...inputStyle, marginTop: '0.4rem' }} 
             />
           </div>
 
+          {/* Shipping fee & Discount */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
             <div>
               <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Phí Ship (VNĐ)</label>
@@ -502,11 +604,14 @@ function PosForm() {
                 value={form.shipping_fee} 
                 onChange={handleChange} 
                 onBlur={() => handleMoneyBlur('shipping_fee')}
-                placeholder="Nhập 30 -> 30.000đ"
+                placeholder="Ví dụ: 30000"
                 style={inputStyle} 
               />
-              <div style={{ fontSize: '0.75rem', color: '#fbbf24', marginTop: '0.2rem', minHeight: '1.2em' }}>
-                {Number(form.shipping_fee) > 0 && formatMoney(Number(form.shipping_fee) < 1000 ? Number(form.shipping_fee) * 1000 : Number(form.shipping_fee))}
+              <div className="preset-chip-group">
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, shipping_fee: 0 }))}>Free</button>
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, shipping_fee: 15000 }))}>15k</button>
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, shipping_fee: 20000 }))}>20k</button>
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, shipping_fee: 30000 }))}>30k</button>
               </div>
             </div>
 
@@ -518,41 +623,47 @@ function PosForm() {
                 value={form.discount} 
                 onChange={handleChange} 
                 onBlur={() => handleMoneyBlur('discount')}
-                placeholder="Nhập 50 -> 50.000đ"
+                placeholder="Ví dụ: 50000"
                 style={inputStyle} 
               />
-              <div style={{ fontSize: '0.75rem', color: '#fbbf24', marginTop: '0.2rem', minHeight: '1.2em' }}>
-                {Number(form.discount) > 0 && formatMoney(Number(form.discount) < 1000 ? Number(form.discount) * 1000 : Number(form.discount))}
+              <div className="preset-chip-group">
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, discount: 0 }))}>0đ</button>
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, discount: 20000 }))}>20k</button>
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, discount: 50000 }))}>50k</button>
               </div>
             </div>
           </div>
 
+          {/* Deposit */}
           <div>
-            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Đặt cọc (VNĐ)</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Đặt cọc (VNĐ)</label>
+              <div className="preset-chip-group" style={{ margin: 0 }}>
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, deposit: Math.round(subtotal * 0.5) }))}>Cọc 50%</button>
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, deposit: subtotal }))}>Full 100%</button>
+                <button type="button" className="preset-chip" onClick={() => setForm(p => ({ ...p, deposit: 0 }))}>Xóa cọc</button>
+              </div>
+            </div>
             <input 
               type="number" 
               name="deposit" 
               value={form.deposit} 
               onChange={handleChange} 
               onBlur={() => handleMoneyBlur('deposit')}
-              placeholder="Nhập 300 -> 300.000đ"
+              placeholder="Ví dụ: 200000"
               style={inputStyle} 
             />
-            <div style={{ fontSize: '0.75rem', color: '#fbbf24', marginTop: '0.2rem', minHeight: '1.2em' }}>
-              {Number(form.deposit) > 0 && formatMoney(Number(form.deposit) < 1000 ? Number(form.deposit) * 1000 : Number(form.deposit))}
-            </div>
           </div>
 
-
           {!isEditMode && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0.6rem 0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0.4rem 0' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem' }}>
-                <input type="checkbox" name="pay_ship_now" checked={form.pay_ship_now} onChange={handleChange} />
+                <input type="checkbox" name="pay_ship_now" checked={form.pay_ship_now} onChange={handleChange} style={{ accentColor: '#f59e0b' }} />
                 <span>Đã thanh toán phí ship</span>
               </label>
 
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem' }}>
-                <input type="checkbox" name="full_pay" checked={form.full_pay} onChange={handleChange} />
+                <input type="checkbox" name="full_pay" checked={form.full_pay} onChange={handleChange} style={{ accentColor: '#f59e0b' }} />
                 <span>Thanh toán TOÀN BỘ (Full)</span>
               </label>
             </div>
@@ -565,40 +676,40 @@ function PosForm() {
               value={form.notes} 
               onChange={handleChange} 
               placeholder="Ghi chú giao hàng, loại vỏ, loại hộp..."
-              style={{ ...inputStyle, height: '70px', resize: 'none' }} 
+              style={{ ...inputStyle, height: '65px', resize: 'none' }} 
             />
           </div>
 
           {/* Payment Totals Box */}
-          <div style={{ marginTop: '0.5rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.9rem' }}>
+          <div style={{ marginTop: '0.3rem', borderTop: '1px solid var(--border)', paddingTop: '0.9rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.88rem' }}>
               <span style={{ color: 'var(--text-muted)' }}>Tiền Hàng:</span> 
               <span>{formatMoney(totalItems)}</span>
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.9rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.88rem' }}>
               <span style={{ color: 'var(--text-muted)' }}>Phí Ship:</span> 
               <span>{formatMoney(ship)}</span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', fontSize: '0.9rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.88rem' }}>
               <span style={{ color: 'var(--text-muted)' }}>Chiết Khấu:</span> 
               <span style={{ color: '#ef4444' }}>-{formatMoney(disc)}</span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', padding: '0.5rem 0', borderTop: '1px dashed var(--border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', padding: '0.4rem 0', borderTop: '1px dashed var(--border)' }}>
               <span style={{ fontWeight: 'bold' }}>TỔNG ĐƠN:</span> 
-              <span className="currency" style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{formatMoney(subtotal)}</span>
+              <span className="currency" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{formatMoney(subtotal)}</span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.9rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.88rem' }}>
               <span style={{ color: 'var(--text-muted)' }}>Đã Thu:</span> 
               <span style={{ color: '#34d399', fontWeight: '500' }}>{formatMoney(paid)}</span>
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.2rem', fontWeight: 'bold' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontWeight: 'bold' }}>
               <span>Còn Thiếu:</span> 
-              <span className={due > 0 ? 'due-positive' : 'due-zero'} style={{ fontSize: '1.15rem' }}>
+              <span className={due > 0 ? 'due-positive' : 'due-zero'} style={{ fontSize: '1.1rem' }}>
                 {formatMoney(due)}
               </span>
             </div>
@@ -606,7 +717,7 @@ function PosForm() {
             <button 
               className="btn btn-primary" 
               onClick={handleSubmit} 
-              style={{ width: '100%', justifyContent: 'center', padding: '0.85rem', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold' }}
+              style={{ width: '100%', justifyContent: 'center', padding: '0.8rem', borderRadius: '10px', fontSize: '0.98rem', fontWeight: 'bold' }}
             >
               {isEditMode ? <Save size={18} /> : <CheckCircle size={18} />}
               <span>{isEditMode ? 'CẬP NHẬT ĐƠN HÀNG' : 'LƯU ĐƠN HÀNG'}</span>
@@ -614,13 +725,33 @@ function PosForm() {
           </div>
         </div>
       </div>
+
+      {/* Floating Sticky Mobile Bottom Bar */}
+      {cart.length > 0 && (
+        <div className="pos-mobile-sticky-bar">
+          <div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{cart.length} món • Còn thiếu:</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: due > 0 ? '#ef4444' : '#34d399' }}>
+              {formatMoney(due)}
+            </div>
+          </div>
+          <button 
+            className="btn btn-primary" 
+            onClick={handleSubmit} 
+            style={{ padding: '0.65rem 1.1rem', borderRadius: '10px', fontWeight: 'bold' }}
+          >
+            {isEditMode ? <Save size={16} /> : <CheckCircle size={16} />}
+            <span>{isEditMode ? 'CẬP NHẬT' : 'LƯU ĐƠN'}</span>
+          </button>
+        </div>
+      )}
     </div>
   )
 }
 
 export default function AdminPosPage() {
   return (
-    <Suspense fallback={<div>Đang tải...</div>}>
+    <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>Đang tải giao diện POS...</div>}>
       <PosForm />
     </Suspense>
   )
