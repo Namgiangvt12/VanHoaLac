@@ -7,6 +7,8 @@ import { ProductsSection } from "@/components/products-section"
 import { YouTubeSection } from "@/components/youtube-section"
 import { Footer } from "@/components/footer"
 
+export const dynamic = 'force-dynamic'
+
 // JSON-LD Structured Data for SEO
 const jsonLd = {
   "@context": "https://schema.org",

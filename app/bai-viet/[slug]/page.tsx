@@ -4,12 +4,17 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 
+export const dynamic = 'force-dynamic'
+
 // Configure this to match where FastAPI is running
 const API_URL = "http://127.0.0.1:8000/api/posts"
 
 async function getPost(slug: string) {
   try {
-    const res = await fetch(`${API_URL}/${slug}`, { cache: 'no-store' })
+    const res = await fetch(`${API_URL}/${slug}`, { 
+      cache: 'no-store',
+      signal: AbortSignal.timeout(2000)
+    })
     if (!res.ok) return null
     return await res.json()
   } catch (e) {

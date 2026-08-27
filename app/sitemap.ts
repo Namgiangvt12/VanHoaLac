@@ -6,7 +6,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogEntries: MetadataRoute.Sitemap = []
   try {
     // Lấy bài viết từ local backend API (chỉ lấy bài đã xuất bản)
-    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { next: { revalidate: 3600 } })
+    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { 
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(2000)
+    })
     if (res.ok) {
       const posts = await res.json()
       blogEntries = posts.map((post: any) => ({
@@ -17,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
     }
   } catch (err) {
-    console.error("Lỗi lấy sitemap bài viết:", err)
+    // Graceful fallback during build
   }
 
   return [

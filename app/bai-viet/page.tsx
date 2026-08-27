@@ -6,6 +6,8 @@ import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { Metadata } from "next"
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: "Tất Cả Bài Viết | Văn Hòa Lạc",
   description: "Cập nhật những tin tức và câu chuyện mới nhất từ tiệm bánh trung thu truyền thống Văn Hòa Lạc Vũng Tàu.",
@@ -34,12 +36,15 @@ const defaultPosts = [
 
 async function getAllPosts() {
   try {
-    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { cache: 'no-store' })
+    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { 
+      cache: 'no-store',
+      signal: AbortSignal.timeout(2000)
+    })
     if (res.ok) {
       return await res.json()
     }
   } catch (e) {
-    console.error(e)
+    // Graceful fallback during build or when backend is offline
   }
   return []
 }

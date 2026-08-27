@@ -25,12 +25,15 @@ const defaultPosts = [
 
 async function getLatestPosts() {
   try {
-    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { cache: 'no-store' })
+    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { 
+      cache: 'no-store',
+      signal: AbortSignal.timeout(2000)
+    })
     if (res.ok) {
       return await res.json()
     }
   } catch (e) {
-    console.error(e)
+    // Graceful fallback during build or when backend is offline
   }
   return []
 }
