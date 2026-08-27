@@ -16,7 +16,7 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Thủ Công Gia Truyền',
-  description: 'Bánh Trung Thu Văn Hòa Lạc - Bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền. Nhân Da Dợp , Đậu Xanh, Gà Quay, Thập Cẩm... Giao hàng toàn quốc. Đặt bánh Tết Trung Thu 2026.',
+  description: 'Bánh trung thu Da Dợp Văn Hòa Lạc chính gốc Vũng Tàu. Đặt sớm nhận ưu đãi, giao tận nơi. Xem bảng giá & đặt hàng ngay hôm nay!',
   keywords: ['van hoa lac', 'văn hòa lạc', 'banh trung thu van hoa lac', 'banh trung thu văn hòa lạc', 'bánh trung thu vũng tàu', 'văn hòa lạc vũng tàu', 'van hoa lac vung tau', 'bánh trung thu long điền', 'bánh da dợp văn hòa lạc', 'bánh trung thu thủ công'],
   authors: [{ name: 'Văn Hòa Lạc Vũng Tàu' }],
   creator: 'Văn Hòa Lạc Vũng Tàu',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Thủ Công',
-    description: 'Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp. Chuyên bánh da dợp. Giao hàng toàn quốc.',
+    description: 'Bánh trung thu Da Dợp Văn Hòa Lạc chính gốc Vũng Tàu. Đặt sớm nhận ưu đãi, giao tận nơi. Xem bảng giá & đặt hàng ngay hôm nay!',
     url: 'https://vanhoalac.vn',
     siteName: 'Bánh Trung Thu Văn Hòa Lạc Vũng Tàu',
     images: [
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu',
-    description: 'Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp. Giao hàng toàn quốc.',
+    description: 'Bánh trung thu Da Dợp Văn Hòa Lạc chính gốc Vũng Tàu. Đặt sớm nhận ưu đãi, giao tận nơi. Xem bảng giá & đặt hàng ngay hôm nay!',
     images: ['/images/hero-mooncakes.jpg'],
   },
   robots: {

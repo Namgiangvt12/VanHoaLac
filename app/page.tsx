@@ -85,7 +85,7 @@ const jsonLd = {
       "name": "Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Cao Cấp Thủ Công Long Điền",
       "isPartOf": { "@id": "https://vanhoalac.vn/#website" },
       "about": { "@id": "https://vanhoalac.vn/#business" },
-      "description": "Bánh Trung Thu Văn Hòa Lạc - Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền. Chuyên cung cấp bánh da dợp (3 lớp nhân) và bánh trung thu gà quay, thập cẩm, đậu xanh. Giao hàng toàn quốc.",
+      "description": "Bánh trung thu Da Dợp Văn Hòa Lạc chính gốc Vũng Tàu. Đặt sớm nhận ưu đãi, giao tận nơi. Xem bảng giá & đặt hàng ngay hôm nay!",
       "breadcrumb": { "@id": "https://vanhoalac.vn/#breadcrumb" },
       "inLanguage": "vi-VN",
       "potentialAction": [

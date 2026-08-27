@@ -4,6 +4,7 @@ import { useState, useRef, useMemo, useEffect } from "react"
 import dynamic from "next/dynamic"
 import "react-quill-new/dist/quill.snow.css"
 import imageCompression from 'browser-image-compression'
+import { Calendar, Clock, Send, FileText, Sparkles } from 'lucide-react'
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
 
@@ -15,6 +16,7 @@ export interface BlogFormData {
   image_url: string
   category: string
   published: boolean
+  scheduled_at?: string | null
 }
 
 export interface BasePost extends BlogFormData {
@@ -37,14 +39,49 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
     image_url: '',
     category: 'Tin tức',
     published: true,
+    scheduled_at: null,
   })
+
+  // 'now' | 'schedule' | 'draft'
+  const [publishMode, setPublishMode] = useState<'now' | 'schedule' | 'draft'>('now')
+  const [scheduleDateTime, setScheduleDateTime] = useState<string>('')
+
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [message, setMessage] = useState('')
   const quillRef = useRef<any>(null)
 
+  const getPresetDateTime = (hoursAhead: number, setExactHour?: number) => {
+    const d = new Date()
+    if (setExactHour !== undefined) {
+      d.setDate(d.getDate() + 1)
+      d.setHours(setExactHour, 0, 0, 0)
+    } else {
+      d.setHours(d.getHours() + hoursAhead)
+    }
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    const hours = String(d.getHours()).padStart(2, '0')
+    const minutes = String(d.getMinutes()).padStart(2, '0')
+    return `${year}-${month}-${day}T${hours}:${minutes}`
+  }
+
   useEffect(() => {
     if (initialData) {
+      const isSched = Boolean(initialData.scheduled_at)
+      const isPub = Boolean(initialData.published)
+
+      let mode: 'now' | 'schedule' | 'draft' = 'now'
+      if (!isPub) {
+        mode = 'draft'
+      } else if (isSched) {
+        mode = 'schedule'
+      }
+
+      setPublishMode(mode)
+      setScheduleDateTime(initialData.scheduled_at ? initialData.scheduled_at.replace(' ', 'T').slice(0, 16) : getPresetDateTime(2))
+
       setFormData({
         title: initialData.title || '',
         slug: initialData.slug || '',
@@ -52,9 +89,12 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         content: initialData.content || '',
         image_url: initialData.image_url || '',
         category: initialData.category || 'Tin tức',
-        published: Boolean(initialData.published),
+        published: isPub,
+        scheduled_at: initialData.scheduled_at || null,
       })
     } else {
+      setPublishMode('now')
+      setScheduleDateTime(getPresetDateTime(2))
       setFormData({
         title: '',
         slug: '',
@@ -63,6 +103,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         image_url: '',
         category: 'Tin tức',
         published: true,
+        scheduled_at: null,
       })
     }
   }, [initialData])
@@ -183,6 +224,34 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
     setLoading(true)
     setMessage('')
 
+    let isPub = true
+    let schedAt: string | null = null
+
+    if (publishMode === 'draft') {
+      isPub = false
+      schedAt = null
+    } else if (publishMode === 'schedule') {
+      isPub = true
+      if (!scheduleDateTime) {
+        alert('Vui lòng chọn ngày và giờ hẹn đăng bài!')
+        setLoading(false)
+        return
+      }
+      schedAt = scheduleDateTime.replace('T', ' ')
+      if (schedAt.length === 16) {
+        schedAt = `${schedAt}:00`
+      }
+    } else {
+      isPub = true
+      schedAt = null
+    }
+
+    const payload = {
+      ...formData,
+      published: isPub,
+      scheduled_at: schedAt
+    }
+
     const isEdit = !!initialData?.id
     const url = isEdit ? `/api/posts/${initialData.id}` : '/api/posts'
     const method = isEdit ? 'PUT' : 'POST'
@@ -193,13 +262,17 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
 
       const data = await response.json()
 
       if (response.ok) {
-        setMessage(isEdit ? 'Bài viết đã được cập nhật thành công!' : 'Bài viết đã được thêm thành công!')
+        const successMsg = isEdit 
+          ? 'Bài viết đã được cập nhật thành công!' 
+          : (publishMode === 'schedule' ? 'Đã lên lịch hẹn giờ đăng bài thành công!' : 'Bài viết đã được thêm thành công!')
+        
+        setMessage(successMsg)
         if (!isEdit) {
           setFormData({
             title: '',
@@ -209,7 +282,9 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
             image_url: '',
             category: 'Tin tức',
             published: true,
+            scheduled_at: null,
           })
+          setPublishMode('now')
         }
         if (onSuccess) onSuccess()
       } else {
@@ -366,26 +441,113 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
           </select>
         </div>
 
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="published"
-            name="published"
-            checked={formData.published}
-            onChange={handleChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label htmlFor="published" className="ml-2 block text-sm text-gray-900">
-            Kích hoạt xuất bản (Hiện trên trang web)
+        {/* TÙY CHỌN XUẤT BẢN & HẸN GIỜ ĐĂNG BÀI */}
+        <div className="border border-gray-200 bg-gray-50/80 rounded-xl p-4 space-y-3">
+          <label className="block text-sm font-semibold text-gray-800 mb-2">
+            Thời Gian & Trạng Thái Xuất Bản
           </label>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => setPublishMode('now')}
+              className={`flex items-center justify-center gap-2 p-3 rounded-lg border text-sm font-medium transition-all ${publishMode === 'now' ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+            >
+              <Send size={16} />
+              <span>Đăng Ngay</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setPublishMode('schedule')
+                if (!scheduleDateTime) setScheduleDateTime(getPresetDateTime(2))
+              }}
+              className={`flex items-center justify-center gap-2 p-3 rounded-lg border text-sm font-medium transition-all ${publishMode === 'schedule' ? 'bg-amber-50 border-amber-500 text-amber-800 shadow-sm' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+            >
+              <Clock size={16} />
+              <span>⏰ Hẹn Giờ Đăng</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPublishMode('draft')}
+              className={`flex items-center justify-center gap-2 p-3 rounded-lg border text-sm font-medium transition-all ${publishMode === 'draft' ? 'bg-gray-100 border-gray-500 text-gray-800 shadow-sm' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+            >
+              <FileText size={16} />
+              <span>Lưu Bản Nháp</span>
+            </button>
+          </div>
+
+          {/* Ô CHỌN NGÀY GIỜ KHI HẸN GIỜ ĐƯỢC KÍCH HOẠT */}
+          {publishMode === 'schedule' && (
+            <div className="mt-3 p-3 bg-white border border-amber-200 rounded-lg space-y-2 animate-fadeIn">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-semibold text-amber-900 flex items-center gap-1.5">
+                  <Calendar size={14} />
+                  <span>Chọn thời gian đăng bài tự động:</span>
+                </label>
+              </div>
+
+              <input
+                type="datetime-local"
+                value={scheduleDateTime}
+                onChange={e => setScheduleDateTime(e.target.value)}
+                min={getPresetDateTime(0)}
+                required={publishMode === 'schedule'}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-medium"
+              />
+
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setScheduleDateTime(getPresetDateTime(1))}
+                  className="text-xs px-2.5 py-1 bg-gray-100 hover:bg-amber-100 hover:text-amber-900 rounded-md text-gray-600 transition"
+                >
+                  +1 Giờ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setScheduleDateTime(getPresetDateTime(3))}
+                  className="text-xs px-2.5 py-1 bg-gray-100 hover:bg-amber-100 hover:text-amber-900 rounded-md text-gray-600 transition"
+                >
+                  +3 Giờ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setScheduleDateTime(getPresetDateTime(0, 8))}
+                  className="text-xs px-2.5 py-1 bg-gray-100 hover:bg-amber-100 hover:text-amber-900 rounded-md text-gray-600 transition"
+                >
+                  Sáng mai (08:00)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setScheduleDateTime(getPresetDateTime(0, 19))}
+                  className="text-xs px-2.5 py-1 bg-gray-100 hover:bg-amber-100 hover:text-amber-900 rounded-md text-gray-600 transition"
+                >
+                  Tối mai (19:00)
+                </button>
+              </div>
+
+              <p className="text-[11px] text-amber-700">
+                💡 Bài viết sẽ tự động xuất hiện trên website khi đến đúng thời điểm hẹn giờ trên.
+              </p>
+            </div>
+          )}
         </div>
 
         <button
           type="submit"
           disabled={loading || uploadingImage}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 font-semibold"
+          className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 font-semibold transition"
         >
-          {loading ? 'Đang lưu...' : (initialData ? 'Lưu Thay Đổi Bài Viết' : 'Thêm Bài Viết Mới')}
+          {loading 
+            ? 'Đang lưu...' 
+            : (initialData 
+                ? 'Lưu Thay Đổi Bài Viết' 
+                : (publishMode === 'schedule' ? '⏰ Xác Nhận Hẹn Giờ Đăng' : (publishMode === 'draft' ? 'Lưu Vào Bản Nháp' : 'Đăng Bài Viết Ngay'))
+              )
+          }
         </button>
       </form>
     </div>

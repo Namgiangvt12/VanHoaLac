@@ -60,6 +60,7 @@ def init_db():
         image_url TEXT,
         category TEXT,
         published BOOLEAN DEFAULT 0,
+        scheduled_at TEXT,
         created_at TEXT NOT NULL
     )""")
     
@@ -73,6 +74,8 @@ def init_db():
         cur.execute("ALTER TABLE posts ADD COLUMN category TEXT")
     if "published" not in columns:
         cur.execute("ALTER TABLE posts ADD COLUMN published BOOLEAN DEFAULT 0")
+    if "scheduled_at" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN scheduled_at TEXT")
 
     con.commit()
     con.close()

@@ -783,9 +783,9 @@ def create_post(post: PostCreateSchema):
     cur = con.cursor()
     try:
         cur.execute("""
-            INSERT INTO posts(id, title, slug, excerpt, content, image_url, category, published, created_at)
-            VALUES(?,?,?,?,?,?,?,?,?)
-        """, (new_id, post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, is_published, now))
+            INSERT INTO posts(id, title, slug, excerpt, content, image_url, category, published, scheduled_at, created_at)
+            VALUES(?,?,?,?,?,?,?,?,?,?)
+        """, (new_id, post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, is_published, post.scheduled_at, now))
         con.commit()
 
         # Sync to MongoDB Atlas if active
@@ -802,6 +802,7 @@ def create_post(post: PostCreateSchema):
                     "image_url": post.image_url or "",
                     "category": post.category or "Tin tức",
                     "published": bool(post.published),
+                    "scheduled_at": post.scheduled_at,
                     "created_at": now
                 }
                 mdb.posts.replace_one({'_id': str(new_id)}, post_doc, upsert=True)
@@ -825,9 +826,9 @@ def update_post(post_id: int, p: PostCreateSchema):
     try:
         is_published = 1 if p.published else 0
         cur.execute("""
-            UPDATE posts SET title=?, slug=?, excerpt=?, content=?, image_url=?, category=?, published=?
+            UPDATE posts SET title=?, slug=?, excerpt=?, content=?, image_url=?, category=?, published=?, scheduled_at=?
             WHERE id=?
-        """, (p.title, p.slug, p.excerpt, p.content, p.image_url, p.category, is_published, post_id))
+        """, (p.title, p.slug, p.excerpt, p.content, p.image_url, p.category, is_published, p.scheduled_at, post_id))
         con.commit()
 
         # Sync to MongoDB Atlas if active
@@ -847,6 +848,7 @@ def update_post(post_id: int, p: PostCreateSchema):
                     "image_url": p.image_url or "",
                     "category": p.category or "Tin tức",
                     "published": bool(p.published),
+                    "scheduled_at": p.scheduled_at,
                     "created_at": created_at
                 }
                 mdb.posts.replace_one({'_id': str(post_id)}, post_doc, upsert=True)
@@ -899,10 +901,7 @@ def get_posts(published_only: bool = False):
     try:
         con = get_conn()
         cur = con.cursor()
-        if published_only:
-            cur.execute("SELECT * FROM posts WHERE (published = 1 OR published = '1' OR LOWER(published) = 'true') ORDER BY id DESC")
-        else:
-            cur.execute("SELECT * FROM posts ORDER BY id DESC")
+        cur.execute("SELECT * FROM posts ORDER BY id DESC")
         rows = cur.fetchall()
         sqlite_posts = [dict(r) for r in rows]
         con.close()
@@ -914,15 +913,9 @@ def get_posts(published_only: bool = False):
     try:
         mdb = get_mongo_db()
         if mdb is not None:
-            query = {"published": {"$in": [True, 1, "true", "True", "1"]}} if published_only else {}
-            mongo_posts = list(mdb.posts.find(query, {"_id": 0}))
+            mongo_posts = list(mdb.posts.find({}, {"_id": 0}))
     except Exception as me:
         print(f"MongoDB get_posts error: {me}")
-
-    if mdb is None or not mongo_posts:
-        for p in sqlite_posts:
-            p['published'] = str(p.get('published')).lower() in ('true', '1')
-        return sqlite_posts
 
     posts_by_slug = {}
 
@@ -956,6 +949,7 @@ def get_posts(published_only: bool = False):
                         "image_url": p.get('image_url', ''),
                         "category": p.get('category', 'Tin tức'),
                         "published": is_pub,
+                        "scheduled_at": p.get('scheduled_at'),
                         "created_at": p.get('created_at', '')
                     }
                     mdb.posts.replace_one({'_id': str(pid)}, post_doc, upsert=True)
@@ -963,6 +957,22 @@ def get_posts(published_only: bool = False):
                     print(f"Auto-sync sqlite post to mongo notice: {sync_e}")
 
     result = list(posts_by_slug.values())
+
+    if published_only:
+        now_clean = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        def is_post_active(p):
+            if not p.get('published'):
+                return False
+            sched = p.get('scheduled_at')
+            if not sched:
+                return True
+            try:
+                sched_clean = str(sched).replace('T', ' ')
+                return sched_clean <= now_clean
+            except Exception:
+                return True
+        result = [p for p in result if is_post_active(p)]
+
     result.sort(key=lambda x: x.get('id', 0) if isinstance(x.get('id'), int) else 0, reverse=True)
     return result
 

@@ -87,12 +87,29 @@ export function BlogList({ onEdit }: BlogListProps) {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{post.category}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {post.created_at ? new Date(post.created_at).toLocaleDateString("vi-VN") : "N/A"}
+                  {post.scheduled_at && new Date(post.scheduled_at) > new Date() ? (
+                    <div>
+                      <div className="text-amber-600 font-medium text-xs">Hẹn lúc:</div>
+                      <div>{new Date(post.scheduled_at).toLocaleString("vi-VN", { dateStyle: 'short', timeStyle: 'short' })}</div>
+                    </div>
+                  ) : (
+                    post.created_at ? new Date(post.created_at).toLocaleDateString("vi-VN") : "N/A"
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${post.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                    {post.published ? 'Đã đăng' : 'Bản nháp'}
-                  </span>
+                  {post.published && post.scheduled_at && new Date(post.scheduled_at) > new Date() ? (
+                    <span className="px-2.5 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                      <span>⏰ Hẹn giờ</span>
+                    </span>
+                  ) : post.published ? (
+                    <span className="px-2.5 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">
+                      <span>✓ Đã đăng</span>
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 border border-gray-200">
+                      <span>Bản nháp</span>
+                    </span>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button 

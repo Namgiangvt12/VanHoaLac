@@ -43,3 +43,5 @@ class PostCreateSchema(BaseModel):
     image_url: Optional[str] = ""
     category: Optional[str] = "Tin tức"
     published: bool = False
+    scheduled_at: Optional[str] = None
+
