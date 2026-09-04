@@ -15,7 +15,7 @@ const jsonLd = {
   "url": "https://vanhoalac.vn/lien-he",
   "name": "Liên Hệ Bánh Trung Thu Văn Hòa Lạc Vũng Tàu",
   "isPartOf": { "@id": "https://vanhoalac.vn/#website" },
-  "about": { "@id": "https://vanhoalac.vn/#organization" }
+  "about": { "@id": "https://vanhoalac.vn/#business" }
 }
 
 export default function ContactPage() {

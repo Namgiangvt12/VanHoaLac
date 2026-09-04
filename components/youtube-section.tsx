@@ -73,14 +73,9 @@ export function YouTubeSection() {
             "@type": "VideoObject",
             "name": "Quy trình làm bánh trung thu Văn Hòa Lạc Vũng Tàu",
             "description": "Video YouTube Shorts quay quy trình làm bánh trung thu thủ công da dợp gia truyền tại Văn Hòa Lạc Vũng Tàu.",
-            "thumbnailUrl": "https://vanhoalac.vn/images/hero-mooncakes.jpg",
+            "thumbnailUrl": "https://vanhoalac.vn/images/hero-mooncakes.JPG",
             "uploadDate": "2026-03-29T12:00:00+07:00",
-            "embedUrl": "https://www.youtube.com/embed/rZNx-Gk67Rw",
-            "interactionStatistic": {
-              "@type": "InteractionCounter",
-              "interactionType": { "@type": "WatchAction" },
-              "userInteractionCount": 25000
-            }
+            "embedUrl": "https://www.youtube.com/embed/rZNx-Gk67Rw"
           })
         }}
       />

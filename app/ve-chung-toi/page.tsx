@@ -12,11 +12,11 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Organization",
-      "@id": "https://vanhoalac.vn/#organization",
+      "@type": ["Bakery", "Organization"],
+      "@id": "https://vanhoalac.vn/#business",
       "name": "Bánh Trung Thu Văn Hòa Lạc",
       "url": "https://vanhoalac.vn",
-      "logo": "https://vanhoalac.vn/images/logo.png",
+      "logo": "https://vanhoalac.vn/logo.png",
       "description": "Thương hiệu bánh trung thu truyền thống lâu đời tại Vũng Tàu, nổi tiếng với bánh da dợp và các loại nhân truyền thống chất lượng cao.",
       "sameAs": [
         "https://www.facebook.com/banh.vanhoalac",
@@ -36,7 +36,7 @@ const jsonLd = {
       "url": "https://vanhoalac.vn/ve-chung-toi",
       "name": "Về Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Chuyên Nghiệp",
       "isPartOf": { "@id": "https://vanhoalac.vn/#website" },
-      "about": { "@id": "https://vanhoalac.vn/#organization" }
+      "about": { "@id": "https://vanhoalac.vn/#business" }
     }
   ]
 }

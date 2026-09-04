@@ -14,15 +14,15 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "LocalBusiness",
+      "@type": ["Bakery", "LocalBusiness"],
       "@id": "https://vanhoalac.vn/#business",
       "name": "Bánh Trung Thu Văn Hòa Lạc Vũng Tàu",
       "alternateName": ["Van Hoa Lac", "Văn Hòa Lạc", "Van Hoa Lac Mooncake", "Văn Hòa Lạc Vũng Tàu", "Bánh Trung Thu Vũng Tàu", "Banh Trung Thu Văn Hòa Lạc"],
-      "description": "Thương hiệu bánh trung thu Văn Hòa Lạc Vũng Tàu thủ công cao cấp tại Long Điền. Chuyên cung cấp bánh da dợp (3 lớp nhân) và bánh trung thu gà quay, thập cẩm , đậu xanh.... Giao hàng toàn quốc.",
+      "description": "Thương hiệu bánh trung thu Văn Hòa Lạc Vũng Tàu thủ công cao cấp tại Long Điền. Chuyên cung cấp bánh da dợp (3 lớp nhân) và bánh trung thu gà quay, thập cẩm, đậu xanh... Giao hàng toàn quốc.",
       "url": "https://vanhoalac.vn",
       "telephone": "+84-971682213",
       "email": "xin-chao@vanhoalac.vn",
-      "image": "https://vanhoalac.vn/images/hero-mooncakes.jpg",
+      "image": "https://vanhoalac.vn/images/hero-mooncakes.JPG",
       "logo": "https://vanhoalac.vn/logo.png",
       "priceRange": "$$",
       "address": {
@@ -57,14 +57,7 @@ const jsonLd = {
         "https://instagram.com/vanhoalac",
         "https://tiktok.com/@vanhoalac",
         "https://www.google.com/maps?cid=10604868065099837957"
-      ],
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "1250",
-        "bestRating": "5",
-        "worstRating": "1"
-      }
+      ]
     },
     {
       "@type": "WebSite",
@@ -112,23 +105,23 @@ const jsonLd = {
     {
       "@type": "ItemList",
       "name": "Sản phẩm Bánh Trung Thu Văn Hòa Lạc",
-      "description": "Danh sách bánh trung thu cao cấp thủ công",
+      "description": "Danh sách bánh trung thu cao cấp thủ công chính hãng",
       "itemListElement": [
         {
           "@type": "Product",
           "position": 1,
-          "name": "Bánh Trung Thu Nhân Hạt Sen Văn Hòa Lạc",
-          "description": "Bánh trung thu nhân hạt sen truyền thống với kết cấu mịn màng như lụa. Sản phẩm thủ công cao cấp của Văn Hòa Lạc.",
-          "image": "https://vanhoalac.vn/images/mooncake-lotus.jpg",
+          "name": "Bánh Da Dợp Thập Cẩm 2 Trứng Văn Hòa Lạc",
+          "description": "Bánh trung thu da dợp đặc sắc 2 trứng hòa quyện hương vị gia truyền Văn Hòa Lạc. Sản phẩm thủ công cao cấp.",
+          "image": "https://vanhoalac.vn/images/banh-da-dop-2-trung.png",
           "brand": {
             "@type": "Brand",
             "name": "Văn Hòa Lạc"
           },
           "offers": {
             "@type": "Offer",
-            "url": "https://vanhoalac.vn/san-pham/banh-hat-sen",
+            "url": "https://vanhoalac.vn/san-pham/da-dop-2-trung",
             "priceCurrency": "VND",
-            "price": "180000",
+            "price": "130000",
             "validFrom": "2024-01-01",
             "priceValidUntil": "2026-10-31",
             "availability": "https://schema.org/InStock",
@@ -168,28 +161,23 @@ const jsonLd = {
               "returnMethod": "https://schema.org/ReturnByMail",
               "returnFees": "https://schema.org/ReturnShippingFees"
             }
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "reviewCount": "420"
           }
         },
         {
           "@type": "Product",
           "position": 2,
-          "name": "Bánh Trung Thu Nhân Đậu Đỏ Văn Hòa Lạc",
-          "description": "Bánh trung thu nhân đậu đỏ azuki ngọt dịu với hương vị tự nhiên thanh nhẹ. Sản phẩm thủ công cao cấp của Văn Hòa Lạc.",
-          "image": "https://vanhoalac.vn/images/mooncake-redbean.jpg",
+          "name": "Bánh Da Dợp Thập Cẩm 3 Trứng Văn Hòa Lạc",
+          "description": "Bánh trung thu da dợp cao cấp 3 trứng thơm ngon đặc biệt từ thương hiệu gia truyền Văn Hòa Lạc.",
+          "image": "https://vanhoalac.vn/images/banh-da-dop-3-trung.png",
           "brand": {
             "@type": "Brand",
             "name": "Văn Hòa Lạc"
           },
           "offers": {
             "@type": "Offer",
-            "url": "https://vanhoalac.vn/san-pham/banh-dau-do",
+            "url": "https://vanhoalac.vn/san-pham/da-dop-3-trung",
             "priceCurrency": "VND",
-            "price": "160000",
+            "price": "165000",
             "validFrom": "2024-01-01",
             "priceValidUntil": "2026-10-31",
             "availability": "https://schema.org/InStock",
@@ -229,28 +217,23 @@ const jsonLd = {
               "returnMethod": "https://schema.org/ReturnByMail",
               "returnFees": "https://schema.org/ReturnShippingFees"
             }
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "reviewCount": "385"
           }
         },
         {
           "@type": "Product",
           "position": 3,
-          "name": "Bánh Trung Thu Trứng Muối Văn Hòa Lạc",
-          "description": "Bánh trung thu với lòng đỏ trứng muối vàng óng tượng trưng cho trăng tròn đoàn viên. Sản phẩm thủ công cao cấp của Văn Hòa Lạc.",
-          "image": "https://vanhoalac.vn/images/mooncake-egg.jpg",
+          "name": "Bánh Da Dợp Ngoại Cỡ 6-10-12-14 Trứng Văn Hòa Lạc",
+          "description": "Bánh trung thu da dợp ngoại cỡ cao cấp thượng hạng, biểu trưng cho sự viên mãn đoàn viên.",
+          "image": "https://vanhoalac.vn/images/banh-da-dop-big.png",
           "brand": {
             "@type": "Brand",
             "name": "Văn Hòa Lạc"
           },
           "offers": {
             "@type": "Offer",
-            "url": "https://vanhoalac.vn/san-pham/banh-trung-muoi",
+            "url": "https://vanhoalac.vn/san-pham/da-dop-big",
             "priceCurrency": "VND",
-            "price": "220000",
+            "price": "460000",
             "validFrom": "2024-01-01",
             "priceValidUntil": "2026-10-31",
             "availability": "https://schema.org/InStock",
@@ -290,11 +273,6 @@ const jsonLd = {
               "returnMethod": "https://schema.org/ReturnByMail",
               "returnFees": "https://schema.org/ReturnShippingFees"
             }
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "reviewCount": "512"
           }
         }
       ]

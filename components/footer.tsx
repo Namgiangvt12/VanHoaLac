@@ -5,8 +5,6 @@ export function Footer() {
     <footer 
       id="contact" 
       className="bg-primary text-primary-foreground py-16 md:py-24 px-6"
-      itemScope
-      itemType="https://schema.org/WPFooter"
     >
       <div className="max-w-7xl mx-auto">
         {/* CTA Section */}
@@ -37,21 +35,16 @@ export function Footer() {
         </div>
 
         {/* Footer Grid */}
-        <div 
-          className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12"
-          itemScope
-          itemType="https://schema.org/LocalBusiness"
-        >
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="font-serif text-2xl font-medium" itemProp="name">
+            <Link href="/" className="font-serif text-2xl font-medium">
               Văn Hòa Lạc
             </Link>
-            <address className="mt-4 not-italic text-sm text-primary-foreground/70 leading-relaxed" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
-              <span itemProp="streetAddress">174 Nguyễn Văn Trỗi</span><br />
-              <span itemProp="addressLocality">Phường Vũng Tàu</span><br />
-              <span itemProp="addressRegion">TP. Hồ Chí Minh</span>
-              <meta itemProp="addressCountry" content="VN" />
+            <address className="mt-4 not-italic text-sm text-primary-foreground/70 leading-relaxed">
+              <span>174 Nguyễn Văn Trỗi</span><br />
+              <span>Phường Vũng Tàu</span><br />
+              <span>TP. Hồ Chí Minh</span>
             </address>
           </div>
 
@@ -70,10 +63,10 @@ export function Footer() {
           <nav aria-label="Khám phá thêm">
             <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-4">Sản Phẩm</p>
             <ul className="space-y-3">
-              <li><Link href="#banh-hat-sen" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Nhân Hạt Sen</Link></li>
-              <li><Link href="#banh-dau-do" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Nhân Đậu Đỏ</Link></li>
-              <li><Link href="#banh-trung-muoi" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Trứng Muối</Link></li>
-              <li><Link href="#hop-qua" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Hộp Quà Tặng</Link></li>
+              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Da Dợp Thập Cẩm</Link></li>
+              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Nướng Đậu Xanh</Link></li>
+              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Thập Cẩm Gà Quay</Link></li>
+              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Hộp Quà Biếu Tặng</Link></li>
             </ul>
           </nav>
 
@@ -81,10 +74,46 @@ export function Footer() {
           <nav aria-label="Dịch vụ">
             <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-4">Dịch Vụ</p>
             <ul className="space-y-3">
-              <li><Link href="#" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Đặt Hàng Online</Link></li>
-              <li><Link href="#" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Giao Hàng Toàn Quốc</Link></li>
-              <li><Link href="#" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Đơn Hàng Doanh Nghiệp</Link></li>
-              <li><Link href="#" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">In Logo Theo Yêu Cầu</Link></li>
+              <li>
+                <Link 
+                  href="https://zalo.me/0971682213" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                >
+                  Đặt Hàng Online
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="https://zalo.me/0971682213" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                >
+                  Giao Hàng Toàn Quốc
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="https://zalo.me/0971682213" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                >
+                  Đơn Hàng Doanh Nghiệp
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="https://zalo.me/0971682213" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                >
+                  In Logo Theo Yêu Cầu
+                </Link>
+              </li>
             </ul>
           </nav>
 
@@ -119,12 +148,12 @@ export function Footer() {
               </li>
               <li>
                 <Link 
-                  href="https://zalo.me/vanhoalac" 
+                  href="https://zalo.me/0971682213" 
                   className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Zalo: Văn Hòa Lạc
+                  Zalo: 0971.682.213
                 </Link>
               </li>
             </ul>

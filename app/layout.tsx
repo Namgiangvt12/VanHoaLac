@@ -75,48 +75,6 @@ export const metadata: Metadata = {
   },
 }
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Bakery",
-  "name": "Bánh Trung Thu Văn Hòa Lạc",
-  "image": "https://vanhoalac.vn/images/hero-mooncakes.jpg",
-  "@id": "https://vanhoalac.vn",
-  "url": "https://vanhoalac.vn",
-  "telephone": "0971682213",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "174 Nguyễn Văn Trỗi",
-    "addressLocality": "Phường Vũng Tàu",
-    "addressRegion": "TP. Hồ Chí Minh",
-    "postalCode": "700000",
-    "addressCountry": "VN"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": 10.3585353,
-    "longitude": 107.0790819
-  },
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday"
-    ],
-    "opens": "07:00",
-    "closes": "21:00"
-  },
-  "sameAs": [
-    "https://www.facebook.com/banh.vanhoalac",
-    "https://www.google.com/maps?cid=10604868065099837957"
-  ],
-  "priceRange": "$$"
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -126,10 +84,6 @@ export default function RootLayout({
     <html lang="vi" className={`${playfair.variable}`}>
       <head>
         <meta name="google-site-verification" content="RMSB0OSydag4gIrvd75hYd8UPgvCY0rE_pTvGUm7A_4" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
       </head>
       <body className="font-sans antialiased">
         <GoogleAnalytics />
