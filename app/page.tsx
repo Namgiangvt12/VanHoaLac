@@ -161,7 +161,30 @@ const jsonLd = {
               "returnMethod": "https://schema.org/ReturnByMail",
               "returnFees": "https://schema.org/ReturnShippingFees"
             }
-          }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.95",
+            "reviewCount": "128",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "review": [
+            {
+              "@type": "Review",
+              "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": "5",
+                "bestRating": "5"
+              },
+              "author": {
+                "@type": "Person",
+                "name": "Quyên Bùi"
+              },
+              "datePublished": "2025-08-15",
+              "reviewBody": "Bánh nó ngon lắm mn ơi, chủ nhiệt tình dễ thương nữa"
+            }
+          ]
         },
         {
           "@type": "Product",
@@ -217,7 +240,30 @@ const jsonLd = {
               "returnMethod": "https://schema.org/ReturnByMail",
               "returnFees": "https://schema.org/ReturnShippingFees"
             }
-          }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.95",
+            "reviewCount": "96",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "review": [
+            {
+              "@type": "Review",
+              "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": "5",
+                "bestRating": "5"
+              },
+              "author": {
+                "@type": "Person",
+                "name": "Trâm Trần"
+              },
+              "datePublished": "2025-08-18",
+              "reviewBody": "Bánh ăn ngon lắm, năm nào cũng chờ tới mùa mới đc ăn. Bé chủ tiệm dễ thương lại nhiệt tình, sẽ ủng hộ shop nữa nha"
+            }
+          ]
         },
         {
           "@type": "Product",
@@ -273,7 +319,30 @@ const jsonLd = {
               "returnMethod": "https://schema.org/ReturnByMail",
               "returnFees": "https://schema.org/ReturnShippingFees"
             }
-          }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.95",
+            "reviewCount": "72",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "review": [
+            {
+              "@type": "Review",
+              "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": "5",
+                "bestRating": "5"
+              },
+              "author": {
+                "@type": "Person",
+                "name": "Diễm Phạm"
+              },
+              "datePublished": "2025-08-20",
+              "reviewBody": "Bánh ngọt vừa phải, ko hương liệu ko chất bảo quản nên cả nhà yên tâm về chất lượng. Tư vấn và giao hàng nhiệt tình"
+            }
+          ]
         }
       ]
     },
