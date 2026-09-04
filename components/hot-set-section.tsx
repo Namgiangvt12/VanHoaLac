@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import useEmblaCarousel from "embla-carousel-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
   Crown, 
@@ -14,8 +15,9 @@ import {
   X, 
   CheckCircle2, 
   Flame,
-  Star,
-  Award
+  Award,
+  Pause,
+  Play
 } from "lucide-react"
 
 interface HotSetItem {
@@ -108,33 +110,55 @@ const HOT_SETS: HotSetItem[] = [
 ]
 
 export function HotSetSection() {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    skipSnaps: false,
+    dragFree: false
+  })
+
+  const [selectedIndex, setSelectedIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [selectedSet, setSelectedSet] = useState<HotSetItem | null>(null)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const total = HOT_SETS.length
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return
+    setSelectedIndex(emblaApi.selectedScrollSnap())
+  }, [emblaApi])
 
-  const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % total)
-  }, [total])
-
-  const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + total) % total)
-  }, [total])
-
-  // Auto-play interval
   useEffect(() => {
-    if (isPaused || selectedSet !== null) return
-
-    timerRef.current = setInterval(() => {
-      nextSlide()
-    }, 3800)
-
+    if (!emblaApi) return
+    onSelect()
+    emblaApi.on("select", onSelect)
+    emblaApi.on("reInit", onSelect)
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
+      emblaApi.off("select", onSelect)
+      emblaApi.off("reInit", onSelect)
     }
-  }, [isPaused, selectedSet, nextSlide])
+  }, [emblaApi, onSelect])
+
+  // Seamless auto-play with loop
+  useEffect(() => {
+    if (!emblaApi || isPaused || selectedSet !== null) return
+
+    const interval = setInterval(() => {
+      emblaApi.scrollNext()
+    }, 3200)
+
+    return () => clearInterval(interval)
+  }, [emblaApi, isPaused, selectedSet])
+
+  const scrollPrev = useCallback(() => {
+    emblaApi?.scrollPrev()
+  }, [emblaApi])
+
+  const scrollNext = useCallback(() => {
+    emblaApi?.scrollNext()
+  }, [emblaApi])
+
+  const scrollTo = useCallback((index: number) => {
+    emblaApi?.scrollTo(index)
+  }, [emblaApi])
 
   return (
     <section 
@@ -166,34 +190,26 @@ export function HotSetSection() {
           </p>
         </div>
 
-        {/* Carousel Container */}
-        <div className="relative">
-          {/* Main Showcase Viewport */}
-          <div className="overflow-hidden rounded-3xl py-4">
-            <motion.div 
-              className="flex gap-5 md:gap-6"
-              animate={{ 
-                x: `-${currentIndex * (100 / (typeof window !== 'undefined' && window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1))}%` 
-              }}
-              transition={{ type: "spring", stiffness: 260, damping: 28 }}
-              style={{
-                display: "flex",
-                touchAction: "pan-y"
-              }}
-            >
+        {/* Carousel Viewport with Embla Loop */}
+        <div className="relative group/carousel">
+          <div 
+            ref={emblaRef} 
+            className="overflow-hidden cursor-grab active:cursor-grabbing rounded-3xl py-4"
+          >
+            <div className="flex -ml-5 md:-ml-6 touch-pan-y">
               {HOT_SETS.map((item, idx) => {
                 const isFirst = item.isRecommended
 
                 return (
                   <div
                     key={item.id}
-                    className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0"
+                    className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-5 md:pl-6 min-w-0"
                   >
                     <div 
-                      className={`group relative h-full rounded-3xl overflow-hidden transition-all duration-500 flex flex-col justify-between ${
+                      className={`relative h-full rounded-3xl overflow-hidden transition-all duration-500 flex flex-col justify-between select-none ${
                         isFirst
-                          ? "bg-gradient-to-b from-amber-500/10 via-card to-card border-2 border-amber-400/80 shadow-[0_10px_35px_rgba(245,158,11,0.22)] ring-4 ring-amber-400/10 hover:shadow-[0_15px_45px_rgba(245,158,11,0.35)]"
-                          : "bg-card/80 backdrop-blur-md border border-border/70 hover:border-gold/50 shadow-md hover:shadow-2xl"
+                          ? "bg-gradient-to-b from-amber-500/10 via-card to-card border-2 border-amber-400/90 shadow-[0_10px_35px_rgba(245,158,11,0.22)] ring-4 ring-amber-400/15 hover:shadow-[0_15px_45px_rgba(245,158,11,0.35)]"
+                          : "bg-card/90 backdrop-blur-md border border-border/80 hover:border-gold/60 shadow-md hover:shadow-2xl"
                       }`}
                     >
                       {/* Badge Area */}
@@ -205,13 +221,13 @@ export function HotSetSection() {
                             <Award className="w-3.5 h-3.5" />
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-background/80 backdrop-blur-md text-foreground text-[11px] font-semibold tracking-wide border border-border/60">
+                          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-background/90 backdrop-blur-md text-foreground text-[11px] font-semibold tracking-wide border border-border/60">
                             <Sparkles className="w-3 h-3 text-gold" />
                             <span>{item.priceTag}</span>
                           </div>
                         )}
 
-                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-black/50 text-white/90 backdrop-blur-sm">
+                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-black/60 text-white backdrop-blur-sm">
                           Set #{idx + 1}
                         </span>
                       </div>
@@ -225,18 +241,18 @@ export function HotSetSection() {
                           src={item.image}
                           alt={`${item.title} - Bánh Trung Thu Văn Hòa Lạc`}
                           fill
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           priority={idx === 0}
                         />
 
                         {/* Gradient shade */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
 
                         {/* Quick View Hover Indicator */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                           <button 
-                            className="px-4 py-2.5 rounded-full bg-white/95 text-primary font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-2xl backdrop-blur-md transform -translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:scale-105"
+                            className="px-4 py-2.5 rounded-full bg-white/95 text-primary font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-2xl backdrop-blur-md transform transition-all duration-300 hover:scale-105"
                             aria-label={`Xem chi tiết ${item.title}`}
                           >
                             <Eye className="w-4 h-4" />
@@ -251,7 +267,7 @@ export function HotSetSection() {
                           <p className="text-xs font-semibold text-gold tracking-widest uppercase mb-1">
                             {item.subtitle}
                           </p>
-                          <h3 className="font-serif text-xl sm:text-2xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                          <h3 className="font-serif text-xl sm:text-2xl font-bold text-foreground hover:text-primary transition-colors line-clamp-1">
                             {item.title}
                           </h3>
                           <p className="text-muted-foreground text-xs sm:text-sm mt-2 line-clamp-2 leading-relaxed">
@@ -299,22 +315,22 @@ export function HotSetSection() {
                   </div>
                 )
               })}
-            </motion.div>
+            </div>
           </div>
 
           {/* Navigation Controls: Prev & Next buttons */}
           <button
-            onClick={prevSlide}
+            onClick={scrollPrev}
             aria-label="Set quà trước"
-            className="absolute left-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-background/90 backdrop-blur-xl border border-border/80 shadow-xl text-foreground flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200 hidden sm:flex"
+            className="absolute -left-2 sm:-left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-background/95 backdrop-blur-xl border border-border/90 shadow-xl text-foreground flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
 
           <button
-            onClick={nextSlide}
+            onClick={scrollNext}
             aria-label="Set quà tiếp theo"
-            className="absolute right-1 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-background/90 backdrop-blur-xl border border-border/80 shadow-xl text-foreground flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200 hidden sm:flex"
+            className="absolute -right-2 sm:-right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-background/95 backdrop-blur-xl border border-border/90 shadow-xl text-foreground flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -326,33 +342,42 @@ export function HotSetSection() {
             {HOT_SETS.map((_, dotIdx) => (
               <button
                 key={dotIdx}
-                onClick={() => setCurrentIndex(dotIdx)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  dotIdx === currentIndex
-                    ? "w-8 bg-amber-500"
-                    : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                onClick={() => scrollTo(dotIdx)}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  dotIdx === selectedIndex
+                    ? "w-8 bg-amber-500 shadow-sm shadow-amber-500/40"
+                    : "w-2.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
                 }`}
                 aria-label={`Chuyển đến set ${dotIdx + 1}`}
               />
             ))}
           </div>
 
-          {/* Status note */}
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            <span>Tự động chuyển set quà sau 3.8s (Dừng khi rê chuột)</span>
+          {/* Status note with pause/play indicator */}
+          <div className="flex items-center gap-2.5 text-xs text-muted-foreground bg-muted/40 px-3.5 py-1.5 rounded-full border border-border/40">
+            {isPaused ? (
+              <>
+                <Pause className="w-3.5 h-3.5 text-amber-500" />
+                <span>Đang tạm dừng xem chi tiết</span>
+              </>
+            ) : (
+              <>
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span>Vòng slide chạy tự động sau 3.2s • Vòng lặp vô tận</span>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-2 sm:hidden">
             <button
-              onClick={prevSlide}
-              className="px-3.5 py-2 rounded-xl bg-card border border-border text-xs font-semibold flex items-center gap-1"
+              onClick={scrollPrev}
+              className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-semibold flex items-center gap-1.5 shadow-sm"
             >
               <ChevronLeft className="w-3.5 h-3.5" /> Trước
             </button>
             <button
-              onClick={nextSlide}
-              className="px-3.5 py-2 rounded-xl bg-primary text-white text-xs font-semibold flex items-center gap-1"
+              onClick={scrollNext}
+              className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm"
             >
               Sau <ChevronRight className="w-3.5 h-3.5" />
             </button>
