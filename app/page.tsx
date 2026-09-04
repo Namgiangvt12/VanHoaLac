@@ -119,7 +119,7 @@ const jsonLd = {
           },
           "offers": {
             "@type": "Offer",
-            "url": "https://vanhoalac.vn/san-pham/da-dop-2-trung",
+            "url": "https://vanhoalac.vn/#products",
             "priceCurrency": "VND",
             "price": "130000",
             "validFrom": "2024-01-01",
@@ -175,7 +175,7 @@ const jsonLd = {
           },
           "offers": {
             "@type": "Offer",
-            "url": "https://vanhoalac.vn/san-pham/da-dop-3-trung",
+            "url": "https://vanhoalac.vn/#products",
             "priceCurrency": "VND",
             "price": "165000",
             "validFrom": "2024-01-01",
@@ -231,7 +231,7 @@ const jsonLd = {
           },
           "offers": {
             "@type": "Offer",
-            "url": "https://vanhoalac.vn/san-pham/da-dop-big",
+            "url": "https://vanhoalac.vn/#products",
             "priceCurrency": "VND",
             "price": "460000",
             "validFrom": "2024-01-01",
