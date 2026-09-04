@@ -23,6 +23,7 @@ export function Header() {
 
   const navLinks = [
     { name: "Giới Thiệu", href: "/ve-chung-toi" },
+    { name: "Set Hot", href: "/#hot-set" },
     { name: "Sản Phẩm", href: "/#products" },
     { name: "Video", href: "/#youtube-section" },
     { name: "Bài Viết", href: "/#blog" },

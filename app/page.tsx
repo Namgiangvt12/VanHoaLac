@@ -1,5 +1,6 @@
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
+import { HotSetSection } from "@/components/hot-set-section"
 import { AboutSection } from "@/components/about-section"
 import { ReviewSection } from "@/components/review-section"
 import { BlogSection } from "@/components/blog-section"
@@ -388,6 +389,7 @@ export default function Home() {
       <Header />
       <main>
         <HeroSection />
+        <HotSetSection />
         <YouTubeSection />
         <AboutSection />
         <ReviewSection />
