@@ -47,9 +47,9 @@ export function HeroSection() {
               className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.1] text-balance mb-6 drop-shadow-2xl"
               itemProp="headline"
             >
-              Nghệ Thuật <br /> 
               <span className="text-gold italic">Bánh Trung Thu</span> <br /> 
-              Văn Hòa Lạc Vũng Tàu
+              Văn Hòa Lạc <br /> 
+              Vũng Tàu
             </h1>
             <p className="text-white/90 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-medium drop-shadow" itemProp="description">
               Khám phá hương vị di sản gia truyền qua từng lớp bánh "Da Dợp" độc bản 
