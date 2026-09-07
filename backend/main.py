@@ -36,6 +36,7 @@ PRODUCTS = [
     ("Da dợp chay", 130000),
     ("Da dợp chay lớn", 680000),
     ("Trung Thu Nướng chay", 130000),
+    ("Hộp 2 thêm", 10000),
 ]
 
 @app.on_event("startup")
@@ -735,7 +736,8 @@ def get_daily_products(date_iso: str):
         q = int(row['qty'] or 0)
         from pdf_services import _boxes_for_product
         boxes = _boxes_for_product(name, q)
-        total_cakes += q
+        if not re.search(r'hộp', name, flags=re.IGNORECASE):
+            total_cakes += q
         total_boxes += boxes
         results.append({
             "name": name,

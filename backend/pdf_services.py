@@ -1,5 +1,6 @@
 import os
 import io
+import re
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from reportlab.pdfgen import canvas
@@ -402,7 +403,9 @@ def generate_daily_report_pdf(day_iso: str):
         name = row['product_name']
         q = int(row['qty'] or 0)
         boxes = _boxes_for_product(name, q)
-        total_cakes += q; total_boxes += boxes
+        if not re.search(r'hộp', name, flags=re.IGNORECASE):
+            total_cakes += q
+        total_boxes += boxes
         c.drawString(margin_x, y, str(name))
         c.drawRightString(W - margin_x, y, f"{q} | {boxes}")
         y -= line_gap
