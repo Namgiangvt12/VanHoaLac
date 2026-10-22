@@ -1,48 +1,57 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Play } from 'lucide-react'
+import { Play, Sparkles } from 'lucide-react'
 
 export function YouTubeSection() {
   return (
-    <section id="youtube-section" className="py-24 bg-card overflow-hidden">
-      <div className="container px-4 mx-auto">
-        <div className="flex flex-col md:flex-row items-center gap-12">
-          {/* Text Content */}
+    <section id="youtube-section" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Framed Baseline Editorial Container */}
+      <div className="rounded-[28px] md:rounded-[36px] bg-[#FFFCF7] border border-[#E8E1D5] p-8 sm:p-12 md:p-16 shadow-[0_4px_30px_rgba(48,37,31,0.03)]">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+          
+          {/* Left: Text Story */}
           <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
             className="flex-1 space-y-6"
           >
-            <h2 className="text-4xl md:text-5xl font-serif text-primary leading-tight">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE9DF] border border-[#E8E1D5] text-[#B58A4A] text-xs uppercase tracking-[0.25em] font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-[#B58A4A]" />
+              <span>Góc Nhìn Thực Tế</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#30251F] leading-tight">
               Khám Phá Nghệ Thuật <br /> Làm Bánh Thủ Công
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+
+            <p className="text-base text-[#766960] leading-relaxed">
               Hãy cùng chúng tôi đi sâu vào quy trình chế biến những chiếc bánh trung thu tinh xảo nhất. 
-              Từ việc tuyển chọn nguyên liệu đến kỹ thuật "Da Dợp" gia truyền, mỗi công đoạn đều là một tác phẩm nghệ thuật.
+              Từ việc tuyển chọn nguyên liệu đến kỹ thuật &quot;Da Dợp&quot; gia truyền, mỗi công đoạn đều là một tác phẩm nghệ thuật.
             </p>
-            <div className="pt-4">
+
+            <div className="pt-2">
               <a 
                 href="https://youtube.com/@vanhoalac" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-8 py-4 bg-primary text-primary-foreground font-medium rounded-full hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl group"
+                className="inline-flex items-center gap-2.5 px-8 py-4 bg-[#7A2935] hover:bg-[#581C25] text-[#FFFCF7] font-bold text-xs uppercase tracking-[0.18em] rounded-full transition-all shadow-md active:scale-95 group"
               >
-                Theo dõi trên YouTube
-                <Play className="ml-2 w-5 h-5 group-hover:fill-current transition-colors" />
+                <span>Theo dõi trên YouTube</span>
+                <Play className="w-4 h-4 text-[#DFC28E] group-hover:scale-110 transition-transform fill-current" />
               </a>
             </div>
           </motion.div>
 
-          {/* Video Embed */}
+          {/* Right: Vertical 9:16 Video Shorts Frame (Aperture Scale Reveal) */}
           <motion.div 
-            initial={{ opacity: 0, x: 50, scale: 0.9 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            initial={{ opacity: 0, scale: 0.95, y: 25 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
-            className="flex-1 w-full max-w-[360px] mx-auto relative aspect-[9/16] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-4 border-gold/30 ring-4 ring-primary/20 bg-black"
+            className="flex-1 w-full max-w-[340px] sm:max-w-[360px] mx-auto relative aspect-[9/16] rounded-[26px] overflow-hidden shadow-2xl border-2 border-[#E8E1D5] bg-black"
           >
             <iframe 
               width="100%" 
@@ -54,17 +63,18 @@ export function YouTubeSection() {
               referrerPolicy="strict-origin-when-cross-origin" 
               allowFullScreen
               className="absolute inset-0 w-full h-full object-cover"
-            ></iframe>
-            {/* SEO Overlay for local recognition */}
+            />
+            {/* SEO Overlay for local search */}
             <div className="hidden">
               <h3>Bánh Trung Thu Văn Hòa Lạc - Quy Trình Thủ Công</h3>
               <p>Xem video ngắn quy trình sản xuất bánh trung thu da dợp cao cấp tại xưởng Văn Hòa Lạc Vũng Tàu.</p>
             </div>
           </motion.div>
+
         </div>
       </div>
 
-      {/* Structured Data for Video SEO (Inline script for this component) */}
+      {/* Structured Data for Video SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

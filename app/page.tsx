@@ -1,5 +1,6 @@
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
+import { HeritageTiltedShowcase } from "@/components/heritage-tilted-showcase"
 import { HotSetSection } from "@/components/hot-set-section"
 import { AboutSection } from "@/components/about-section"
 import { ReviewSection } from "@/components/review-section"
@@ -7,6 +8,7 @@ import { BlogSection } from "@/components/blog-section"
 import { ProductsSection } from "@/components/products-section"
 import { YouTubeSection } from "@/components/youtube-section"
 import { Footer } from "@/components/footer"
+
 
 export const dynamic = 'force-dynamic'
 
@@ -17,9 +19,16 @@ const jsonLd = {
     {
       "@type": ["Bakery", "LocalBusiness"],
       "@id": "https://vanhoalac.vn/#business",
-      "name": "Bánh Trung Thu Văn Hòa Lạc Vũng Tàu",
-      "alternateName": ["Van Hoa Lac", "Văn Hòa Lạc", "Van Hoa Lac Mooncake", "Văn Hòa Lạc Vũng Tàu", "Bánh Trung Thu Vũng Tàu", "Banh Trung Thu Văn Hòa Lạc"],
-      "description": "Thương hiệu bánh trung thu Văn Hòa Lạc Vũng Tàu thủ công cao cấp tại Long Điền. Chuyên cung cấp bánh da dợp (3 lớp nhân) và bánh trung thu gà quay, thập cẩm, đậu xanh... Giao hàng toàn quốc.",
+      "name": "Văn Hòa Lạc Vũng Tàu",
+      "alternateName": [
+        "Văn Hòa Lạc Vũng Tàu",
+        "Bánh Trung Thu Văn Hòa Lạc Vũng Tàu",
+        "Van Hoa Lac Vung Tau",
+        "Văn Hòa Lạc",
+        "Van Hoa Lac",
+        "Tiệm Bánh Văn Hòa Lạc Vũng Tàu"
+      ],
+      "description": "Văn Hòa Lạc Vũng Tàu là thương hiệu bánh trung thu thủ công gia truyền từ năm 1970. Chuyên cung cấp bánh Da Dợp độc bản vỏ giòn xốp, bánh nướng thập cẩm gà quay, đậu xanh hạt sen và giao hàng toàn quốc.",
       "url": "https://vanhoalac.vn",
       "telephone": "+84-971682213",
       "email": "xin-chao@vanhoalac.vn",
@@ -352,26 +361,42 @@ const jsonLd = {
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Bánh trung thu Văn Hòa Lạc có giao hàng toàn quốc không?",
+          "name": "Văn Hòa Lạc Vũng Tàu là gì và có nguồn gốc từ đâu?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Có, Văn Hòa Lạc giao hàng bánh trung thu toàn quốc với dịch vụ đóng gói bảo quản an toàn chuyên nghiệp, đảm bảo bánh luôn tươi ngon khi tới tay khách hàng."
+            "text": "Văn Hòa Lạc Vũng Tàu là thương hiệu bánh trung thu thủ công gia truyền có lịch sử từ năm 1970 (hơn 50 năm). Văn Hòa Lạc Vũng Tàu nức tiếng với phương pháp làm bánh thủ công truyền thống, sử dụng nguyên liệu tuyển chọn tươi sạch và đặc biệt là dòng bánh Da Dợp độc bản với lớp vỏ nhiều lớp giòn xốp."
           }
         },
         {
           "@type": "Question",
-          "name": "Bánh trung thu Văn Hòa Lạc có hạn sử dụng bao lâu?",
+          "name": "Văn Hòa Lạc Vũng Tàu có những sản phẩm bánh nào nổi bật?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Bánh trung thu Văn Hòa Lạc có hạn sử dụng 30 ngày kể từ ngày sản xuất khi bảo quản ở nhiệt độ mát (15-20°C). Để tối ưu hương vị thơm ngon nhất, nên thưởng thức trong vòng 2 tuần."
+            "text": "Văn Hòa Lạc Vũng Tàu chuyên các dòng bánh trung thu thủ công cao cấp: Bánh Da Dợp thập cẩm xá xíu 2 trứng và 3 trứng, bánh nướng thập cẩm gà quay ngũ nhân, bánh nướng đậu xanh sầu riêng, hạt sen và các hộp quà biếu tặng sang trọng."
           }
         },
         {
           "@type": "Question",
-          "name": "Văn Hòa Lạc có nhận đặt bánh trung thu số lượng lớn cho doanh nghiệp không?",
+          "name": "Địa chỉ mua bánh và hotline của Văn Hòa Lạc Vũng Tàu ở đâu?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Có, Văn Hòa Lạc nhận đặt bánh trung thu số lượng lớn cho doanh nghiệp cùng chính sách chiết khấu hấp dẫn. Chúng tôi cũng hỗ trợ in logo và thiết kế hộp quà theo yêu cầu riêng."
+            "text": "Khách hàng có thể mua bánh Văn Hòa Lạc Vũng Tàu trực tiếp tại điểm bán: 174 Nguyễn Văn Trỗi, Phường Vũng Tàu, TP. Hồ Chí Minh (Hotline/Zalo: 0971.682.213), mở cửa từ 08:00 - 21:00 hàng ngày, hoặc đặt hàng trực tuyến giao tận nơi toàn quốc qua website chính thức vanhoalac.vn."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Bánh trung thu Văn Hòa Lạc Vũng Tàu bảo quản được trong bao lâu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Bánh trung thu thủ công Văn Hòa Lạc Vũng Tàu có hạn sử dụng tốt nhất từ 20 đến 30 ngày kể từ ngày sản xuất khi bảo quản ở nơi thoáng mát (15-20°C). Bánh hoàn toàn không sử dụng phụ gia hay chất bảo quản độc hại."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Văn Hòa Lạc Vũng Tàu có chính sách đặt hàng cho doanh nghiệp không?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Có, Văn Hòa Lạc Vũng Tàu cung cấp dịch vụ đặt bánh trung thu số lượng lớn cho công ty và doanh nghiệp, hỗ trợ in logo thương hiệu trên hộp quà, xuất hóa đơn VAT đầy đủ và chính sách chiết khấu hấp dẫn."
           }
         }
       ]
@@ -389,6 +414,7 @@ export default function Home() {
       <Header />
       <main>
         <HeroSection />
+        <HeritageTiltedShowcase />
         <HotSetSection />
         <YouTubeSection />
         <AboutSection />

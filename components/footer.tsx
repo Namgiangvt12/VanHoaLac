@@ -1,85 +1,96 @@
 import Link from "next/link"
+import { Phone, MessageCircle } from "lucide-react"
 
 export function Footer() {
   return (
     <footer 
       id="contact" 
-      className="bg-primary text-primary-foreground py-16 md:py-24 px-6"
+      className="bg-[#231814] text-[#FFFCF7] pt-16 md:pt-24 pb-12 px-4 sm:px-6 lg:px-8 mt-16"
     >
-      <div className="max-w-7xl mx-auto">
-        {/* CTA Section */}
-        <div className="text-center mb-16 pb-16 border-b border-primary-foreground/20">
-          <h2 className="font-serif text-2xl md:text-3xl font-light mb-4">
+      <div className="max-w-7xl mx-auto space-y-16">
+        
+        {/* Top Inset CTA Card */}
+        <div className="rounded-[28px] md:rounded-[36px] bg-[#30251F] border border-[#43362E] p-8 sm:p-12 md:p-16 text-center space-y-6 shadow-xl">
+          <span className="inline-block px-4 py-1 rounded-full bg-white/10 border border-white/20 text-[#DFC28E] text-[11px] tracking-[0.25em] uppercase font-bold">
+            Tết Đoàn Viên 2026
+          </span>
+
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
             Đặt Bánh Trung Thu Văn Hòa Lạc
           </h2>
-          <p className="text-primary-foreground/70 mb-6 max-w-lg mx-auto">
+
+          <p className="text-[#D5C9BF] max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
             Liên hệ ngay để đặt bánh trung thu cao cấp cho gia đình hoặc doanh nghiệp. 
             Giao hàng toàn quốc với dịch vụ bảo quản lạnh chuyên nghiệp.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+
+          <div className="pt-2 flex flex-col sm:flex-row justify-center items-center gap-4">
             <Link 
               href="tel:0902371025" 
-              className="border border-primary-foreground px-8 py-3.5 text-sm tracking-widest uppercase hover:bg-primary-foreground hover:text-primary transition-colors inline-block"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-white/30 text-[#FFFCF7] px-8 py-3.5 rounded-full text-xs tracking-[0.16em] uppercase font-bold hover:bg-white hover:text-[#30251F] transition-all"
               title="Gọi điện đặt bánh điện thoại 1"
             >
-              Gọi Ngay: 0902.371.025
+              <Phone size={14} />
+              <span>Gọi Ngay: 0902.371.025</span>
             </Link>
+
             <Link 
               href="tel:0971682213" 
-              className="border border-primary-foreground px-8 py-3.5 text-sm tracking-widest uppercase hover:bg-primary-foreground hover:text-primary transition-colors inline-block"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#7A2935] hover:bg-[#581C25] text-[#FFFCF7] px-8 py-3.5 rounded-full text-xs tracking-[0.16em] uppercase font-bold transition-all shadow-md"
               title="Gọi điện đặt bánh điện thoại 2"
             >
-              Hỗ Trợ: 0971.682.213
+              <Phone size={14} />
+              <span>Hỗ Trợ: 0971.682.213</span>
             </Link>
           </div>
         </div>
 
-        {/* Footer Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
-          {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="font-serif text-2xl font-medium">
+        {/* Footer Navigation Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-8 pt-4">
+          {/* Brand & Address */}
+          <div className="col-span-2 md:col-span-1 space-y-4">
+            <Link href="/" className="font-serif text-2xl font-bold tracking-tight text-white block">
               Văn Hòa Lạc
             </Link>
-            <address className="mt-4 not-italic text-sm text-primary-foreground/70 leading-relaxed">
-              <span>174 Nguyễn Văn Trỗi</span><br />
+            <address className="not-italic text-sm text-[#D5C9BF] leading-relaxed">
+              <span className="text-white font-medium">174 Nguyễn Văn Trỗi</span><br />
               <span>Phường Vũng Tàu</span><br />
               <span>TP. Hồ Chí Minh</span>
             </address>
           </div>
 
           {/* Navigation */}
-          <nav aria-label="Điều hướng footer">
-            <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-4">Điều Hướng</p>
-            <ul className="space-y-3">
-              <li><Link href="/" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Trang Chủ</Link></li>
-              <li><Link href="#about" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Về Văn Hòa Lạc</Link></li>
-              <li><Link href="#blog" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bài Viết</Link></li>
-              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Sản Phẩm</Link></li>
+          <nav aria-label="Điều hướng footer" className="space-y-4">
+            <p className="text-xs tracking-[0.2em] uppercase font-bold text-[#DFC28E]">Điều Hướng</p>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link href="/" className="text-[#D5C9BF] hover:text-white transition-colors">Trang Chủ</Link></li>
+              <li><Link href="#about" className="text-[#D5C9BF] hover:text-white transition-colors">Về Văn Hòa Lạc</Link></li>
+              <li><Link href="#blog" className="text-[#D5C9BF] hover:text-white transition-colors">Bài Viết</Link></li>
+              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Sản Phẩm</Link></li>
             </ul>
           </nav>
 
-          {/* Discover */}
-          <nav aria-label="Khám phá thêm">
-            <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-4">Sản Phẩm</p>
-            <ul className="space-y-3">
-              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Da Dợp Thập Cẩm</Link></li>
-              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Nướng Đậu Xanh</Link></li>
-              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Bánh Thập Cẩm Gà Quay</Link></li>
-              <li><Link href="#products" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Hộp Quà Biếu Tặng</Link></li>
+          {/* Products */}
+          <nav aria-label="Khám phá thêm" className="space-y-4">
+            <p className="text-xs tracking-[0.2em] uppercase font-bold text-[#DFC28E]">Sản Phẩm</p>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Da Dợp Thập Cẩm</Link></li>
+              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Nướng Đậu Xanh</Link></li>
+              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Thập Cẩm Gà Quay</Link></li>
+              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Hộp Quà Biếu Tặng</Link></li>
             </ul>
           </nav>
 
           {/* Services */}
-          <nav aria-label="Dịch vụ">
-            <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-4">Dịch Vụ</p>
-            <ul className="space-y-3">
+          <nav aria-label="Dịch vụ" className="space-y-4">
+            <p className="text-xs tracking-[0.2em] uppercase font-bold text-[#DFC28E]">Dịch Vụ</p>
+            <ul className="space-y-2.5 text-sm">
               <li>
                 <Link 
                   href="https://zalo.me/0971682213" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                  className="text-[#D5C9BF] hover:text-white transition-colors"
                 >
                   Đặt Hàng Online
                 </Link>
@@ -89,7 +100,7 @@ export function Footer() {
                   href="https://zalo.me/0971682213" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                  className="text-[#D5C9BF] hover:text-white transition-colors"
                 >
                   Giao Hàng Toàn Quốc
                 </Link>
@@ -99,7 +110,7 @@ export function Footer() {
                   href="https://zalo.me/0971682213" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                  className="text-[#D5C9BF] hover:text-white transition-colors"
                 >
                   Đơn Hàng Doanh Nghiệp
                 </Link>
@@ -109,7 +120,7 @@ export function Footer() {
                   href="https://zalo.me/0971682213" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                  className="text-[#D5C9BF] hover:text-white transition-colors"
                 >
                   In Logo Theo Yêu Cầu
                 </Link>
@@ -117,39 +128,24 @@ export function Footer() {
             </ul>
           </nav>
 
-          {/* Contact */}
-          <div>
-            <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-4">Liên Hệ</p>
-            <ul className="space-y-3">
-              <li className="flex flex-col gap-2">
-                <Link 
-                  href="tel:0902371025" 
-                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  itemProp="telephone"
-                >
-                  0902.371.025
-                </Link>
-                <Link 
-                  href="tel:0971682213" 
-                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  itemProp="telephone"
-                >
-                  0971.682.213
+          {/* Contact Hotline & Zalo */}
+          <nav aria-label="Thông tin liên hệ" className="space-y-4">
+            <p className="text-xs tracking-[0.2em] uppercase font-bold text-[#DFC28E]">Liên Hệ</p>
+            <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link href="tel:0902371025" className="text-[#D5C9BF] hover:text-white transition-colors">
+                  Hotline 1: 0902.371.025
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="mailto:xin-chao@vanhoalac.vn" 
-                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  itemProp="email"
-                >
-                  xin-chao@vanhoalac.vn
+                <Link href="tel:0971682213" className="text-[#D5C9BF] hover:text-white transition-colors">
+                  Hotline 2: 0971.682.213
                 </Link>
               </li>
               <li>
                 <Link 
                   href="https://zalo.me/0971682213" 
-                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                  className="text-[#D5C9BF] hover:text-white transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -157,21 +153,20 @@ export function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </nav>
         </div>
 
-        {/* Copyright & SEO Footer Text */}
-        <div className="mt-16 pt-8 border-t border-primary-foreground/20">
-          <div className="text-center">
-            <p className="text-xs text-primary-foreground/60 mb-2">
-              Bản quyền © {new Date().getFullYear()} Bánh Trung Thu Văn Hòa Lạc (Van Hoa Lac). Đã đăng ký bản quyền.
-            </p>
-            <p className="text-xs text-primary-foreground/50 max-w-2xl mx-auto leading-relaxed">
-              Văn Hòa Lạc (Van Hoa Lac Mooncake) – Thương hiệu bánh trung thu gia truyền hơn 50 năm tại Long Điền, Bà Rịa - Vũng Tàu.
-              Chuyên cung cấp bánh trung thu van hoa lac thu cong cao cap với các dòng nhân truyền thống, giao hàng toàn quốc và nhận đặt bánh trung thu doanh nghiệp số lượng lớn.
-            </p>
-          </div>
+        {/* Bottom Copyright & Brand Statement */}
+        <div className="pt-8 border-t border-white/10 text-center space-y-2 text-xs text-[#D5C9BF]/70">
+          <p>
+            Bản quyền © {new Date().getFullYear()} Bánh Trung Thu Văn Hòa Lạc (Van Hoa Lac). Đã đăng ký bản quyền.
+          </p>
+          <p className="max-w-3xl mx-auto leading-relaxed">
+            Văn Hòa Lạc (Van Hoa Lac Mooncake) – Thương hiệu bánh trung thu gia truyền hơn 50 năm tại Long Điền, Bà Rịa - Vũng Tàu. 
+            Chuyên cung cấp bánh trung thu van hoa lac thu cong cao cap với các dòng nhân truyền thống, giao hàng toàn quốc và nhận đặt bánh trung thu doanh nghiệp số lượng lớn.
+          </p>
         </div>
+
       </div>
     </footer>
   )

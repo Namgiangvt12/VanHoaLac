@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Plus, ShoppingBag, Sparkles, Star } from "lucide-react"
+import { ArrowRight, ShoppingBag, Sparkles, Star } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
@@ -23,15 +23,23 @@ const containerVars = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.12
     }
   }
 }
 
 const itemVars = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  hidden: { opacity: 0, y: 40 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.8, 
+      ease: [0.16, 1, 0.3, 1] as const
+    } 
+  }
 }
+
 
 export function ProductsSection() {
   const [products, setProducts] = useState<Product[]>([])
@@ -61,21 +69,15 @@ export function ProductsSection() {
 
   if (loading) {
     return (
-      <section id="products" className="py-24 md:py-32 px-6 bg-background" aria-label="Đang tải sản phẩm">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section id="products" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" aria-label="Đang tải sản phẩm">
+        <div className="space-y-12">
           <div className="text-center space-y-4 max-w-xl mx-auto">
-            <div className="h-4 bg-muted animate-pulse rounded-full w-48 mx-auto" />
-            <div className="h-10 bg-muted animate-pulse rounded-xl w-3/4 mx-auto" />
+            <div className="h-4 bg-[#EFE9DF] animate-pulse rounded-full w-48 mx-auto" />
+            <div className="h-10 bg-[#EFE9DF] animate-pulse rounded-2xl w-3/4 mx-auto" />
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="space-y-4">
-                <div className="aspect-[4/5] rounded-3xl bg-muted/60 animate-pulse border border-border/40" />
-                <div className="space-y-2 text-center">
-                  <div className="h-5 bg-muted animate-pulse rounded-lg w-3/4 mx-auto" />
-                  <div className="h-4 bg-muted/80 animate-pulse rounded-md w-1/2 mx-auto" />
-                </div>
-              </div>
+              <div key={i} className="aspect-[4/5] rounded-[24px] bg-[#FFFCF7] border border-[#E8E1D5] animate-pulse" />
             ))}
           </div>
         </div>
@@ -85,10 +87,8 @@ export function ProductsSection() {
 
   if (error) {
     return (
-      <section id="products" className="py-24 md:py-32 px-6 bg-background">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-destructive font-bold text-lg">Lỗi: {error}</p>
-        </div>
+      <section id="products" className="py-20 px-6 max-w-7xl mx-auto text-center">
+        <p className="text-destructive font-bold text-lg">Lỗi: {error}</p>
       </section>
     )
   }
@@ -110,54 +110,53 @@ export function ProductsSection() {
       <motion.article 
         key={product.id} 
         variants={itemVars}
-        className="group relative"
+        whileHover={{ y: -6, transition: { duration: 0.25, ease: "easeOut" } }}
+        className="group relative flex flex-col justify-between rounded-[24px] bg-[#FFFCF7] border border-[#E8E1D5] hover:border-[#B58A4A]/60 overflow-hidden shadow-sm hover:shadow-xl transition-colors duration-300"
         itemScope
         itemType="https://schema.org/Product"
         role="listitem"
       >
-        <Link href={`#${product.slug}`} className="block">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-card border border-border/50 shadow-sm transition-all group-hover:shadow-2xl group-hover:border-gold/20">
+        <Link href={`/san-pham/${product.slug}`} className="block p-3 sm:p-4">
+          {/* Product Image Container with subtle max 1.04 zoom */}
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[20px] bg-[#EFE9DF]">
             <Image
               src={product.image}
               alt={"Bánh Trung Thu Văn Hòa Lạc (Van Hoa Lac) - " + product.name}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
-              sizes="(max-width: 768px) 100vw, 25vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               itemProp="image"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
-            {/* Badge */}
-            <div className={`absolute top-4 left-4 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm flex items-center gap-1 ${isSpecial ? 'bg-gold/90 text-white' : 'bg-white/90 text-primary'}`}>
+            {/* Pill Badge */}
+            <div className="absolute top-3 left-3 flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase backdrop-blur-md shadow-sm bg-[#FFFCF7]/95 text-[#7A2935] border border-[#E8E1D5]">
               {isSpecial ? (
                 <>
-                  <Star size={12} className="text-white fill-white" />
-                  <span>Da Dợp Thập Cẩm</span>
+                  <Star size={11} className="text-[#B58A4A] fill-[#B58A4A]" />
+                  <span>Da Dợp Độc Bản</span>
                 </>
               ) : (
-                'Gia Truyền'
+                <span>{product.category || "Truyền Thống"}</span>
               )}
             </div>
-
-            {/* Actions Overlay */}
-            <div className="absolute inset-x-0 bottom-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex justify-between items-end">
-              <button 
-                className="bg-white text-primary w-10 h-10 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform active:scale-95"
-                aria-label="Thêm vào giỏ hàng"
-              >
-                <Plus size={18} />
-              </button>
-              <div className="bg-primary px-3 py-1.5 rounded-lg text-white font-bold text-sm shadow-xl">
-                {product.price}
-              </div>
-            </div>
           </div>
-          
-          <div className="mt-4 space-y-1 text-center">
-            <h3 className="font-serif text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[56px]" itemProp="name">
-              {product.shortName}
-            </h3>
-            <p className="text-muted-foreground text-xs md:text-sm line-clamp-2 leading-relaxed" itemProp="description">
+
+          {/* Product Info */}
+          <div className="pt-4 pb-2 px-1 space-y-2">
+            <h4 className="font-serif text-base sm:text-lg font-bold text-[#30251F] group-hover:text-[#7A2935] transition-colors line-clamp-1" itemProp="name">
+              {product.name}
+            </h4>
+
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="font-serif text-base sm:text-lg font-bold text-[#7A2935]" itemProp="price">
+                {product.price}
+              </span>
+              <span className="text-[11px] font-bold text-[#B58A4A] uppercase tracking-wider group-hover:underline inline-flex items-center gap-0.5">
+                Chi tiết <ArrowRight size={11} />
+              </span>
+            </div>
+
+            <p className="text-[#766960] text-xs line-clamp-2 leading-relaxed" itemProp="description">
               {product.description}
             </p>
           </div>
@@ -169,53 +168,45 @@ export function ProductsSection() {
   return (
     <section 
       id="products" 
-      className="py-24 md:py-32 px-6 bg-gradient-to-b from-background to-card/30"
+      className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
       aria-labelledby="products-heading"
     >
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <header className="text-center mb-20 space-y-4">
-          <motion.p 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-gold text-xs tracking-[0.4em] uppercase font-bold"
-          >
-            Bộ Sưu Tập Quà Tặng 2026
-          </motion.p>
-          <motion.h2 
-            id="products-heading" 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary max-w-3xl mx-auto leading-tight"
-          >
-            Bánh Trung Thu Thủ Công Cao Cấp
-          </motion.h2>
-        </header>
-
-        {/* Products Grid Sections */}
-      </div>
-
-      {/* Section 1 Header */}
-      <div className="w-full bg-primary/95 py-4 mb-10 mt-12 shadow-md border-y border-gold/30 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 text-center flex items-center justify-center gap-3">
-          <span className="h-px w-8 bg-gold/50 hidden sm:block" />
-          <h3 className="text-white font-serif text-lg md:text-xl font-bold tracking-widest uppercase">
-            {section1Title}
-          </h3>
-          <span className="h-px w-8 bg-gold/50 hidden sm:block" />
+      {/* Section Header */}
+      <motion.header 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center mb-16 space-y-3 max-w-3xl mx-auto"
+      >
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE9DF] border border-[#E8E1D5] text-[#B58A4A] text-xs uppercase tracking-[0.25em] font-bold">
+          <Sparkles className="w-3.5 h-3.5 text-[#B58A4A]" />
+          <span>Bộ Sưu Tập Quà Tặng 2026</span>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6">
+        <h2 
+          id="products-heading" 
+          className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#30251F] tracking-tight leading-tight"
+        >
+          Bánh Trung Thu Thủ Công Cao Cấp
+        </h2>
+      </motion.header>
+
+      {/* Category 1: Da Dợp Thập Cẩm */}
+      <div className="mb-14">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="px-5 py-2 rounded-full bg-[#7A2935] text-[#FFFCF7] text-xs font-bold uppercase tracking-widest">
+            {section1Title}
+          </div>
+          <div className="flex-1 h-px bg-[#E8E1D5]" />
+        </div>
+
         <motion.div 
           variants={containerVars}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10" 
+          viewport={{ once: true, margin: "-6%" }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6" 
           role="list" 
           aria-label={section1Title}
         >
@@ -223,61 +214,65 @@ export function ProductsSection() {
         </motion.div>
       </div>
 
-      {/* Section 2 Header */}
-      <div className="w-full bg-primary/95 py-4 mb-10 mt-20 shadow-md border-y border-gold/30 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 text-center flex items-center justify-center gap-3">
-          <span className="h-px w-8 bg-gold/50 hidden sm:block" />
-          <h3 className="text-white font-serif text-lg md:text-xl font-bold tracking-widest uppercase">
+      {/* Category 2: Trung Thu Nướng */}
+      <div className="mb-16">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="px-5 py-2 rounded-full bg-[#30251F] text-[#FFFCF7] text-xs font-bold uppercase tracking-widest">
             {section2Title}
-          </h3>
-          <span className="h-px w-8 bg-gold/50 hidden sm:block" />
+          </div>
+          <div className="flex-1 h-px bg-[#E8E1D5]" />
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6">
         <motion.div 
           variants={containerVars}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10" 
+          viewport={{ once: true, margin: "-6%" }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6" 
           role="list" 
           aria-label={section2Title}
         >
           {section2Products.map(renderProduct)}
         </motion.div>
-
-        {/* CTA Footer Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="mt-24 p-10 md:p-16 rounded-[40px] bg-primary text-primary-foreground text-center relative overflow-hidden shadow-[0_30px_60px_-15px_rgba(139,0,0,0.3)]"
-        >
-          {/* Decorative background element */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-          
-          <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-            <h3 className="text-3xl md:text-4xl font-serif font-bold">Quà Tặng Sang Trọng & Tinh Tế</h3>
-            <p className="text-primary-foreground/80 leading-relaxed md:text-lg">
-              Mỗi hộp bánh trung thu <strong>Văn Hòa Lạc</strong> là một đại sứ của lòng tri ân. 
-              Chúng tôi cam kết mang đến hương vị chuẩn mực nhất cùng dịch vụ <strong>Giao hàng toàn quốc</strong> an toàn, nhanh chóng.
-            </p>
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link 
-                href="#contact" 
-                className="inline-flex items-center gap-3 bg-white text-primary px-10 py-5 rounded-full text-xs tracking-widest uppercase font-black hover:bg-gold hover:text-white transition-all shadow-2xl active:scale-95 group"
-              >
-                <ShoppingBag size={18} />
-                Đặt Hàng Ngay
-              </Link>
-              <span className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase">Hotline: 097.168.2213</span>
-            </div>
-          </div>
-        </motion.div>
       </div>
+
+      {/* Baseline Framed CTA Banner */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        viewport={{ once: true }}
+        className="rounded-[28px] md:rounded-[36px] bg-[#30251F] text-[#FFFCF7] p-8 sm:p-12 md:p-16 text-center border border-[#43362E] shadow-2xl relative overflow-hidden"
+      >
+        <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-[#DFC28E] text-[11px] uppercase tracking-[0.25em] font-bold">
+            <Sparkles className="w-3.5 h-3.5 text-[#DFC28E]" />
+            <span>Đại Sứ Lòng Tri Ân</span>
+          </div>
+
+          <h3 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white leading-tight">
+            Quà Tặng Sang Trọng & Tinh Tế
+          </h3>
+
+          <p className="text-white/80 leading-relaxed text-sm sm:text-base">
+            Mỗi hộp bánh trung thu <strong>Văn Hòa Lạc</strong> là một đại sứ của lòng tri ân. 
+            Chúng tôi cam kết mang đến hương vị chuẩn mực nhất cùng dịch vụ <strong>Giao hàng toàn quốc</strong> an toàn, nhanh chóng.
+          </p>
+
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link 
+              href="#contact" 
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#7A2935] hover:bg-[#581C25] text-[#FFFCF7] px-8 py-4 rounded-full text-xs tracking-[0.2em] uppercase font-bold transition-all shadow-md active:scale-95"
+            >
+              <ShoppingBag size={16} />
+              <span>Đặt Hàng Ngay</span>
+            </Link>
+            <span className="text-[#DFC28E] text-xs font-bold tracking-[0.2em] uppercase">
+              Hotline: 097.168.2213
+            </span>
+          </div>
+        </div>
+      </motion.div>
     </section>
   )
 }

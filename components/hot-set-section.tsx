@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import useEmblaCarousel from "embla-carousel-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
-  Crown, 
   Sparkles, 
   ChevronLeft, 
   ChevronRight, 
@@ -17,8 +16,9 @@ import {
   Flame,
   Award,
   Pause,
-  Play
+  ArrowRight
 } from "lucide-react"
+import { useLenis } from "./smooth-scroll-provider"
 
 interface HotSetItem {
   id: string
@@ -120,6 +120,24 @@ export function HotSetSection() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [selectedSet, setSelectedSet] = useState<HotSetItem | null>(null)
+  const { stopScroll, startScroll } = useLenis()
+
+  // Baseline scroll lock and Escape key handler
+  useEffect(() => {
+    if (selectedSet) {
+      stopScroll()
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setSelectedSet(null)
+        }
+      }
+      window.addEventListener("keydown", handleKeyDown)
+      return () => {
+        startScroll()
+        window.removeEventListener("keydown", handleKeyDown)
+      }
+    }
+  }, [selectedSet, stopScroll, startScroll])
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return
@@ -137,14 +155,11 @@ export function HotSetSection() {
     }
   }, [emblaApi, onSelect])
 
-  // Seamless auto-play with loop
   useEffect(() => {
     if (!emblaApi || isPaused || selectedSet !== null) return
-
     const interval = setInterval(() => {
       emblaApi.scrollNext()
-    }, 3200)
-
+    }, 3500)
     return () => clearInterval(interval)
   }, [emblaApi, isPaused, selectedSet])
 
@@ -163,139 +178,168 @@ export function HotSetSection() {
   return (
     <section 
       id="hot-set" 
-      className="relative py-20 md:py-28 px-4 sm:px-6 bg-gradient-to-b from-card/30 via-background to-card/20 overflow-hidden"
+      className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      aria-labelledby="hot-set-heading"
     >
-      {/* Decorative ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gold/10 blur-[130px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute bottom-10 left-10 w-[350px] h-[250px] bg-primary/5 blur-[100px] rounded-full pointer-events-none -z-10" />
-
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/15 via-gold/20 to-amber-500/15 border border-gold/30 text-gold text-xs uppercase tracking-[0.3em] font-bold shadow-sm backdrop-blur-md">
-            <Flame className="w-4 h-4 text-amber-500 animate-pulse" />
+      {/* Section Header (Baseline Typography & Spacing) */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-2xl space-y-3"
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE9DF] border border-[#E8E1D5] text-[#B58A4A] text-xs uppercase tracking-[0.25em] font-bold">
+            <Flame className="w-3.5 h-3.5 text-[#B58A4A]" />
             <span>Bộ Sưu Tập Set Hot 2026</span>
-            <Sparkles className="w-3.5 h-3.5 text-gold" />
           </div>
 
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary tracking-tight leading-tight">
+          <h2 
+            id="hot-set-heading"
+            className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#30251F] tracking-tight leading-tight"
+          >
             Set Quà Tặng Trung Thu Đẳng Cấp
           </h2>
 
-          <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-[#766960] text-sm sm:text-base leading-relaxed">
             Tuyển tập các set hộp quà bánh trung thu sang trọng bậc nhất mùa trăng 2026. 
             Lựa chọn hàng đầu cho doanh nghiệp tri ân đối tác và quà biếu gia đình trọn vẹn tình thân.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Carousel Viewport with Embla Loop */}
-        <div className="relative group/carousel">
-          <div 
-            ref={emblaRef} 
-            className="overflow-hidden cursor-grab active:cursor-grabbing rounded-3xl py-4"
+        {/* Desktop Carousel Controls */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="hidden sm:flex items-center gap-3"
+        >
+          <button
+            onClick={scrollPrev}
+            aria-label="Set quà trước"
+            className="w-11 h-11 rounded-full bg-[#FFFCF7] border border-[#E8E1D5] text-[#30251F] flex items-center justify-center hover:bg-[#7A2935] hover:text-[#FFFCF7] hover:border-[#7A2935] transition-all shadow-sm active:scale-95"
           >
-            <div className="flex -ml-5 md:-ml-6 touch-pan-y">
-              {HOT_SETS.map((item, idx) => {
-                const isFirst = item.isRecommended
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={scrollNext}
+            aria-label="Set quà tiếp theo"
+            className="w-11 h-11 rounded-full bg-[#FFFCF7] border border-[#E8E1D5] text-[#30251F] flex items-center justify-center hover:bg-[#7A2935] hover:text-[#FFFCF7] hover:border-[#7A2935] transition-all shadow-sm active:scale-95"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </motion.div>
+      </div>
 
-                return (
-                  <div
-                    key={item.id}
-                    className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-5 md:pl-6 min-w-0"
+      {/* Embla Carousel Viewport */}
+      <div className="relative">
+        <div ref={emblaRef} className="overflow-hidden cursor-grab active:cursor-grabbing rounded-[28px] -mx-2 px-2 py-2">
+          <div className="flex -ml-6 touch-pan-y">
+            {HOT_SETS.map((item, idx) => {
+              const isFirst = item.isRecommended
+
+              return (
+                <div
+                  key={item.id}
+                  className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-6 min-w-0"
+                >
+                  {/* WRAPPER RIÊNG CHO REVEAL ANIMATION - KHÔNG GHI ĐÈ TRANSFORM CỦA EMBLA */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-6%" }}
+                    transition={{ 
+                      duration: 0.8, 
+                      delay: (idx % 3) * 0.12, 
+                      ease: [0.16, 1, 0.3, 1] 
+                    }}
+                    whileHover={{ y: -6, transition: { duration: 0.25, ease: "easeOut" } }}
+                    className="h-full"
                   >
                     <div 
-                      className={`relative h-full rounded-3xl overflow-hidden transition-all duration-500 flex flex-col justify-between select-none ${
-                        isFirst
-                          ? "bg-gradient-to-b from-amber-500/10 via-card to-card border-2 border-amber-400/90 shadow-[0_10px_35px_rgba(245,158,11,0.22)] ring-4 ring-amber-400/15 hover:shadow-[0_15px_45px_rgba(245,158,11,0.35)]"
-                          : "bg-card/90 backdrop-blur-md border border-border/80 hover:border-gold/60 shadow-md hover:shadow-2xl"
-                      }`}
+                      className="relative h-full rounded-[26px] bg-[#FFFCF7] border border-[#E8E1D5] hover:border-[#B58A4A]/50 transition-colors duration-300 flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-xl group"
                     >
-                      {/* Badge Area */}
+                      {/* Top Badges */}
                       <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
                         {isFirst ? (
-                          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/40 border border-amber-200 animate-pulse">
-                            <Crown className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7A2935] text-[#FFFCF7] font-bold text-[10px] uppercase tracking-wider shadow">
+                            <Award className="w-3.5 h-3.5 text-[#DFC28E]" />
                             <span>100% RECOMMENDED</span>
-                            <Award className="w-3.5 h-3.5" />
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-background/90 backdrop-blur-md text-foreground text-[11px] font-semibold tracking-wide border border-border/60">
-                            <Sparkles className="w-3 h-3 text-gold" />
+                          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#FFFCF7]/95 text-[#30251F] text-[10px] font-bold tracking-wider uppercase border border-[#E8E1D5]">
+                            <Sparkles className="w-3 h-3 text-[#B58A4A]" />
                             <span>{item.priceTag}</span>
                           </div>
                         )}
 
-                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-black/60 text-white backdrop-blur-sm">
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#30251F]/70 text-white backdrop-blur-sm">
                           Set #{idx + 1}
                         </span>
                       </div>
 
-                      {/* Image Container with 2026 modern hover zoom */}
+                      {/* Image Container with subtle zoom (Max 1.04) */}
                       <div 
-                        className="relative aspect-[4/5] w-full overflow-hidden cursor-pointer"
+                        className="relative aspect-[4/5] w-full overflow-hidden cursor-pointer bg-[#EFE9DF]"
                         onClick={() => setSelectedSet(item)}
                       >
                         <Image
                           src={item.image}
                           alt={`${item.title} - Bánh Trung Thu Văn Hòa Lạc`}
                           fill
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           priority={idx === 0}
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#231814]/70 via-transparent to-transparent opacity-40 group-hover:opacity-60 transition-opacity" />
 
-                        {/* Gradient shade */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
-
-                        {/* Quick View Hover Indicator */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        {/* Quick View Button on Hover */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <button 
-                            className="px-4 py-2.5 rounded-full bg-white/95 text-primary font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-2xl backdrop-blur-md transform transition-all duration-300 hover:scale-105"
+                            className="px-4 py-2 rounded-full bg-[#FFFCF7]/95 text-[#30251F] font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-xl backdrop-blur-md hover:bg-[#7A2935] hover:text-[#FFFCF7] transition-all"
                             aria-label={`Xem chi tiết ${item.title}`}
                           >
-                            <Eye className="w-4 h-4" />
-                            <span>Xem Ảnh Chi Tiết</span>
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Xem Ảnh</span>
                           </button>
                         </div>
                       </div>
 
-                      {/* Content Card Body */}
-                      <div className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col justify-between">
+                      {/* Card Body */}
+                      <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                         <div>
-                          <p className="text-xs font-semibold text-gold tracking-widest uppercase mb-1">
+                          <p className="text-[11px] font-bold text-[#B58A4A] tracking-widest uppercase mb-1">
                             {item.subtitle}
                           </p>
-                          <h3 className="font-serif text-xl sm:text-2xl font-bold text-foreground hover:text-primary transition-colors line-clamp-1">
+                          <h3 className="font-serif text-xl font-bold text-[#30251F] group-hover:text-[#7A2935] transition-colors line-clamp-1">
                             {item.title}
                           </h3>
-                          <p className="text-muted-foreground text-xs sm:text-sm mt-2 line-clamp-2 leading-relaxed">
+                          <p className="text-[#766960] text-xs sm:text-sm mt-2 line-clamp-2 leading-relaxed">
                             {item.description}
                           </p>
                         </div>
 
-                        {/* Highlights checklist */}
-                        <div className="pt-2 border-t border-border/50 space-y-1.5">
+                        {/* Highlights */}
+                        <div className="pt-3 border-t border-[#E8E1D5]/70 space-y-1.5">
                           {item.highlights.slice(0, 2).map((hl, hIdx) => (
-                            <div key={hIdx} className="flex items-center gap-2 text-xs text-foreground/80">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                            <div key={hIdx} className="flex items-center gap-2 text-xs text-[#30251F]/80">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#B58A4A] shrink-0" />
                               <span className="truncate">{hl}</span>
                             </div>
                           ))}
                         </div>
 
-                        {/* Action CTA Buttons */}
-                        <div className="pt-3 flex items-center gap-2.5">
+                        {/* Card Actions */}
+                        <div className="pt-2 flex items-center gap-2.5">
                           <Link
                             href="https://zalo.me/0971682213"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 ${
-                              isFirst
-                                ? "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg shadow-amber-500/25 hover:scale-[1.02]"
-                                : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:scale-[1.02]"
-                            }`}
+                            className="flex-1 py-3 px-4 rounded-xl bg-[#7A2935] hover:bg-[#581C25] text-[#FFFCF7] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow active:scale-95"
                           >
                             <MessageCircle className="w-4 h-4" />
                             <span>Tư Vấn Zalo</span>
@@ -303,7 +347,7 @@ export function HotSetSection() {
 
                           <button
                             onClick={() => setSelectedSet(item)}
-                            className="p-3 rounded-xl border border-border/70 hover:border-primary hover:bg-primary/10 text-foreground transition-all duration-300"
+                            className="p-3 rounded-xl border border-[#E8E1D5] hover:border-[#7A2935] hover:bg-[#EFE9DF]/50 text-[#30251F] transition-all active:scale-95"
                             title="Xem chi tiết set"
                             aria-label="Xem chi tiết set quà"
                           >
@@ -312,105 +356,78 @@ export function HotSetSection() {
                         </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Navigation Controls: Prev & Next buttons */}
-          <button
-            onClick={scrollPrev}
-            aria-label="Set quà trước"
-            className="absolute -left-2 sm:-left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-background/95 backdrop-blur-xl border border-border/90 shadow-xl text-foreground flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          <button
-            onClick={scrollNext}
-            aria-label="Set quà tiếp theo"
-            className="absolute -right-2 sm:-right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-background/95 backdrop-blur-xl border border-border/90 shadow-xl text-foreground flex items-center justify-center hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Carousel Pagination & Indicator */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border/40 pt-6">
-          <div className="flex items-center gap-2">
-            {HOT_SETS.map((_, dotIdx) => (
-              <button
-                key={dotIdx}
-                onClick={() => scrollTo(dotIdx)}
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  dotIdx === selectedIndex
-                    ? "w-8 bg-amber-500 shadow-sm shadow-amber-500/40"
-                    : "w-2.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                }`}
-                aria-label={`Chuyển đến set ${dotIdx + 1}`}
-              />
-            ))}
-          </div>
-
-          {/* Status note with pause/play indicator */}
-          <div className="flex items-center gap-2.5 text-xs text-muted-foreground bg-muted/40 px-3.5 py-1.5 rounded-full border border-border/40">
-            {isPaused ? (
-              <>
-                <Pause className="w-3.5 h-3.5 text-amber-500" />
-                <span>Đang tạm dừng xem chi tiết</span>
-              </>
-            ) : (
-              <>
-                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                <span>Vòng slide chạy tự động sau 3.2s • Vòng lặp vô tận</span>
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 sm:hidden">
-            <button
-              onClick={scrollPrev}
-              className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-semibold flex items-center gap-1.5 shadow-sm"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" /> Trước
-            </button>
-            <button
-              onClick={scrollNext}
-              className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm"
-            >
-              Sau <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+                  </motion.div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
 
-      {/* Lightbox Dialog Modal for High-Res Preview */}
+      {/* Pagination & Status Footer */}
+      <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#E8E1D5] pt-6">
+        <div className="flex items-center gap-2">
+          {HOT_SETS.map((_, dotIdx) => (
+            <button
+              key={dotIdx}
+              onClick={() => scrollTo(dotIdx)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                dotIdx === selectedIndex
+                  ? "w-8 bg-[#7A2935]"
+                  : "w-2 bg-[#766960]/25 hover:bg-[#766960]/50"
+              }`}
+              aria-label={`Chuyển đến set ${dotIdx + 1}`}
+            />
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 text-xs text-[#766960] bg-[#FFFCF7] px-4 py-1.5 rounded-full border border-[#E8E1D5]">
+          {isPaused ? (
+            <>
+              <Pause className="w-3.5 h-3.5 text-[#B58A4A]" />
+              <span>Đang tạm dừng xem chi tiết</span>
+            </>
+          ) : (
+            <>
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Tự động chuyển slide sau 3.5s</span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Lightbox Dialog Modal */}
       <AnimatePresence>
         {selectedSet && (
-          <div 
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "spring", stiffness: 240, damping: 30 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#1F1916]/80 backdrop-blur-md"
             onClick={() => setSelectedSet(null)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              role="dialog"
+              aria-modal="true"
+              initial={{ opacity: 0, scale: 0.96, y: 28 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              transition={{ type: "spring", duration: 0.4 }}
-              className="relative max-w-4xl w-full bg-card rounded-3xl overflow-hidden shadow-2xl border border-border grid md:grid-cols-2 max-h-[90vh]"
+              exit={{ opacity: 0, scale: 0.96, y: 28 }}
+              transition={{ type: "spring", stiffness: 240, damping: 26 }}
+              className="relative max-w-4xl w-full bg-[#FFFCF7] rounded-[28px] overflow-hidden shadow-2xl border border-[#E8E1D5] grid md:grid-cols-2 max-h-[90vh]"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
-              <button
+              <motion.button
                 onClick={() => setSelectedSet(null)}
-                className="absolute top-4 right-4 z-30 w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/90 transition-colors"
-                aria-label="Đóng xem chi tiết"
+                whileHover={{ rotate: 90 }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className="absolute top-4 right-4 z-30 w-10 h-10 rounded-full bg-[#30251F]/80 text-[#FFFCF7] flex items-center justify-center hover:bg-[#7A2935] transition-colors shadow-md"
+                aria-label="Đóng xem chi tiết (Esc)"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </motion.button>
 
-              {/* Modal Image */}
-              <div className="relative aspect-square md:aspect-auto h-72 md:h-full w-full bg-muted">
+              <div className="relative aspect-square md:aspect-auto h-72 md:h-full w-full bg-[#EFE9DF]">
                 <Image
                   src={selectedSet.image}
                   alt={selectedSet.title}
@@ -420,60 +437,59 @@ export function HotSetSection() {
                   priority
                 />
                 {selectedSet.isRecommended && (
-                  <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg">
-                    <Crown className="w-3.5 h-3.5 fill-slate-950" />
+                  <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7A2935] text-[#FFFCF7] font-bold text-xs uppercase tracking-wider shadow">
+                    <Award className="w-3.5 h-3.5 text-[#DFC28E]" />
                     <span>100% RECOMMENDED</span>
                   </div>
                 )}
               </div>
 
-              {/* Modal Content */}
               <div className="p-6 md:p-8 flex flex-col justify-between overflow-y-auto space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <span className="text-xs font-bold text-gold tracking-widest uppercase">
+                    <span className="text-xs font-bold text-[#B58A4A] tracking-widest uppercase">
                       {selectedSet.subtitle}
                     </span>
-                    <h3 className="font-serif text-2xl md:text-3xl font-bold text-foreground mt-1">
+                    <h3 className="font-serif text-2xl md:text-3xl font-bold text-[#30251F] mt-1">
                       {selectedSet.title}
                     </h3>
                   </div>
 
-                  <p className="text-muted-foreground text-sm leading-relaxed">
+                  <p className="text-[#766960] text-sm leading-relaxed">
                     {selectedSet.description}
                   </p>
 
-                  <div className="space-y-2.5 pt-2">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  <div className="space-y-2 pt-2">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#30251F]">
                       Điểm Nổi Bật Của Set Quà:
                     </h4>
                     {selectedSet.highlights.map((hl, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-sm text-foreground/90">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-start gap-2.5 text-sm text-[#30251F]">
+                        <CheckCircle2 className="w-4 h-4 text-[#B58A4A] shrink-0 mt-0.5" />
                         <span>{hl}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-4 border-t border-border">
+                <div className="space-y-3 pt-4 border-t border-[#E8E1D5]">
                   <Link
                     href="https://zalo.me/0971682213"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 transition-all"
+                    className="w-full py-3.5 px-6 rounded-full bg-[#7A2935] hover:bg-[#581C25] text-[#FFFCF7] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>Tư Vấn & Báo Giá Qua Zalo (0971.682.213)</span>
                   </Link>
 
-                  <p className="text-[11px] text-center text-muted-foreground">
+                  <p className="text-[11px] text-center text-[#766960]">
                     ⚡ Hỗ trợ in logo công ty lên hộp từ 20 set • Giao hàng tận nơi toàn quốc
                   </p>
                 </div>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>

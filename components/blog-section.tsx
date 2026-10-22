@@ -1,8 +1,6 @@
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
+import { BlogMotionGrid, BlogPostItem } from "./blog-motion-grid"
 
-const defaultPosts = [
+const defaultPosts: BlogPostItem[] = [
   {
     id: 'a1',
     title: "Từ lò bánh truyền thống lên máy bay xuyên lục địa",
@@ -26,7 +24,7 @@ const defaultPosts = [
 async function getLatestPosts() {
   try {
     const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { 
-      cache: 'no-store',
+      next: { revalidate: 3600 },
       signal: AbortSignal.timeout(2000)
     })
     if (res.ok) {
@@ -41,7 +39,7 @@ async function getLatestPosts() {
 export async function BlogSection() {
   const dbPosts = await getLatestPosts()
 
-  const formattedDbPosts = dbPosts.map((p: any) => ({
+  const formattedDbPosts: BlogPostItem[] = dbPosts.map((p: any) => ({
     id: p.id,
     title: p.title,
     excerpt: p.excerpt,
@@ -54,65 +52,9 @@ export async function BlogSection() {
   const displayPosts = [...formattedDbPosts, ...defaultPosts].slice(0, 3)
 
   return (
-    <section id="blog" className="py-24 md:py-32 px-6 bg-secondary">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
-          <div>
-            <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
-              Nhật Ký
-            </p>
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-light">
-              Câu chuyện từ căn bếp
-            </h2>
-          </div>
-          <Link
-            href="/bai-viet"
-            className="inline-flex items-center gap-2 text-sm tracking-widest uppercase hover:text-muted-foreground transition-colors"
-          >
-            Xem Tất Cả Bài Viết
-            <ArrowUpRight size={16} />
-          </Link>
-        </div>
-
-        {/* Blog Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayPosts.map((post) => (
-            <Link 
-              key={post.id} 
-              href={post.href} 
-              className="group cursor-pointer block"
-              target={post.href.startsWith("http") ? "_blank" : undefined}
-              rel={post.href.startsWith("http") ? "noopener noreferrer" : undefined}
-            >
-              <article className="h-full flex flex-col bg-background border border-border/80 rounded-2xl overflow-hidden hover:shadow-lg transition-all group-hover:-translate-y-1">
-                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-                    <span className="text-xs tracking-widest uppercase font-medium">{post.category}</span>
-                  </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <p className="text-xs text-muted-foreground tracking-widest uppercase mb-3">
-                    {post.date}
-                  </p>
-                  <h3 className="font-serif text-xl md:text-2xl font-light group-hover:text-primary transition-colors">
-                    {post.title}
-                  </h3>
-                  <p className="mt-3 text-muted-foreground text-sm leading-relaxed flex-1">
-                    {post.excerpt}
-                  </p>
-                </div>
-              </article>
-            </Link>
-          ))}
-        </div>
-      </div>
+    <section id="blog" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" aria-labelledby="blog-heading">
+      <BlogMotionGrid posts={displayPosts} />
     </section>
   )
 }
+

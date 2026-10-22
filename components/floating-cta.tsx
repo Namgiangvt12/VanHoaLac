@@ -1,6 +1,7 @@
 "use client"
+
 import Link from "next/link"
-import { PhoneCall } from "lucide-react"
+import { MessageCircle } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 export function FloatingCTA() {
@@ -15,13 +16,14 @@ export function FloatingCTA() {
       href="https://zalo.me/0971682213"
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-red-600 text-white px-6 py-4 rounded-full shadow-2xl hover:bg-red-700 hover:scale-105 active:scale-95 transition-all animate-bounce"
+      className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2.5 bg-[#7A2935] hover:bg-[#581C25] text-[#FFFCF7] px-5 sm:px-6 py-3.5 rounded-full shadow-[0_10px_30px_rgba(122,41,53,0.35)] border border-white/20 active:scale-95 hover:scale-105 transition-all group"
+      aria-label="Đặt bánh qua Zalo"
     >
-      <div className="relative flex h-5 w-5">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-        <PhoneCall className="relative inline-flex rounded-full h-5 w-5" />
+      <div className="relative flex h-2.5 w-2.5">
+        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-white" />
       </div>
-      <span className="font-medium tracking-wider text-sm md:text-base">MUA BÁNH NGAY</span>
+      <MessageCircle className="w-4 h-4 text-[#DFC28E] group-hover:scale-110 transition-transform" />
+      <span className="font-bold tracking-wider text-xs uppercase">Đặt Bánh Ngay</span>
     </Link>
   )
 }

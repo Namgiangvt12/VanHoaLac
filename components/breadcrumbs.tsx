@@ -13,21 +13,21 @@ interface BreadcrumbsProps {
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
-      <ol className="flex items-center space-x-2 text-sm text-muted-foreground whitespace-nowrap overflow-x-auto">
+      <ol className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFFCF7] border border-[#E8E1D5] text-xs font-medium text-[#30251F]/70 shadow-2xs whitespace-nowrap overflow-x-auto">
         <li>
-          <Link href="/" className="hover:text-primary transition-colors">
+          <Link href="/" className="hover:text-[#7A2935] transition-colors">
             Trang Chủ
           </Link>
         </li>
         {items.map((item, index) => (
-          <li key={item.href} className="flex items-center space-x-2">
-            <ChevronRight className="w-4 h-4" />
+          <li key={item.href} className="flex items-center gap-2">
+            <ChevronRight className="w-3.5 h-3.5 text-[#B58A4A]" />
             {index === items.length - 1 ? (
-              <span className="font-semibold text-foreground" aria-current="page">
+              <span className="font-semibold text-[#30251F]" aria-current="page">
                 {item.label}
               </span>
             ) : (
-              <Link href={item.href} className="hover:text-primary transition-colors">
+              <Link href={item.href} className="hover:text-[#7A2935] transition-colors">
                 {item.label}
               </Link>
             )}

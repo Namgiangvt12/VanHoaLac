@@ -67,9 +67,9 @@ export default async function BlogListPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-secondary min-h-screen">
-        <div className="pt-24 border-b border-border/40 bg-background/50 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto px-6 py-4">
+      <main className="flex-1 bg-[#F7F3EC] min-h-screen pt-28 md:pt-32 pb-24 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-6">
             <Breadcrumbs 
               items={[
                 { label: 'Trang chủ', href: '/' },
@@ -77,16 +77,15 @@ export default async function BlogListPage() {
               ]} 
             />
           </div>
-        </div>
 
-        <section className="py-16 md:py-24 px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+          <div className="bg-[#FFFCF7] border border-[#E8E1D5] rounded-[28px] md:rounded-[36px] p-6 sm:p-10 md:p-14 shadow-xs">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
               <div>
-                <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
-                  Nhật Ký
-                </p>
-                <h1 className="font-serif text-3xl md:text-5xl lg:text-6xl font-light">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F7F3EC] border border-[#E8E1D5] text-[#7A2935] text-xs font-bold uppercase tracking-[0.2em] mb-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B58A4A]" />
+                  Nhật Ký & Báo Chí
+                </div>
+                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#30251F]">
                   Tất cả bài viết
                 </h1>
               </div>
@@ -101,8 +100,8 @@ export default async function BlogListPage() {
                   target={post.href.startsWith("http") ? "_blank" : undefined}
                   rel={post.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 >
-                  <article className="h-full flex flex-col bg-background border border-border/80 rounded-2xl overflow-hidden hover:shadow-lg transition-all group-hover:-translate-y-1">
-                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                  <article className="h-full flex flex-col bg-[#F7F3EC]/70 border border-[#E8E1D5] rounded-[24px] overflow-hidden hover:shadow-md transition-all duration-300">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-[#E8E1D5]/40">
                       <Image
                         src={post.image}
                         alt={post.title}
@@ -110,20 +109,26 @@ export default async function BlogListPage() {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
-                      <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-                        <span className="text-xs tracking-widest uppercase font-medium">{post.category}</span>
+                      <div className="absolute top-4 right-4 bg-[#FFFCF7]/95 backdrop-blur-sm px-3 py-1 rounded-full border border-[#E8E1D5] shadow-xs">
+                        <span className="text-[11px] tracking-wider uppercase font-bold text-[#B58A4A]">{post.category}</span>
                       </div>
                     </div>
-                    <div className="p-6 flex-1 flex flex-col">
-                      <p className="text-xs text-muted-foreground tracking-widest uppercase mb-3">
-                        {post.date}
-                      </p>
-                      <h3 className="font-serif text-xl md:text-2xl font-light group-hover:text-primary transition-colors">
-                        {post.title}
-                      </h3>
-                      <p className="mt-3 text-muted-foreground text-sm leading-relaxed flex-1 line-clamp-3">
-                        {post.excerpt}
-                      </p>
+                    <div className="p-6 flex-1 flex flex-col justify-between">
+                      <div>
+                        <p className="text-xs text-[#30251F]/60 tracking-widest uppercase mb-2">
+                          {post.date}
+                        </p>
+                        <h3 className="font-serif text-xl font-bold text-[#30251F] group-hover:text-[#7A2935] transition-colors leading-snug">
+                          {post.title}
+                        </h3>
+                        <p className="mt-3 text-[#30251F]/75 text-sm leading-relaxed line-clamp-3">
+                          {post.excerpt}
+                        </p>
+                      </div>
+                      <div className="mt-5 pt-4 border-t border-[#E8E1D5]/70 flex items-center justify-between text-xs font-bold text-[#7A2935] uppercase tracking-wider">
+                        <span>Đọc tiếp</span>
+                        <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </div>
                     </div>
                   </article>
                 </Link>
@@ -131,12 +136,12 @@ export default async function BlogListPage() {
             </div>
             
             {displayPosts.length === 0 && (
-              <div className="text-center py-20 text-muted-foreground">
+              <div className="text-center py-20 text-[#30251F]/60">
                 Chưa có bài viết nào!
               </div>
             )}
           </div>
-        </section>
+        </div>
       </main>
       <Footer />
     </>

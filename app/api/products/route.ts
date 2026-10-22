@@ -1,88 +1,10 @@
 import { NextResponse } from 'next/server'
+import { PRODUCTS } from '@/lib/products'
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const products = [
-    {
-      id: '1',
-      name: "Bánh Da Dợp Thập Cẩm 2 Trứng",
-      shortName: "Da dợp 2 trứng",
-      description: "Bánh trung thu da dợp đặc sắc 2 trứng hòa quyện hương vị",
-      price: "130.000đ",
-      priceValue: 130000,
-      image: "/images/banh-da-dop-2-trung.png",
-      slug: "da-dop-2-trung",
-      category: "Da Dợp Thập Cẩm",
-    },
-    {
-      id: '2',
-      name: "Bánh Da Dợp Thập Cẩm 3 Trứng",
-      shortName: "Da dợp 3 trứng",
-      description: "Bánh trung thu da dợp cao cấp 3 trứng thơm ngon đặc biệt",
-      price: "165.000đ",
-      priceValue: 165000,
-      image: "/images/banh-da-dop-3-trung.png",
-      slug: "da-dop-3-trung",
-      category: "Da Dợp Thập Cẩm",
-    },
-    {
-      id: '3',
-      name: "Bánh Da Dợp 6-10-12-14 Trứng",
-      shortName: "Da dợp 6-10-12-14 trứng",
-      description: "Bánh trung thu da dợp ngoại cỡ cao cấp",
-      price: "460.000đ",
-      priceValue: 460000,
-      image: "/images/banh-da-dop-big.png",
-      slug: "da-dop-big",
-      category: "Da Dợp Thập Cẩm",
-    },
-    {
-      id: '4',
-      name: "Trung Thu Nướng Đậu Xanh",
-      shortName: "Đậu xanh",
-      description: "Bánh nướng truyền thống nhân đậu xanh mịn màng",
-      price: "130.000đ",
-      priceValue: 130000,
-      image: "/images/mooncake-lotus.jpg",
-      slug: "trung-thu-dau-xanh",
-      category: "Trung Thu Nướng",
-    },
-    {
-      id: '5',
-      name: "Trung Thu Nướng Thập Cẩm",
-      shortName: "Thập cẩm",
-      description: "Bánh nướng truyền thống nhân thập cẩm",
-      price: "130.000đ",
-      priceValue: 130000,
-      image: "/images/mooncake-redbean.jpg",
-      slug: "trung-thu-thap-cam",
-      category: "Trung Thu Nướng",
-    },
-    {
-      id: '6',
-      name: "Trung Thu Nướng Thập Cẩm Gà Quay",
-      shortName: "Thập cẩm gà quay",
-      description: "Bánh nướng thập cẩm gà quay thơm lừng",
-      price: "140.000đ",
-      priceValue: 140000,
-      image: "/images/mooncake-redbean.jpg",
-      slug: "trung-thu-ga-quay",
-      category: "Trung Thu Nướng",
-    },
-    {
-      id: '7',
-      name: "Trung Thu Nướng Dừa Mè",
-      shortName: "Dừa mè",
-      description: "Bánh nướng nhân dừa mè ngọt thanh",
-      price: "115.000đ",
-      priceValue: 115000,
-      image: "/images/mooncake-lotus.jpg",
-      slug: "trung-thu-dua-me",
-      category: "Trung Thu Nướng",
-    },
-  ]
-  return NextResponse.json(products)
+  return NextResponse.json(PRODUCTS)
 }
 
 export async function POST(request: Request) {

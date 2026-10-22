@@ -1,23 +1,32 @@
 import type { Metadata } from 'next'
-import { Playfair_Display } from 'next/font/google'
+import { Playfair_Display, Be_Vietnam_Pro } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { FloatingCTA } from '@/components/floating-cta'
 import { VisitorTracker } from '@/components/visitor-tracker'
 import { GoogleAnalytics } from '@/components/google-analytics'
+import { SmoothScrollProvider } from '@/components/smooth-scroll-provider'
+import { IntroCurtainLoader } from '@/components/intro-curtain-loader'
 import './globals.css'
-
 
 const playfair = Playfair_Display({
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-serif"
+  variable: "--font-serif",
+  display: 'swap',
+});
+
+const beVietnam = Be_Vietnam_Pro({
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: 'swap',
 });
 
 
 export const metadata: Metadata = {
-  title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Thủ Công Gia Truyền',
-  description: 'Bánh trung thu Da Dợp Văn Hòa Lạc chính gốc Vũng Tàu. Đặt sớm nhận ưu đãi, giao tận nơi. Xem bảng giá & đặt hàng ngay hôm nay!',
-  keywords: ['van hoa lac', 'văn hòa lạc', 'banh trung thu van hoa lac', 'banh trung thu văn hòa lạc', 'bánh trung thu vũng tàu', 'văn hòa lạc vũng tàu', 'van hoa lac vung tau', 'bánh trung thu long điền', 'bánh da dợp văn hòa lạc', 'bánh trung thu thủ công'],
+  title: 'Văn Hòa Lạc Vũng Tàu | Bánh Trung Thu Gia Truyền Thủ Công Độc Bản',
+  description: 'Văn Hòa Lạc Vũng Tàu - Thương hiệu bánh trung thu thủ công gia truyền từ năm 1970. Nổi tiếng với bánh Da Dợp vỏ giòn xốp độc bản, bánh nướng thập cẩm gà quay và giao hàng toàn quốc.',
+  keywords: ['văn hòa lạc vũng tàu', 'van hoa lac vung tau', 'văn hòa lạc', 'bánh trung thu văn hòa lạc vũng tàu', 'banh trung thu van hoa lac vung tau', 'tiệm bánh văn hòa lạc vũng tàu', 'bánh trung thu vũng tàu', 'bánh da dợp văn hòa lạc'],
   authors: [{ name: 'Văn Hòa Lạc Vũng Tàu' }],
   creator: 'Văn Hòa Lạc Vũng Tàu',
   publisher: 'Văn Hòa Lạc Vũng Tàu',
@@ -35,16 +44,16 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu Thủ Công',
-    description: 'Bánh trung thu Da Dợp Văn Hòa Lạc chính gốc Vũng Tàu. Đặt sớm nhận ưu đãi, giao tận nơi. Xem bảng giá & đặt hàng ngay hôm nay!',
+    title: 'Văn Hòa Lạc Vũng Tàu | Bánh Trung Thu Gia Truyền Thủ Công',
+    description: 'Văn Hòa Lạc Vũng Tàu - Thương hiệu bánh trung thu thủ công gia truyền từ năm 1970. Nổi tiếng với bánh Da Dợp vỏ giòn xốp độc bản, bánh nướng thập cẩm gà quay và giao hàng toàn quốc.',
     url: 'https://vanhoalac.vn',
-    siteName: 'Bánh Trung Thu Văn Hòa Lạc Vũng Tàu',
+    siteName: 'Văn Hòa Lạc Vũng Tàu',
     images: [
       {
         url: '/images/hero-mooncakes.jpg',
         width: 1200,
         height: 630,
-        alt: 'Bánh Trung Thu Văn Hòa Lạc - Bánh trung thu cao cấp thủ công',
+        alt: 'Văn Hòa Lạc Vũng Tàu - Bánh trung thu gia truyền cao cấp',
       },
     ],
     locale: 'vi_VN',
@@ -52,8 +61,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Bánh Trung Thu Văn Hòa Lạc | Bánh Trung Thu Vũng Tàu',
-    description: 'Bánh trung thu Da Dợp Văn Hòa Lạc chính gốc Vũng Tàu. Đặt sớm nhận ưu đãi, giao tận nơi. Xem bảng giá & đặt hàng ngay hôm nay!',
+    title: 'Văn Hòa Lạc Vũng Tàu | Bánh Trung Thu Gia Truyền',
+    description: 'Văn Hòa Lạc Vũng Tàu - Thương hiệu bánh trung thu thủ công gia truyền từ năm 1970. Nổi tiếng với bánh Da Dợp vỏ giòn xốp độc bản.',
     images: ['/images/hero-mooncakes.jpg'],
   },
   robots: {
@@ -81,19 +90,21 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="vi" className={`${playfair.variable}`}>
+    <html lang="vi" className={`${playfair.variable} ${beVietnam.variable}`}>
       <head>
         <meta name="google-site-verification" content="RMSB0OSydag4gIrvd75hYd8UPgvCY0rE_pTvGUm7A_4" />
       </head>
-      <body className="font-sans antialiased">
-        <GoogleAnalytics />
-        {children}
-        <VisitorTracker />
-        <FloatingCTA />
-        <Analytics />
+      <body className="font-sans antialiased bg-background text-foreground selection:bg-primary/20 selection:text-primary">
+        <SmoothScrollProvider>
+          <IntroCurtainLoader />
+          <GoogleAnalytics />
+          {children}
+          <VisitorTracker />
+          <FloatingCTA />
+          <Analytics />
+        </SmoothScrollProvider>
       </body>
-
-
     </html>
   )
 }
+

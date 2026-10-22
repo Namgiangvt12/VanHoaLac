@@ -67,26 +67,31 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Header />
-      <main className="pt-32 pb-24 px-6 min-h-screen bg-background">
-        <div className="max-w-3xl mx-auto">
+      <main className="pt-28 md:pt-32 pb-24 px-4 sm:px-6 min-h-screen bg-[#F7F3EC]">
+        <div className="max-w-4xl mx-auto">
           <Breadcrumbs items={[
-            { label: "Bài Viết", href: "/#blog" },
+            { label: "Bài Viết", href: "/bai-viet" },
             { label: post.title, href: `/bai-viet/${post.slug}` }
           ]} />
           
-          <article className="mt-8">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-6 text-primary leading-tight">
+          <article className="bg-[#FFFCF7] border border-[#E8E1D5] rounded-[28px] md:rounded-[36px] p-6 sm:p-10 md:p-14 shadow-xs mt-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F7F3EC] border border-[#E8E1D5] text-[#7A2935] text-xs font-bold uppercase tracking-[0.2em] mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#B58A4A]" />
+              {post.category || "Bài Viết & Báo Chí"}
+            </div>
+
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-[#30251F] leading-tight">
               {post.title}
             </h1>
             
-            <div className="flex items-center text-sm text-muted-foreground mb-8 pb-8 border-b border-border">
+            <div className="flex items-center text-xs sm:text-sm text-[#30251F]/60 mb-8 pb-6 border-b border-[#E8E1D5]">
               <span>Đăng ngày: {new Date(post.created_at).toLocaleDateString('vi-VN')}</span>
               <span className="mx-3">•</span>
-              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">{post.category}</span>
+              <span className="text-[#B58A4A] font-semibold">Văn Hòa Lạc Vũng Tàu</span>
             </div>
 
             {post.image_url && (
-              <div className="relative aspect-video w-full mb-12 rounded-xl overflow-hidden shadow-xl">
+              <div className="relative aspect-video w-full mb-10 rounded-[22px] md:rounded-[28px] overflow-hidden border border-[#E8E1D5] shadow-xs">
                 <Image
                   src={post.image_url}
                   alt={post.title}
@@ -97,7 +102,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             )}
 
             <div 
-              className="quill-content text-foreground text-lg leading-relaxed mb-20"
+              className="quill-content text-[#30251F]/85 text-base sm:text-lg leading-relaxed space-y-4"
               dangerouslySetInnerHTML={{ __html: post.content ? post.content.replace(/&nbsp;|\u00A0/g, ' ') : '' }}
             />
           </article>

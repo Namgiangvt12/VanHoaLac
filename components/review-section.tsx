@@ -1,4 +1,7 @@
-import { Star } from "lucide-react"
+"use client"
+
+import { Star, Sparkles, MessageSquareQuote } from "lucide-react"
+import { motion } from "framer-motion"
 
 const reviews = [
   {
@@ -26,42 +29,79 @@ const reviews = [
 
 export function ReviewSection() {
   return (
-    <section className="py-24 px-6 bg-secondary/50">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4">
-            Đánh Giá
-          </p>
-          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-light mb-4 text-foreground">
-            Khách hàng nói gì về Văn Hòa Lạc (Van Hoa Lac)?
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Dưới đây là một số đánh giá chân thực từ khách hàng qua Google Maps. Chúng tôi luôn trân trọng mọi góp ý để ngày càng hoàn thiện.
-          </p>
+    <section className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" aria-labelledby="review-heading">
+      {/* Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center mb-16 space-y-3 max-w-3xl mx-auto"
+      >
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE9DF] border border-[#E8E1D5] text-[#B58A4A] text-xs uppercase tracking-[0.25em] font-bold">
+          <Sparkles className="w-3.5 h-3.5 text-[#B58A4A]" />
+          <span>Đánh Giá Thực Tế</span>
         </div>
-        
-        <div className="grid md:grid-cols-3 gap-8">
-          {reviews.map((review) => (
-            <div key={review.id} className="bg-background p-8 rounded-2xl shadow-sm border border-border transition-transform hover:-translate-y-2">
-              <div className="flex gap-1 mb-4 text-yellow-500">
-                {[...Array(review.rating)].map((_, i) => (
-                  <Star key={i} size={18} fill="currentColor" />
-                ))}
+
+        <h2 
+          id="review-heading"
+          className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#30251F] tracking-tight leading-tight"
+        >
+          Khách hàng nói gì về Văn Hòa Lạc (Van Hoa Lac)?
+        </h2>
+
+        <p className="text-[#766960] text-sm sm:text-base leading-relaxed">
+          Dưới đây là một số đánh giá chân thực từ khách hàng qua Google Maps. Chúng tôi luôn trân trọng mọi góp ý để ngày càng hoàn thiện.
+        </p>
+      </motion.div>
+      
+      {/* 3 Review Cards with Staggered In-View Reveal & Subtle 6px Lift */}
+      <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+        {reviews.map((review, idx) => (
+          <motion.div 
+            key={review.id} 
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-5%" }}
+            transition={{ 
+              duration: 0.75, 
+              delay: idx * 0.12, 
+              ease: [0.16, 1, 0.3, 1] 
+            }}
+            whileHover={{ y: -6, transition: { duration: 0.25, ease: "easeOut" } }}
+            className="bg-[#FFFCF7] p-8 rounded-[26px] border border-[#E8E1D5] hover:border-[#B58A4A]/60 transition-colors duration-300 shadow-sm hover:shadow-xl flex flex-col justify-between space-y-6"
+          >
+            <div>
+              {/* Stars & Quote Icon */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex gap-1 text-[#B58A4A]">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <Star key={i} size={16} fill="currentColor" />
+                  ))}
+                </div>
+                <MessageSquareQuote className="w-6 h-6 text-[#E8E1D5]" />
               </div>
-              <p className="text-muted-foreground italic mb-6 leading-relaxed">"{review.text}"</p>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
-                  {review.name.charAt(0)}
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{review.name}</h4>
-                  <span className="text-xs text-muted-foreground">{review.date} qua Google Maps</span>
-                </div>
+
+              {/* Review Text */}
+              <p className="text-[#30251F] text-sm sm:text-base leading-relaxed font-normal italic">
+                &ldquo;{review.text}&rdquo;
+              </p>
+            </div>
+
+            {/* Author Footer */}
+            <div className="flex items-center gap-3.5 pt-4 border-t border-[#E8E1D5]/60">
+              <div className="w-10 h-10 bg-[#7A2935]/10 border border-[#7A2935]/20 rounded-full flex items-center justify-center text-[#7A2935] font-bold text-sm shrink-0">
+                {review.name.charAt(0)}
+              </div>
+              <div>
+                <h4 className="font-bold text-sm text-[#30251F]">{review.name}</h4>
+                <span className="text-xs text-[#766960]">{review.date} qua Google Maps</span>
               </div>
             </div>
-          ))}
-        </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   )
 }
+
