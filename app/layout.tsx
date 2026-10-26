@@ -93,6 +93,11 @@ export default function RootLayout({
     <html lang="vi" className={`${playfair.variable} ${beVietnam.variable}`}>
       <head>
         <meta name="google-site-verification" content="RMSB0OSydag4gIrvd75hYd8UPgvCY0rE_pTvGUm7A_4" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3196172423187525"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="font-sans antialiased bg-background text-foreground selection:bg-primary/20 selection:text-primary">
         <SmoothScrollProvider>
