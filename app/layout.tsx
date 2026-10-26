@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Be_Vietnam_Pro } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { FloatingCTA } from '@/components/floating-cta'
+import { CookieConsent } from '@/components/cookie-consent'
 import { VisitorTracker } from '@/components/visitor-tracker'
 import { GoogleAnalytics } from '@/components/google-analytics'
 import { SmoothScrollProvider } from '@/components/smooth-scroll-provider'
@@ -106,6 +107,7 @@ export default function RootLayout({
           {children}
           <VisitorTracker />
           <FloatingCTA />
+          <CookieConsent />
           <Analytics />
         </SmoothScrollProvider>
       </body>
