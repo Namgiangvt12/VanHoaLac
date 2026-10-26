@@ -388,7 +388,7 @@ const jsonLd = {
           "name": "Bánh trung thu Văn Hòa Lạc Vũng Tàu bảo quản được trong bao lâu?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Bánh trung thu thủ công Văn Hòa Lạc Vũng Tàu có hạn sử dụng tốt nhất từ 20 đến 30 ngày kể từ ngày sản xuất khi bảo quản ở nơi thoáng mát (15-20°C). Bánh hoàn toàn không sử dụng phụ gia hay chất bảo quản độc hại."
+            "text": "Bánh trung thu thủ công Văn Hòa Lạc Vũng Tàu có hạn sử dụng tốt nhất từ 20 đến 30 ngày kể từ ngày sản xuất khi còn nguyên bao bì hút chân không, bảo quản ở nơi khô ráo thoáng mát (15-20°C). Sau khi mở gói hoặc cắt bánh, quý khách nên bọc kín bằng màng bọc thực phẩm, bảo quản trong ngăn mát tủ lạnh và dùng ngon nhất trong vòng 4 đến 6 ngày. Bánh hoàn toàn không sử dụng chất bảo quản độc hại."
           }
         },
         {

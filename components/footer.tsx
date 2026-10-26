@@ -64,9 +64,10 @@ export function Footer() {
             <p className="text-xs tracking-[0.2em] uppercase font-bold text-[#DFC28E]">Điều Hướng</p>
             <ul className="space-y-2.5 text-sm">
               <li><Link href="/" className="text-[#D5C9BF] hover:text-white transition-colors">Trang Chủ</Link></li>
-              <li><Link href="#about" className="text-[#D5C9BF] hover:text-white transition-colors">Về Văn Hòa Lạc</Link></li>
-              <li><Link href="#blog" className="text-[#D5C9BF] hover:text-white transition-colors">Bài Viết</Link></li>
-              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Sản Phẩm</Link></li>
+              <li><Link href="/ve-chung-toi" className="text-[#D5C9BF] hover:text-white transition-colors">Về Văn Hòa Lạc</Link></li>
+              <li><Link href="/bai-viet" className="text-[#D5C9BF] hover:text-white transition-colors">Bài Viết & Tin Tức</Link></li>
+              <li><Link href="/#products" className="text-[#D5C9BF] hover:text-white transition-colors">Danh Mục Sản Phẩm</Link></li>
+              <li><Link href="/lien-he" className="text-[#D5C9BF] hover:text-white transition-colors">Liên Hệ Đặt Hàng</Link></li>
             </ul>
           </nav>
 
@@ -74,10 +75,10 @@ export function Footer() {
           <nav aria-label="Khám phá thêm" className="space-y-4">
             <p className="text-xs tracking-[0.2em] uppercase font-bold text-[#DFC28E]">Sản Phẩm</p>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Da Dợp Thập Cẩm</Link></li>
-              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Nướng Đậu Xanh</Link></li>
-              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Thập Cẩm Gà Quay</Link></li>
-              <li><Link href="#products" className="text-[#D5C9BF] hover:text-white transition-colors">Hộp Quà Biếu Tặng</Link></li>
+              <li><Link href="/san-pham/da-dop-2-trung" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Da Dợp 2 Trứng</Link></li>
+              <li><Link href="/san-pham/da-dop-3-trung" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Da Dợp 3 Trứng</Link></li>
+              <li><Link href="/san-pham/da-dop-big" className="text-[#D5C9BF] hover:text-white transition-colors">Bánh Ngoại Cỡ 6 - 14 Trứng</Link></li>
+              <li><Link href="/#hot-sets" className="text-[#D5C9BF] hover:text-white transition-colors">Hộp Quà Biếu Tặng</Link></li>
             </ul>
           </nav>
 
@@ -156,8 +157,31 @@ export function Footer() {
           </nav>
         </div>
 
+        {/* Legal & Policy Quick Links */}
+        <div className="pt-8 border-t border-white/10 flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-xs text-[#D5C9BF]">
+          <Link href="/chinh-sach-bao-mat" className="hover:text-[#DFC28E] transition-colors font-medium underline underline-offset-4 text-white">
+            Chính Sách Bảo Mật (Privacy Policy)
+          </Link>
+          <span className="text-white/20">•</span>
+          <Link href="/ve-chung-toi" className="hover:text-[#DFC28E] transition-colors">
+            Giới Thiệu Thương Hiệu
+          </Link>
+          <span className="text-white/20">•</span>
+          <Link href="/lien-he" className="hover:text-[#DFC28E] transition-colors">
+            Liên Hệ & Hỗ Trợ
+          </Link>
+          <span className="text-white/20">•</span>
+          <Link href="/qr" className="hover:text-[#DFC28E] transition-colors">
+            Tra Cứu Mã QR
+          </Link>
+          <span className="text-white/20">•</span>
+          <Link href="/sitemap.xml" className="hover:text-[#DFC28E] transition-colors" target="_blank">
+            Sitemap XML
+          </Link>
+        </div>
+
         {/* Bottom Copyright & Brand Statement */}
-        <div className="pt-8 border-t border-white/10 text-center space-y-2 text-xs text-[#D5C9BF]/70">
+        <div className="pt-6 border-t border-white/5 text-center space-y-2 text-xs text-[#D5C9BF]/70">
           <p>
             Bản quyền © {new Date().getFullYear()} Bánh Trung Thu Văn Hòa Lạc (Van Hoa Lac). Đã đăng ký bản quyền.
           </p>

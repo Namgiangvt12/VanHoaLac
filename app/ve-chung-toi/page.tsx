@@ -91,16 +91,16 @@ export default function AboutPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <span className="font-serif text-2xl font-bold text-[#B58A4A]">01</span>
                   <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#7A2935]">
-                    Nơi lưu giữ nét đẹp truyền thống của Tết Đoàn Viên
+                    Hơn 50 năm lưu giữ nét đẹp Tết Đoàn Viên
                   </h2>
                 </div>
                 <p className="mb-4">
-                  Hơn một thập niên, <strong className="text-[#30251F] font-semibold">Văn Hòa Lạc</strong> đã trở thành cái tên bảo chứng cho chất lượng và 
-                  hương vị bánh trung thu truyền thống đích thực tại Vũng Tàu. 
+                  Trải qua hơn nửa thế kỷ từ năm 1970, <strong className="text-[#30251F] font-semibold">Văn Hòa Lạc</strong> đã trở thành thương hiệu gia truyền ba thế hệ bảo chứng cho chất lượng và 
+                  hương vị bánh trung thu truyền thống đích thực tại Long Điền, Bà Rịa - Vũng Tàu. 
                 </p>
                 <p>
-                  Từ những mẻ bánh nướng đầu tiên bằng lò than củi cho đến quy trình sản xuất hiện đại và đạt chuẩn 
-                  VSATTP ngày nay, triết lý kinh doanh của chúng tôi vẫn không bao giờ thay đổi: "Làm bằng cái tâm, trao tinh hoa nghệ thuật".
+                  Từ những mẻ bánh nướng đầu tiên bằng lò than củi cho đến quy trình sản xuất thủ công khép kín đạt chuẩn 
+                  vệ sinh an toàn thực phẩm ngày nay, triết lý của chúng tôi vẫn vẹn nguyên: "Làm bằng cái tâm, trao trọn phong vị đoàn viên".
                 </p>
               </div>
 
@@ -112,9 +112,8 @@ export default function AboutPage() {
                   </h2>
                 </div>
                 <p>
-                  Nghệ nhân của Văn Hòa Lạc đích thân chọn lọc kỹ lưỡng từng hạt sen bùi béo, quả trứng muối vàng ươm, cho tới lớp mỡ đường trong trẻo.
-                  Không chất bảo quản, không hương liệu công nghiệp, bánh trung thu Văn Hòa Lạc tự hào mang đến cho gia đình bạn
-                  sự an tâm tuyệt đối về chất lượng.
+                  Nghệ nhân của Văn Hòa Lạc đích thân chọn lọc kỹ lưỡng từng hạt sen bùi béo, quả trứng muối vàng ươm xử lý rượu Mai Quế Lộ, cho tới lớp mỡ đường trong trẻo.
+                  Chúng tôi kiên định cam kết: <strong>100% nguyên liệu tươi sạch, không chất bảo quản độc hại, không phẩm màu công nghiệp</strong>, để mỗi chiếc bánh đều an lành và trọn vị.
                 </p>
               </div>
               
@@ -122,12 +121,13 @@ export default function AboutPage() {
                 <div className="flex items-center gap-3 mb-3">
                   <span className="font-serif text-2xl font-bold text-[#B58A4A]">03</span>
                   <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#7A2935]">
-                    Cột mốc chứng nhận
+                    Tiêu chuẩn chất lượng & Cam kết vệ sinh
                   </h2>
                 </div>
                 <ul className="list-disc pl-6 space-y-2 text-[#30251F]/80">
-                  <li>Giấy chứng nhận Cơ sở đủ điều kiện An toàn Thực phẩm.</li>
-                  <li>Các giải thưởng tại hội chợ ẩm thực truyền thống (kèm hình ảnh chứng nhận bên dưới - Đang cập nhật).</li>
+                  <li><strong>Chứng nhận VSATTP:</strong> Cơ sở sản xuất tuân thủ nghiêm ngặt điều kiện An toàn Vệ sinh Thực phẩm theo quy chuẩn của ngành Y tế.</li>
+                  <li><strong>Quy trình khép kín:</strong> Phòng nướng bánh và đóng gói được kiểm soát vệ sinh định kỳ, sử dụng bao bì hút chân không chuyên dụng kéo dài độ tươi ngon tự nhiên.</li>
+                  <li><strong>Nguồn gốc minh bạch:</strong> Từng hộp bánh xuất xưởng đều có tem nhãn, ngày sản xuất và hạn sử dụng rõ ràng kèm mã QR truy xuất nguồn gốc.</li>
                 </ul>
               </div>
             </div>

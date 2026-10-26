@@ -36,8 +36,8 @@ export const PRODUCTS: ProductItem[] = [
       "2 lòng đỏ trứng muối",
       "Mè rang, mứt bí, hạt dưa"
     ],
-    shelfLife: "20 - 30 ngày kể từ ngày sản xuất",
-    storage: "Bảo quản nơi khô ráo, thoáng mát, tránh ánh nắng trực tiếp (15 - 20°C)",
+    shelfLife: "20 - 30 ngày (nguyên bao bì hút chân không); 4 - 6 ngày sau khi mở gói",
+    storage: "Nơi khô ráo, thoáng mát (15 - 20°C) khi nguyên bao bì; sau khi mở gói nên bọc kín để ngăn mát tủ lạnh dùng trong 4 - 6 ngày",
     highlight: "Vỏ mỏng nhiều lớp giòn xốp độc bản, ít ngấy"
   },
   {
@@ -59,8 +59,8 @@ export const PRODUCTS: ProductItem[] = [
       "Lạp xưởng nạc",
       "Hạt điều, mứt sen, mè thơm"
     ],
-    shelfLife: "20 - 30 ngày kể từ ngày sản xuất",
-    storage: "Bảo quản nơi khô ráo, thoáng mát (15 - 20°C)",
+    shelfLife: "20 - 30 ngày (nguyên bao bì hút chân không); 4 - 6 ngày sau khi mở gói",
+    storage: "Nơi khô ráo, thoáng mát (15 - 20°C) khi nguyên bao bì; sau khi mở gói nên bọc kín để ngăn mát tủ lạnh dùng trong 4 - 6 ngày",
     highlight: "3 trứng muối ngậy bùi, trọng lượng bánh đầm tay"
   },
   {
@@ -81,8 +81,8 @@ export const PRODUCTS: ProductItem[] = [
       "Thập cẩm gà quay ngũ nhân",
       "Gia vị thảo mộc bí truyền từ 1970"
     ],
-    shelfLife: "25 - 30 ngày kể từ ngày sản xuất",
-    storage: "Bảo quản nơi khô ráo, thoáng mát hoặc ngăn mát tủ lạnh sau khi cắt",
+    shelfLife: "25 - 30 ngày (nguyên bao bì hút chân không); 5 - 7 ngày sau khi cắt bánh",
+    storage: "Nơi khô ráo, thoáng mát khi nguyên gói; do bánh kích thước lớn, sau khi cắt nên bọc màng thực phẩm bảo quản ngăn mát tủ lạnh",
     highlight: "Kích thước đại, đẳng cấp làm quà biếu sang trọng"
   },
   {
@@ -103,8 +103,8 @@ export const PRODUCTS: ProductItem[] = [
       "2 lòng đỏ trứng muối",
       "Dầu thực vật cao cấp, đường phèn"
     ],
-    shelfLife: "25 - 30 ngày kể từ ngày sản xuất",
-    storage: "Bảo quản nơi khô ráo, thoáng mát",
+    shelfLife: "25 - 30 ngày (nguyên bao bì); 4 - 6 ngày sau khi mở gói",
+    storage: "Nơi thoáng mát tránh ánh nắng; sau khi mở túi bảo quản ngăn mát tủ lạnh",
     highlight: "Đậu xanh thanh mát, ngọt dịu vừa vặn"
   },
   {
@@ -125,8 +125,8 @@ export const PRODUCTS: ProductItem[] = [
       "Mứt bí, mứt gừng, lá chanh",
       "2 lòng đỏ trứng muối"
     ],
-    shelfLife: "25 - 30 ngày kể từ ngày sản xuất",
-    storage: "Bảo quản nơi khô ráo, thoáng mát",
+    shelfLife: "25 - 30 ngày (nguyên bao bì); 4 - 6 ngày sau khi mở gói",
+    storage: "Nơi thoáng mát tránh ánh nắng; sau khi mở túi bảo quản ngăn mát tủ lạnh",
     highlight: "Hương vị thập cẩm truyền thống xưa chuẩn gốc"
   },
   {
@@ -147,8 +147,8 @@ export const PRODUCTS: ProductItem[] = [
       "2 lòng đỏ trứng muối",
       "Hạt điều rang, hạt bí"
     ],
-    shelfLife: "25 - 30 ngày kể từ ngày sản xuất",
-    storage: "Bảo quản nơi khô ráo, thoáng mát",
+    shelfLife: "25 - 30 ngày (nguyên bao bì); 4 - 6 ngày sau khi mở gói",
+    storage: "Nơi thoáng mát tránh ánh nắng; sau khi mở túi bảo quản ngăn mát tủ lạnh",
     highlight: "Thịt gà quay đậm vị, trứng muối dẻo bùi"
   },
   {
@@ -169,8 +169,8 @@ export const PRODUCTS: ProductItem[] = [
       "2 lòng đỏ trứng muối",
       "Đường cát trắng tinh khiết"
     ],
-    shelfLife: "20 - 25 ngày kể từ ngày sản xuất",
-    storage: "Bảo quản nơi khô ráo, thoáng mát",
+    shelfLife: "20 - 25 ngày (nguyên bao bì); 4 - 6 ngày sau khi mở gói",
+    storage: "Nơi thoáng mát tránh ánh nắng; sau khi mở túi bảo quản ngăn mát tủ lạnh",
     highlight: "Cơm dừa sần sật ngọt ngào thơm nức mùi mè rang"
   }
 ]
