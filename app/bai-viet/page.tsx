@@ -5,12 +5,16 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { Metadata } from "next"
+import { resolvePostImage } from "@/lib/blog-helpers"
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: "Tất Cả Bài Viết | Văn Hòa Lạc",
   description: "Cập nhật những tin tức và câu chuyện mới nhất từ tiệm bánh trung thu truyền thống Văn Hòa Lạc Vũng Tàu.",
+  alternates: {
+    canonical: "https://vanhoalac.vn/bai-viet",
+  },
 }
 
 const defaultPosts = [
@@ -36,7 +40,7 @@ const defaultPosts = [
 
 async function getAllPosts() {
   try {
-    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', { 
+    const res = await fetch('http://127.0.0.1:8000/api/posts?published_only=true', {
       cache: 'no-store',
       signal: AbortSignal.timeout(2000)
     })
@@ -56,9 +60,9 @@ export default async function BlogListPage() {
     id: p.id,
     title: p.title,
     excerpt: p.excerpt,
-    image: p.image_url || "/images/blog-crafting.jpg",
+    image: resolvePostImage(p.image_url, p.category, p.slug),
     date: new Date(p.created_at).toLocaleDateString("vi-VN"),
-    category: p.category,
+    category: p.category || "Tin Tức",
     href: `/bai-viet/${p.slug}`
   }))
 
@@ -70,11 +74,11 @@ export default async function BlogListPage() {
       <main className="flex-1 bg-[#F7F3EC] min-h-screen pt-28 md:pt-32 pb-24 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
-            <Breadcrumbs 
+            <Breadcrumbs
               items={[
                 { label: 'Trang chủ', href: '/' },
                 { label: 'Bài viết', href: '/bai-viet' },
-              ]} 
+              ]}
             />
           </div>
 
@@ -93,9 +97,9 @@ export default async function BlogListPage() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {displayPosts.map((post) => (
-                <Link 
-                  key={post.id} 
-                  href={post.href} 
+                <Link
+                  key={post.id}
+                  href={post.href}
                   className="group cursor-pointer block"
                   target={post.href.startsWith("http") ? "_blank" : undefined}
                   rel={post.href.startsWith("http") ? "noopener noreferrer" : undefined}
@@ -134,7 +138,7 @@ export default async function BlogListPage() {
                 </Link>
               ))}
             </div>
-            
+
             {displayPosts.length === 0 && (
               <div className="text-center py-20 text-[#30251F]/60">
                 Chưa có bài viết nào!

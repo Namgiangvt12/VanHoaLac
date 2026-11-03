@@ -61,7 +61,11 @@ def init_db():
         category TEXT,
         published BOOLEAN DEFAULT 0,
         scheduled_at TEXT,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        updated_at TEXT,
+        meta_title TEXT,
+        meta_description TEXT,
+        og_image TEXT
     )""")
     
     cur.execute("PRAGMA table_info(posts)")
@@ -76,6 +80,14 @@ def init_db():
         cur.execute("ALTER TABLE posts ADD COLUMN published BOOLEAN DEFAULT 0")
     if "scheduled_at" not in columns:
         cur.execute("ALTER TABLE posts ADD COLUMN scheduled_at TEXT")
+    if "updated_at" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN updated_at TEXT")
+    if "meta_title" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN meta_title TEXT")
+    if "meta_description" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN meta_description TEXT")
+    if "og_image" not in columns:
+        cur.execute("ALTER TABLE posts ADD COLUMN og_image TEXT")
 
     con.commit()
     con.close()

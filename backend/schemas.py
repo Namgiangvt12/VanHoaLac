@@ -44,4 +44,7 @@ class PostCreateSchema(BaseModel):
     category: Optional[str] = "Tin tức"
     published: bool = False
     scheduled_at: Optional[str] = None
+    meta_title: Optional[str] = ""
+    meta_description: Optional[str] = ""
+    og_image: Optional[str] = ""
 

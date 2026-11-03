@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLenis } from "./smooth-scroll-provider"
 
@@ -9,11 +10,15 @@ const MAX_VISIBLE_MS = 2600
 const EXIT_MS = 850
 
 export function IntroCurtainLoader() {
+  const pathname = usePathname()
+  const isAdminRoute = pathname?.startsWith("/admin") ?? false
   const [shouldRender, setShouldRender] = useState(false)
   const [isExiting, setIsExiting] = useState(false)
   const { stopScroll, startScroll } = useLenis()
 
   useEffect(() => {
+    if (isAdminRoute) return
+
     // Check if prefers-reduced-motion is enabled
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     if (prefersReduced) {
@@ -73,9 +78,9 @@ export function IntroCurtainLoader() {
       clearTimeout(fallbackTimer)
       window.removeEventListener("load", triggerExit)
     }
-  }, [stopScroll, startScroll])
+  }, [isAdminRoute, stopScroll, startScroll])
 
-  if (!shouldRender) return null
+  if (isAdminRoute || !shouldRender) return null
 
   return (
     <AnimatePresence>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import type { BasePost } from "./add-blog-form"
+import { resolvePostImage } from "@/lib/blog-helpers"
 
 interface BlogListProps {
   onEdit: (post: BasePost) => void
@@ -78,7 +79,11 @@ export function BlogList({ onEdit }: BlogListProps) {
                       <img src={post.image_url} alt={post.title} className="w-full h-full object-cover" />
                     </div>
                   ) : (
-                    <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center text-xs text-gray-400">Không ảnh</div>
+                    <div className="w-12 h-12 rounded overflow-hidden bg-gray-100 relative border border-dashed border-gray-300" title="Ảnh mặc định theo danh mục">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={resolvePostImage(post.image_url, post.category, post.slug)} alt={post.title} className="w-full h-full object-cover opacity-75" />
+                      <span className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[9px] text-center leading-tight py-0.5">Mặc định</span>
+                    </div>
                   )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">

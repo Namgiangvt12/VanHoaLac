@@ -1,11 +1,15 @@
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { MapPin, Phone, Mail, Clock } from "lucide-react"
+import Link from "next/link"
+import { MapPin, Phone, Mail, Clock, ArrowRight } from "lucide-react"
 
 export const metadata = {
   title: "Liên Hệ Văn Hòa Lạc | Điểm Bán Bánh Trung Thu Vũng Tàu",
   description: "Trang liên hệ và thông tin bản đồ, hotline của hiệu bánh trung thu Văn Hòa Lạc tại Vũng Tàu. Hỗ trợ đặt bánh trực tuyến và giải đáp khách hàng.",
+  alternates: {
+    canonical: "https://vanhoalac.vn/lien-he",
+  },
 }
 
 const jsonLd = {
@@ -121,6 +125,79 @@ export default function ContactPage() {
                   referrerPolicy="strict-origin-when-cross-origin"
                   title="Bản đồ đường đi đến Bánh Trung Thu Văn Hòa Lạc Long Điền"
                 ></iframe>
+              </div>
+            </div>
+
+            {/* Liên kết nội bộ: Sản phẩm & Hướng dẫn đặt mua */}
+            <div className="mt-12 pt-10 border-t border-[#E8E1D5] grid md:grid-cols-2 gap-8">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-serif text-xl font-bold text-[#30251F]">
+                    Sản Phẩm Đặt Nhiều Nhất
+                  </h2>
+                  <Link href="/san-pham" className="text-xs font-bold uppercase tracking-wider text-[#7A2935] hover:underline inline-flex items-center gap-1">
+                    Bảng giá đầy đủ <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+                <ul className="space-y-2.5 text-sm">
+                  <li>
+                    <Link href="/san-pham/da-dop-2-trung" className="flex items-center justify-between p-3 rounded-xl bg-[#F7F3EC]/70 border border-[#E8E1D5] hover:border-[#7A2935] transition-colors">
+                      <span className="font-semibold text-[#30251F]">Bánh Da Dợp Thập Cẩm 2 Trứng</span>
+                      <span className="text-[#7A2935] font-bold">130.000đ</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/san-pham/da-dop-3-trung" className="flex items-center justify-between p-3 rounded-xl bg-[#F7F3EC]/70 border border-[#E8E1D5] hover:border-[#7A2935] transition-colors">
+                      <span className="font-semibold text-[#30251F]">Bánh Da Dợp Thập Cẩm 3 Trứng</span>
+                      <span className="text-[#7A2935] font-bold">165.000đ</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/san-pham/da-dop-big" className="flex items-center justify-between p-3 rounded-xl bg-[#F7F3EC]/70 border border-[#E8E1D5] hover:border-[#7A2935] transition-colors">
+                      <span className="font-semibold text-[#30251F]">Bánh Da Dợp Ngoại Cỡ 6 - 14 Trứng</span>
+                      <span className="text-[#7A2935] font-bold">460.000đ</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/san-pham/trung-thu-ga-quay" className="flex items-center justify-between p-3 rounded-xl bg-[#F7F3EC]/70 border border-[#E8E1D5] hover:border-[#7A2935] transition-colors">
+                      <span className="font-semibold text-[#30251F]">Bánh Nướng Thập Cẩm Gà Quay</span>
+                      <span className="text-[#7A2935] font-bold">140.000đ</span>
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-serif text-xl font-bold text-[#30251F]">
+                    Cẩm Nang Đặt Bánh & Quà Biếu
+                  </h2>
+                  <Link href="/bai-viet" className="text-xs font-bold uppercase tracking-wider text-[#7A2935] hover:underline inline-flex items-center gap-1">
+                    Tất cả bài viết <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+                <ul className="space-y-2.5 text-sm">
+                  <li>
+                    <Link href="/bai-viet/tu-lo-banh-gia-truyen-1970-den-thuong-hieu-chinh-hang-hom-nay" className="block p-3 rounded-xl bg-[#F7F3EC]/70 border border-[#E8E1D5] hover:border-[#7A2935] transition-colors font-medium text-[#30251F] hover:text-[#7A2935]">
+                      Từ lò bánh gia truyền 1970 đến thương hiệu chính hãng hôm nay
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/bai-viet/goi-y-set-qua-bieu-cuoi-nam-tu-thuong-hieu-chinh-hang-56-nam-van-hoa-lac" className="block p-3 rounded-xl bg-[#F7F3EC]/70 border border-[#E8E1D5] hover:border-[#7A2935] transition-colors font-medium text-[#30251F] hover:text-[#7A2935]">
+                      Gợi ý set quà biếu cuối năm từ thương hiệu chính hãng 56 năm Văn Hòa Lạc
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/bai-viet/banh-trung-thu-lam-qua-tang-cuoi-nam-cho-doanh-nghiep" className="block p-3 rounded-xl bg-[#F7F3EC]/70 border border-[#E8E1D5] hover:border-[#7A2935] transition-colors font-medium text-[#30251F] hover:text-[#7A2935]">
+                      Bánh trung thu làm quà tặng cuối năm cho doanh nghiệp
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/bai-viet/dai-ly-van-hoa-lac-174-nguyen-van-troi-vung-tau" className="block p-3 rounded-xl bg-[#F7F3EC]/70 border border-[#E8E1D5] hover:border-[#7A2935] transition-colors font-medium text-[#30251F] hover:text-[#7A2935]">
+                      Điểm bán Văn Hòa Lạc 174 Nguyễn Văn Trỗi, Vũng Tàu
+                    </Link>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

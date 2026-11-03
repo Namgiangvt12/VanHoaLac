@@ -17,11 +17,15 @@ export interface BlogFormData {
   category: string
   published: boolean
   scheduled_at?: string | null
+  meta_title?: string
+  meta_description?: string
+  og_image?: string
 }
 
 export interface BasePost extends BlogFormData {
   id: number
   created_at: string
+  updated_at?: string | null
 }
 
 interface Props {
@@ -40,6 +44,9 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
     category: 'Tin tức',
     published: true,
     scheduled_at: null,
+    meta_title: '',
+    meta_description: '',
+    og_image: '',
   })
 
   // 'now' | 'schedule' | 'draft'
@@ -48,6 +55,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
 
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingOgImage, setUploadingOgImage] = useState(false)
   const [message, setMessage] = useState('')
   const quillRef = useRef<any>(null)
 
@@ -91,6 +99,9 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         category: initialData.category || 'Tin tức',
         published: isPub,
         scheduled_at: initialData.scheduled_at || null,
+        meta_title: initialData.meta_title || '',
+        meta_description: initialData.meta_description || '',
+        og_image: initialData.og_image || '',
       })
     } else {
       setPublishMode('now')
@@ -104,6 +115,9 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
         category: 'Tin tức',
         published: true,
         scheduled_at: null,
+        meta_title: '',
+        meta_description: '',
+        og_image: '',
       })
     }
   }, [initialData])
@@ -219,6 +233,46 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
     }
   }
 
+  const handleOgImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let file = e.target.files ? e.target.files[0] : null
+    if (!file) return
+
+    setUploadingOgImage(true)
+
+    try {
+      if (file.type.startsWith('image/')) {
+        file = await imageCompression(file, {
+          maxSizeMB: 0.8,
+          maxWidthOrHeight: 1200,
+          useWebWorker: true
+        })
+      }
+    } catch (error) {
+      console.error("Compression error:", error)
+    }
+
+    const uploadData = new FormData()
+    uploadData.append("file", file)
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadData,
+      })
+      const data = await res.json()
+      if (data.url) {
+        setFormData(prev => ({ ...prev, og_image: data.url }))
+      } else {
+        alert('Lỗi: ' + (data.detail || 'Không thể upload ảnh chia sẻ'))
+      }
+    } catch (err: any) {
+      alert("Lỗi kết nối upload: " + err.message)
+    } finally {
+      setUploadingOgImage(false)
+      e.target.value = ''
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -283,6 +337,9 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
             category: 'Tin tức',
             published: true,
             scheduled_at: null,
+            meta_title: '',
+            meta_description: '',
+            og_image: '',
           })
           setPublishMode('now')
         }
@@ -372,9 +429,15 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
             name="excerpt"
             value={formData.excerpt}
             onChange={handleChange}
+            onKeyDown={(e) => {
+              if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+                e.stopPropagation()
+                e.currentTarget.select()
+              }
+            }}
             required
             rows={2}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 select-text"
             placeholder="Tóm tắt bài viết (sẽ hiển thị trong danh sách)"
           />
         </div>
@@ -388,7 +451,11 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
               {...({ ref: quillRef } as any)}
               theme="snow"
               value={formData.content}
-              onChange={(value: string) => setFormData(prev => ({ ...prev, content: value }))}
+              onChange={(value: string, _delta: any, source: string) => {
+                if (source === 'user' || value !== formData.content) {
+                  setFormData(prev => (prev.content === value ? prev : { ...prev, content: value }))
+                }
+              }}
               modules={modules}
               className="h-[400px] mb-12"
             />
@@ -439,6 +506,82 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
             <option value="Báo chí">Báo chí</option>
             <option value="Khuyến mãi">Khuyến mãi</option>
           </select>
+        </div>
+
+        {/* TÙY CHỌN SEO (META TITLE, META DESCRIPTION, OG IMAGE) */}
+        <div className="border border-gray-200 bg-gray-50/80 rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="block text-sm font-semibold text-gray-800 flex items-center gap-1.5">
+              <Sparkles size={15} className="text-amber-600" />
+              <span>Tùy Chọn SEO & Chia Sẻ Mạng Xã Hội (Không bắt buộc)</span>
+            </label>
+            <span className="text-[11px] text-gray-500">Để trống sẽ tự dùng Tiêu đề & Tóm tắt</span>
+          </div>
+
+          <div>
+            <label htmlFor="meta_title" className="block text-xs font-medium text-gray-700 mb-1">
+              Meta Title (Tiêu đề SEO trên Google)
+            </label>
+            <input
+              type="text"
+              id="meta_title"
+              name="meta_title"
+              value={formData.meta_title || ''}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+              placeholder={formData.title ? `${formData.title} | Văn Hòa Lạc Vũng Tàu` : "Mặc định lấy theo Tiêu đề bài viết"}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="meta_description" className="block text-xs font-medium text-gray-700 mb-1">
+              Meta Description (Mô tả SEO trên Google)
+            </label>
+            <textarea
+              id="meta_description"
+              name="meta_description"
+              value={formData.meta_description || ''}
+              onChange={handleChange}
+              onKeyDown={(e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+                  e.stopPropagation()
+                  e.currentTarget.select()
+                }
+              }}
+              rows={2}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white select-text"
+              placeholder={formData.excerpt || "Mặc định lấy theo Tóm tắt bài viết (khuyến nghị 140 - 160 ký tự)"}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="og_image" className="block text-xs font-medium text-gray-700 mb-1">
+              Ảnh chia sẻ mạng xã hội (OG Image riêng)
+            </label>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <input
+                  type="text"
+                  id="og_image"
+                  name="og_image"
+                  value={formData.og_image || ''}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                  placeholder={formData.image_url || "Mặc định dùng Ảnh đại diện hoặc ảnh theo danh mục"}
+                />
+              </div>
+              <label className="whitespace-nowrap cursor-pointer bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 py-2 px-3 rounded-md flex items-center justify-center text-xs font-medium">
+                {uploadingOgImage ? 'Đang tải...' : '📂 Tải ảnh OG'}
+                <input type="file" accept="image/*" className="hidden" disabled={uploadingOgImage} onChange={handleOgImageUpload} />
+              </label>
+            </div>
+            {formData.og_image && (
+              <div className="mt-2 relative w-32 h-20 rounded border border-gray-200 overflow-hidden bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={formData.og_image} alt="OG preview" className="w-full h-full object-cover" />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* TÙY CHỌN XUẤT BẢN & HẸN GIỜ ĐĂNG BÀI */}
@@ -538,7 +681,7 @@ export function AddBlogForm({ initialData, onSuccess, onCancel }: Props) {
 
         <button
           type="submit"
-          disabled={loading || uploadingImage}
+          disabled={loading || uploadingImage || uploadingOgImage}
           className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 font-semibold transition"
         >
           {loading 

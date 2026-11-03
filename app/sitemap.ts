@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next'
 import { PRODUCTS } from '@/lib/products'
 
+export const revalidate = 3600
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://vanhoalac.vn'
 
@@ -20,12 +22,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
     if (res.ok) {
       const posts = await res.json()
-      blogEntries = posts.map((post: any) => ({
-        url: `${baseUrl}/bai-viet/${post.slug}`,
-        lastModified: post.created_at ? new Date(post.created_at) : new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.7,
-      }))
+      blogEntries = posts.map((post: any) => {
+        const dateStr = post.updated_at || post.created_at
+        return {
+          url: `${baseUrl}/bai-viet/${post.slug}`,
+          lastModified: dateStr ? new Date(dateStr) : new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        }
+      })
     }
   } catch (err) {
     // Graceful fallback during build
@@ -37,6 +42,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
+    },
+    {
+      url: `${baseUrl}/san-pham`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/ve-chung-toi`,

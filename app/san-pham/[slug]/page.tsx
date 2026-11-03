@@ -8,7 +8,9 @@ import { Breadcrumbs } from '@/components/breadcrumbs'
 import { 
   getProductBySlug, 
   getAllProductSlugs, 
-  PRODUCTS 
+  PRODUCTS,
+  DEFAULT_SHIPPING_DETAILS,
+  DEFAULT_MERCHANT_RETURN_POLICY
 } from '@/lib/products'
 import { 
   Phone, 
@@ -122,7 +124,9 @@ export default async function ProductDetailPage({
         "name": "Văn Hòa Lạc Vũng Tàu",
         "telephone": "+84-971682213",
         "url": "https://vanhoalac.vn"
-      }
+      },
+      "shippingDetails": DEFAULT_SHIPPING_DETAILS,
+      "hasMerchantReturnPolicy": DEFAULT_MERCHANT_RETURN_POLICY
     }
   }
 

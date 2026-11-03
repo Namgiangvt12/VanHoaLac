@@ -66,7 +66,7 @@ export function Footer() {
               <li><Link href="/" className="text-[#D5C9BF] hover:text-white transition-colors">Trang Chủ</Link></li>
               <li><Link href="/ve-chung-toi" className="text-[#D5C9BF] hover:text-white transition-colors">Về Văn Hòa Lạc</Link></li>
               <li><Link href="/bai-viet" className="text-[#D5C9BF] hover:text-white transition-colors">Bài Viết & Tin Tức</Link></li>
-              <li><Link href="/#products" className="text-[#D5C9BF] hover:text-white transition-colors">Danh Mục Sản Phẩm</Link></li>
+              <li><Link href="/san-pham" className="text-[#D5C9BF] hover:text-white transition-colors">Danh Mục Sản Phẩm</Link></li>
               <li><Link href="/lien-he" className="text-[#D5C9BF] hover:text-white transition-colors">Liên Hệ Đặt Hàng</Link></li>
             </ul>
           </nav>

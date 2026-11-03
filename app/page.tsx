@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
 import { HeritageTiltedShowcase } from "@/components/heritage-tilted-showcase"
@@ -11,6 +12,12 @@ import { Footer } from "@/components/footer"
 
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://vanhoalac.vn',
+  },
+}
 
 // JSON-LD Structured Data for SEO
 const jsonLd = {
@@ -29,10 +36,11 @@ const jsonLd = {
         "Tiệm Bánh Văn Hòa Lạc Vũng Tàu"
       ],
       "description": "Văn Hòa Lạc Vũng Tàu là thương hiệu bánh trung thu thủ công gia truyền từ năm 1970. Chuyên cung cấp bánh Da Dợp độc bản vỏ giòn xốp, bánh nướng thập cẩm gà quay, đậu xanh hạt sen và giao hàng toàn quốc.",
+      "foundingDate": "1970",
       "url": "https://vanhoalac.vn",
       "telephone": "+84-971682213",
       "email": "xin-chao@vanhoalac.vn",
-      "image": "https://vanhoalac.vn/images/hero-mooncakes.JPG",
+      "image": "https://vanhoalac.vn/images/hero-mooncakes.jpg",
       "logo": "https://vanhoalac.vn/logo.png",
       "priceRange": "$$",
       "address": {
@@ -74,7 +82,7 @@ const jsonLd = {
       "@id": "https://vanhoalac.vn/#website",
       "url": "https://vanhoalac.vn",
       "name": "Bánh Trung Thu Văn Hòa Lạc Vũng Tàu",
-      "description": "Thương hiệu bánh trung thu Vũng Tàu thủ công cao cấp tại Long Điền - Vũng Tàu",
+      "description": "Thương hiệu bánh trung thu thủ công gia truyền Văn Hòa Lạc tại Vũng Tàu từ năm 1970",
       "publisher": { "@id": "https://vanhoalac.vn/#business" },
       "potentialAction": {
         "@type": "SearchAction",

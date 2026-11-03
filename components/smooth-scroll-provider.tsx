@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useRef, useState } from "react"
+import { usePathname } from "next/navigation"
 import Lenis from "lenis"
 
 interface LenisContextType {
@@ -20,10 +21,17 @@ export function useLenis() {
 }
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const isAdminRoute = pathname?.startsWith("/admin") ?? false
   const [lenisInstance, setLenisInstance] = useState<Lenis | null>(null)
   const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
+    if (isAdminRoute) {
+      document.documentElement.classList.remove("overflow-hidden")
+      return
+    }
+
     // Respect prefers-reduced-motion
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     if (prefersReducedMotion) return
@@ -66,7 +74,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       lenis.destroy()
       lenisRef.current = null
     }
-  }, [])
+  }, [isAdminRoute])
 
   const stopScroll = () => {
     lenisRef.current?.stop()

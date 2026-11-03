@@ -1,4 +1,5 @@
 import { BlogMotionGrid, BlogPostItem } from "./blog-motion-grid"
+import { resolvePostImage, isGiftPriorityPost } from "@/lib/blog-helpers"
 
 const defaultPosts: BlogPostItem[] = [
   {
@@ -39,17 +40,24 @@ async function getLatestPosts() {
 export async function BlogSection() {
   const dbPosts = await getLatestPosts()
 
-  const formattedDbPosts: BlogPostItem[] = dbPosts.map((p: any) => ({
-    id: p.id,
+  const sortedDbPosts = [...dbPosts].sort((a: any, b: any) => {
+    const aGift = isGiftPriorityPost(a) ? 1 : 0
+    const bGift = isGiftPriorityPost(b) ? 1 : 0
+    if (aGift !== bGift) return bGift - aGift
+    return (Number(b.id) || 0) - (Number(a.id) || 0)
+  })
+
+  const formattedDbPosts: BlogPostItem[] = sortedDbPosts.map((p: any) => ({
+    id: String(p.id),
     title: p.title,
     excerpt: p.excerpt,
-    image: p.image_url || "/images/blog-crafting.jpg",
+    image: resolvePostImage(p.image_url, p.category, p.slug),
     date: new Date(p.created_at).toLocaleDateString('vi-VN'),
     category: p.category || "Tin Tức",
     href: `/bai-viet/${p.slug}`
   }))
 
-  const displayPosts = [...formattedDbPosts, ...defaultPosts].slice(0, 3)
+  const displayPosts = [...formattedDbPosts, ...defaultPosts].slice(0, 6)
 
   return (
     <section id="blog" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" aria-labelledby="blog-heading">

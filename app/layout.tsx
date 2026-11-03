@@ -37,13 +37,6 @@ export const metadata: Metadata = {
     telephone: true,
   },
   metadataBase: new URL('https://vanhoalac.vn'),
-  alternates: {
-    canonical: '/',
-    languages: {
-      'vi-VN': '/',
-      'en-US': '/en',
-    },
-  },
   openGraph: {
     title: 'Văn Hòa Lạc Vũng Tàu | Bánh Trung Thu Gia Truyền Thủ Công',
     description: 'Văn Hòa Lạc Vũng Tàu - Thương hiệu bánh trung thu thủ công gia truyền từ năm 1970. Nổi tiếng với bánh Da Dợp vỏ giòn xốp độc bản, bánh nướng thập cẩm gà quay và giao hàng toàn quốc.',

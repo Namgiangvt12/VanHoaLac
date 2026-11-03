@@ -182,3 +182,41 @@ export function getProductBySlug(slug: string): ProductItem | undefined {
 export function getAllProductSlugs(): string[] {
   return PRODUCTS.map(p => p.slug)
 }
+
+export const DEFAULT_SHIPPING_DETAILS = {
+  "@type": "OfferShippingDetails",
+  "shippingRate": {
+    "@type": "MonetaryAmount",
+    "value": "30000",
+    "currency": "VND"
+  },
+  "shippingDestination": {
+    "@type": "DefinedRegion",
+    "addressCountry": "VN"
+  },
+  "deliveryTime": {
+    "@type": "ShippingDeliveryTime",
+    "handlingTime": {
+      "@type": "QuantitativeValue",
+      "minValue": 0,
+      "maxValue": 1,
+      "unitCode": "DAY"
+    },
+    "transitTime": {
+      "@type": "QuantitativeValue",
+      "minValue": 1,
+      "maxValue": 3,
+      "unitCode": "DAY"
+    }
+  }
+}
+
+export const DEFAULT_MERCHANT_RETURN_POLICY = {
+  "@type": "MerchantReturnPolicy",
+  "applicableCountry": "VN",
+  "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+  "merchantReturnDays": 7,
+  "returnMethod": "https://schema.org/ReturnByMail",
+  "returnFees": "https://schema.org/ReturnShippingFees"
+}
+

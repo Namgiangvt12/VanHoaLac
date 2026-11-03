@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  const host = request.headers.get('host') || ''
+  if (host.startsWith('www.')) {
+    const newHost = host.replace(/^www\./, '')
+    const newUrl = new URL(request.nextUrl.pathname + request.nextUrl.search, `https://${newHost}`)
+    return NextResponse.redirect(newUrl, 301)
+  }
+
   if (request.nextUrl.pathname.startsWith('/admin/login')) {
     return NextResponse.next()
   }
@@ -17,5 +24,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/admin/:path*',
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)',
+  ],
 }
+

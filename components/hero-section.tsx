@@ -183,7 +183,7 @@ export function HeroSection() {
                     ease: [0.16, 1, 0.3, 1] 
                   }}
                 >
-                  {line.text}
+                  {line.text}{idx < titleLines.length - 1 ? " " : ""}
                 </motion.span>
               </span>
             ))}

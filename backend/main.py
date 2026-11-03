@@ -785,9 +785,9 @@ def create_post(post: PostCreateSchema):
     cur = con.cursor()
     try:
         cur.execute("""
-            INSERT INTO posts(id, title, slug, excerpt, content, image_url, category, published, scheduled_at, created_at)
-            VALUES(?,?,?,?,?,?,?,?,?,?)
-        """, (new_id, post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, is_published, post.scheduled_at, now))
+            INSERT INTO posts(id, title, slug, excerpt, content, image_url, category, published, scheduled_at, created_at, updated_at, meta_title, meta_description, og_image)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        """, (new_id, post.title, post.slug, post.excerpt, post.content, post.image_url, post.category, is_published, post.scheduled_at, now, now, post.meta_title or "", post.meta_description or "", post.og_image or ""))
         con.commit()
 
         # Sync to MongoDB Atlas if active
@@ -805,7 +805,11 @@ def create_post(post: PostCreateSchema):
                     "category": post.category or "Tin tức",
                     "published": bool(post.published),
                     "scheduled_at": post.scheduled_at,
-                    "created_at": now
+                    "created_at": now,
+                    "updated_at": now,
+                    "meta_title": post.meta_title or "",
+                    "meta_description": post.meta_description or "",
+                    "og_image": post.og_image or ""
                 }
                 mdb.posts.replace_one({'_id': str(new_id)}, post_doc, upsert=True)
         except Exception as me:
@@ -826,11 +830,12 @@ def update_post(post_id: int, p: PostCreateSchema):
     con = get_conn()
     cur = con.cursor()
     try:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         is_published = 1 if p.published else 0
         cur.execute("""
-            UPDATE posts SET title=?, slug=?, excerpt=?, content=?, image_url=?, category=?, published=?, scheduled_at=?
+            UPDATE posts SET title=?, slug=?, excerpt=?, content=?, image_url=?, category=?, published=?, scheduled_at=?, updated_at=?, meta_title=?, meta_description=?, og_image=?
             WHERE id=?
-        """, (p.title, p.slug, p.excerpt, p.content, p.image_url, p.category, is_published, p.scheduled_at, post_id))
+        """, (p.title, p.slug, p.excerpt, p.content, p.image_url, p.category, is_published, p.scheduled_at, now, p.meta_title or "", p.meta_description or "", p.og_image or "", post_id))
         con.commit()
 
         # Sync to MongoDB Atlas if active
@@ -838,7 +843,7 @@ def update_post(post_id: int, p: PostCreateSchema):
             mdb = get_mongo_db()
             if mdb is not None:
                 existing = mdb.posts.find_one({"$or": [{"_id": str(post_id)}, {"id": post_id}]})
-                created_at = existing.get("created_at") if existing and isinstance(existing, dict) else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                created_at = existing.get("created_at") if existing and isinstance(existing, dict) else now
 
                 post_doc = {
                     "_id": str(post_id),
@@ -851,7 +856,11 @@ def update_post(post_id: int, p: PostCreateSchema):
                     "category": p.category or "Tin tức",
                     "published": bool(p.published),
                     "scheduled_at": p.scheduled_at,
-                    "created_at": created_at
+                    "created_at": created_at,
+                    "updated_at": now,
+                    "meta_title": p.meta_title or "",
+                    "meta_description": p.meta_description or "",
+                    "og_image": p.og_image or ""
                 }
                 mdb.posts.replace_one({'_id': str(post_id)}, post_doc, upsert=True)
         except Exception as me:
@@ -952,7 +961,11 @@ def get_posts(published_only: bool = False):
                         "category": p.get('category', 'Tin tức'),
                         "published": is_pub,
                         "scheduled_at": p.get('scheduled_at'),
-                        "created_at": p.get('created_at', '')
+                        "created_at": p.get('created_at', ''),
+                        "updated_at": p.get('updated_at') or p.get('created_at', ''),
+                        "meta_title": p.get('meta_title', ''),
+                        "meta_description": p.get('meta_description', ''),
+                        "og_image": p.get('og_image', '')
                     }
                     mdb.posts.replace_one({'_id': str(pid)}, post_doc, upsert=True)
                 except Exception as sync_e:
